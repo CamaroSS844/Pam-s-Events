@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+
+    // Connection test collection
+    match /_connection_test_/{docId} {
+      allow read, write: if true;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isSignedIn() || request.auth.uid == userId || true;
+    }
+
+    // Events collection (invitation sites are public viewable by slug/id)
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+
+      // Guests subcollection (RSVP and guest management)
+      match /guests/{guestId} {
+        allow read, create, update, delete: if true;
+      }
+
+      // Guestbook subcollection
+      match /guestbook/{entryId} {
+        allow read, create, update, delete: if true;
+      }
+
+      // Activities subcollection
+      match /activities/{activityId} {
+        allow read, create, update, delete: if true;
+      }
+    }
+
+    // Catch-all safety rule
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Registered user profile with client or admin role",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "name": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["client", "admin"] },
+        "avatar": { "type": "string", "maxLength": 1024 },
+        "eventLimit": { "type": "number" },
+        "isBlocked": { "type": "boolean" }
+      },
+      "required": ["id", "email", "name", "role"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Event detail and website settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "type": { "type": "string", "enum": ["wedding", "birthday"] },
+        "status": { "type": "string", "enum": ["draft", "pending_approval", "published", "archived", "taken_down"] },
+        "name": { "type": "string", "maxLength": 256 },
+        "brideName": { "type": "string", "maxLength": 128 },
+        "groomName": { "type": "string", "maxLength": 128 },
+        "birthdayPerson": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 64 },
+        "time": { "type": "string", "maxLength": 64 },
+        "venue": { "type": "string", "maxLength": 512 },
+        "description": { "type": "string", "maxLength": 2048 },
+        "themeId": { "type": "string", "enum": ["luxury", "elegant", "modern", "rustic", "floral", "traditional", "minimal"] },
+        "themeColor": { "type": "string", "maxLength": 64 },
+        "dressCode": { "type": "string", "maxLength": 256 },
+        "mapLink": { "type": "string", "maxLength": 1024 },
+        "coverImage": { "type": "string", "maxLength": 1024 },
+        "galleryImages": { "type": "array" },
+        "heroBackground": { "type": "string", "maxLength": 1024 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "clientId": { "type": "string", "maxLength": 128 },
+        "clientNumber": { "type": "string", "maxLength": 64 },
+        "rsvpDeadline": { "type": "string", "maxLength": 64 },
+        "maxGuestsPerInvitation": { "type": "number" },
+        "slug": { "type": "string", "maxLength": 128 },
+        "musicUrl": { "type": "string", "maxLength": 1024 },
+        "musicTitle": { "type": "string", "maxLength": 128 },
+        "musicAutoPlay": { "type": "boolean" }
+      },
+      "required": ["id", "type", "status", "name", "date", "venue", "themeId", "clientId"]
+    },
+    "Guest": {
+      "title": "Guest",
+      "description": "Event guest list entry and RSVP status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 64 },
+        "email": { "type": "string", "maxLength": 256 },
+        "isVip": { "type": "boolean" },
+        "isFamily": { "type": "boolean" },
+        "tableNumber": { "type": "string", "maxLength": 64 },
+        "rsvpStatus": { "type": "string", "enum": ["pending", "accepted", "declined"] },
+        "mealOption": { "type": "string", "maxLength": 128 },
+        "companionsCount": { "type": "number" },
+        "invitationOpened": { "type": "boolean" },
+        "lastOpenedTime": { "type": "string", "maxLength": 64 },
+        "token": { "type": "string", "maxLength": 128 },
+        "responseDate": { "type": "string", "maxLength": 64 },
+        "songRequest": { "type": "string", "maxLength": 256 },
+        "personalMessage": { "type": "string", "maxLength": 1024 },
+        "rsvpTimestamp": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "eventId", "name", "rsvpStatus", "token"]
+    },
+    "GuestbookEntry": {
+      "title": "GuestbookEntry",
+      "description": "Wishes and guestbook posts left by visitors",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "message": { "type": "string", "maxLength": 1024 },
+        "imageUrl": { "type": "string", "maxLength": 1024 },
+        "timestamp": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "eventId", "name", "message"]
+    },
+    "RecentActivity": {
+      "title": "RecentActivity",
+      "description": "Activity feed logs for event events",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "eventName": { "type": "string", "maxLength": 256 },
+        "guestName": { "type": "string", "maxLength": 128 },
+        "action": { "type": "string", "enum": ["rsvp_accepted", "rsvp_declined", "opened_invitation", "guestbook_entry"] },
+        "detail": { "type": "string", "maxLength": 512 },
+        "timestamp": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "eventId", "eventName", "guestName", "action"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile collection"
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/Event" },
+      "description": "Event documents collection"
+    },
+    "/events/{eventId}/guests/{guestId}": {
+      "schema": { "$ref": "#/entities/Guest" },
+      "description": "Subcollection of guests per event"
+    },
+    "/events/{eventId}/guestbook/{entryId}": {
+      "schema": { "$ref": "#/entities/GuestbookEntry" },
+      "description": "Subcollection of guestbook posts"
+    },
+    "/events/{eventId}/activities/{activityId}": {
+      "schema": { "$ref": "#/entities/RecentActivity" },
+      "description": "Subcollection of activity feed logs"
+    }
+  }
+}

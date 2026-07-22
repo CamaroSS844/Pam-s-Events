@@ -1,0 +1,264 @@
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Cinzel:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&family=Tangerine:wght@700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-script: "Great Vibes", cursive;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Custom theme typographies */
+  --font-luxury-heading: "Cormorant Garamond", "Playfair Display", serif;
+  --font-luxury-body: "Montserrat", sans-serif;
+  --font-luxury-script: "Allura", "Great Vibes", cursive;
+  
+  --font-elegant-heading: "Cormorant Garamond", serif;
+  --font-elegant-body: "Inter", sans-serif;
+  
+  --font-modern-heading: "Space Grotesk", sans-serif;
+  --font-modern-body: "Lora", serif;
+  
+  --font-rustic-heading: "Fraunces", serif;
+  --font-rustic-body: "Inter", sans-serif;
+  
+  --font-floral-heading: "Lora", serif;
+  --font-floral-body: "Inter", sans-serif;
+  --font-floral-script: "Tangerine", cursive;
+
+  /* Clean Minimalism Slate Palette mapped to stone for system-wide consistency */
+  --color-stone-50: #f8fafc;
+  --color-stone-100: #f1f5f9;
+  --color-stone-200: #e2e8f0;
+  --color-stone-300: #cbd5e1;
+  --color-stone-400: #94a3b8;
+  --color-stone-500: #64748b;
+  --color-stone-600: #475569;
+  --color-stone-700: #334155;
+  --color-stone-800: #1e293b;
+  --color-stone-850: #1e293b;
+  --color-stone-900: #0f172a;
+  --color-stone-950: #020617;
+
+  /* Mapping zinc to match the Clean Minimalism slate family */
+  --color-zinc-50: #f8fafc;
+  --color-zinc-100: #f1f5f9;
+  --color-zinc-150: #e2e8f0;
+  --color-zinc-200: #e2e8f0;
+  --color-zinc-250: #cbd5e1;
+  --color-zinc-300: #cbd5e1;
+  --color-zinc-400: #94a3b8;
+  --color-zinc-500: #64748b;
+  --color-zinc-600: #475569;
+  --color-zinc-700: #334155;
+  --color-zinc-800: #1e293b;
+  --color-zinc-900: #0f172a;
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Custom styles and scrollbar overrides */
+body {
+  font-family: var(--font-sans);
+  background-color: #fafafa;
+  color: #18181b;
+  overflow-x: hidden;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+/* Custom subtle glassmorphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark-glass-panel {
+  background: rgba(15, 15, 20, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Animation utilities */
+.reveal-delay-1 { animation-delay: 100ms; }
+.reveal-delay-2 { animation-delay: 200ms; }
+.reveal-delay-3 { animation-delay: 300ms; }
+
+/* Custom calendar style overrides */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: opacity(0.5);
+  cursor: pointer;
+}
+
+/* SaaS Dark Mode Global Overrides */
+.dark .bg-stone-50,
+.dark .bg-zinc-50,
+.dark .bg-stone-50\/40,
+.dark .bg-stone-50\/50 {
+  background-color: #020617 !important; /* Stone 950 */
+}
+
+.dark .bg-white,
+.dark .glass-panel {
+  background-color: #0f172a !important; /* Stone 900 */
+}
+
+.dark .text-zinc-900,
+.dark .text-slate-900,
+.dark .text-stone-900,
+.dark .text-zinc-800,
+.dark .text-stone-850 {
+  color: #f8fafc !important; /* Stone 50 */
+}
+
+.dark .text-zinc-500,
+.dark .text-slate-500,
+.dark .text-zinc-600,
+.dark .text-stone-500,
+.dark .text-zinc-700,
+.dark .text-stone-700 {
+  color: #94a3b8 !important; /* Stone 400 */
+}
+
+.dark .text-zinc-400,
+.dark .text-slate-400,
+.dark .text-stone-400 {
+  color: #64748b !important; /* Stone 500 */
+}
+
+.dark .border-zinc-200,
+.dark .border-slate-200,
+.dark .border-stone-200,
+.dark .border-zinc-150 {
+  border-color: #1e293b !important; /* Stone 800 */
+}
+
+.dark .border-zinc-250 {
+  border-color: #334155 !important; /* Stone 700 */
+}
+
+.dark .bg-stone-100,
+.dark .bg-zinc-100 {
+  background-color: #1e293b !important; /* Stone 800 */
+}
+
+.dark .bg-stone-50\/60 {
+  background-color: rgba(30, 41, 59, 0.6) !important;
+}
+
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark input::placeholder, 
+.dark textarea::placeholder {
+  color: #475569 !important;
+}
+
+.dark select option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+/* High-fidelity printing stylesheet for Event Details Summary PDF */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+  }
+
+  /* Hide active screen layout elements */
+  header,
+  footer,
+  nav,
+  button,
+  aside,
+  select,
+  input,
+  textarea,
+  .no-print,
+  #root > div > header,
+  #root > div > header + div,
+  #root > div > div > header,
+  #root > div > div > main > div:not(.printable-area),
+  #root > div > div > div:not(.printable-area) {
+    display: none !important;
+  }
+
+  /* Expand printable area to full width and height */
+  .printable-area {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    padding: 2rem !important;
+    margin: 0 !important;
+    z-index: 9999999 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Ensure text remains dark and headers are clean */
+  h1, h2, h3, h4, h5, h6 {
+    color: #0f172a !important;
+    font-family: 'Playfair Display', Georgia, serif !important;
+  }
+
+  p, span, td, th {
+    color: #1e293b !important;
+  }
+
+  /* Avoid breaking important card layouts inside pages */
+  .print-avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Force page breaks for distinct sections if desired */
+  .print-page-break {
+    page-break-before: always !important;
+    break-before: always !important;
+  }
+
+  /* Highlight borders on printing paper */
+  .print-border {
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  .print-border-b {
+    border-bottom: 1px solid #cbd5e1 !important;
+  }
+
+  /* Table styles */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 8px 12px !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+}
+

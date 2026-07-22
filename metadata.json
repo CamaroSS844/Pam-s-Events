@@ -1,0 +1,8 @@
+{
+  "name": "Pam's Events",
+  "description": "Pam's Events is a modern platform for creating elegant digital invitations, managing guests, tracking RSVPs, and delivering unforgettable event experiences.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

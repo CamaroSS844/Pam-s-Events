@@ -1,0 +1,17 @@
+{
+  "name": "Pam's Events",
+  "short_name": "Pam's Events",
+  "description": "Pam's Events is a modern platform for creating elegant digital invitations, managing guests, tracking RSVPs, and delivering unforgettable event experiences.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#D4AF37",
+  "icons": [
+    {
+      "src": "/pams-events-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
