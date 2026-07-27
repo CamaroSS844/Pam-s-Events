@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { 
   ChevronLeft, ChevronRight, Calendar as CalendarIcon, 
-  MapPin, Clock, ArrowRight, Sparkles, Users, ClipboardCheck, CheckCircle2 
+  MapPin, Clock, ArrowRight, Info, Users, ClipboardCheck, CheckCircle2 
 } from 'lucide-react';
 import { EventModel } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -420,7 +420,7 @@ export const DashboardCalendar: React.FC<DashboardCalendarProps> = ({
 
           {/* Quick tips label at bottom */}
           <div className="mt-6 pt-3 border-t border-zinc-200/60 dark:border-stone-800/60 text-[10px] text-zinc-400 dark:text-stone-500 leading-normal flex items-start gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5 animate-pulse" />
+            <Info className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
             <span>Click any calendar date cell to display the registered wedding or party itinerary detail immediately.</span>
           </div>
 

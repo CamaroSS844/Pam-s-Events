@@ -64,16 +64,16 @@ export const Countdown: React.FC<CountdownProps> = ({ targetDate, themeFontHeadi
   }
 
   return (
-    <div className="flex justify-center items-center gap-3 sm:gap-6 py-2 select-none">
+    <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 py-2 px-2 max-w-full select-none overflow-hidden">
       {items.map((item, idx) => (
-        <div key={idx} className="flex flex-col items-center">
+        <div key={idx} className="flex flex-col items-center shrink-0">
           <div 
-            className={`text-2xl sm:text-4xl md:text-5xl font-semibold font-mono tracking-tight tabular-nums min-w-[3.5rem] text-center`}
+            className={`text-xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold font-mono tracking-tight tabular-nums min-w-[2.2rem] sm:min-w-[3.5rem] text-center`}
             style={{ color: themeColor }}
           >
             {String(item.value).padStart(2, '0')}
           </div>
-          <span className="text-[10px] sm:text-xs uppercase font-medium tracking-widest text-neutral-400 mt-1">
+          <span className="text-[9px] sm:text-xs uppercase font-medium tracking-widest text-neutral-400 mt-1 truncate max-w-[4rem] sm:max-w-none text-center">
             {item.label}
           </span>
         </div>

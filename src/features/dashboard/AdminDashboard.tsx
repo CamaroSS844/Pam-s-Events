@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import QRCode from 'qrcode';
 import { 
-  Sparkles, CheckCircle, XCircle, Users, Layers, Activity, CalendarCheck, 
+  CheckCircle, XCircle, Users, Layers, Activity, CalendarCheck, 
   ArrowRight, ShieldCheck, HelpCircle, Eye, AlertCircle, FileCheck2,
   UserPlus, ShieldAlert, Trash2, Ban, Unlock, FileText, Search, UserCheck, MessageSquare,
   Lock, Mail, User as UserIcon, Link2, QrCode, Download, FileSpreadsheet, Star

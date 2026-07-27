@@ -46,8 +46,9 @@ export async function requestGoogleAccessToken(): Promise<string> {
     }
 
     try {
+      const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.VITE_OAUTH_CLIENT_ID || '';
       const client = (window as any).google.accounts.oauth2.initTokenClient({
-        client_id: '80446b20-4923-47ea-b1e4-e8d8c93d55d1.apps.googleusercontent.com', // AI Studio workspace OAuth client
+        client_id: googleClientId,
         scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
         callback: (response: any) => {
           if (response.error) {

@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, X, Music, MessageSquare, Phone, User, AlertTriangle, Sparkles, Clock, Trash2, Edit3, RotateCcw, Image, Camera, Upload } from 'lucide-react';
+import { Check, X, Music, MessageSquare, Phone, User, AlertTriangle, CheckCircle2, Clock, Trash2, Edit3, RotateCcw, Image, Camera, Upload } from 'lucide-react';
 import { EventModel, Guest } from '../../types';
 import { mockApi } from '../../services/mockApi';
 
@@ -448,15 +448,16 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
             className="p-6 sm:p-8 text-center bg-emerald-500/10 border border-emerald-500/25 rounded-xl"
           >
             <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <Sparkles className="w-7 h-7 text-emerald-600 animate-pulse" />
+              <CheckCircle2 className="w-7 h-7 text-emerald-600" />
             </div>
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600/15 border border-emerald-600/30 text-[10px] font-mono font-bold text-emerald-800 uppercase tracking-widest mb-3">
               <Check className="w-3.5 h-3.5" /> Reservation Confirmed
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-emerald-950 tracking-tight">
-              See You There! 🎉
+            <h3 className="text-xl sm:text-2xl font-bold text-emerald-950 tracking-tight flex items-center justify-center gap-2">
+              <span>See You There!</span>
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 inline-block" />
             </h3>
             <p className="text-xs text-emerald-800/90 mt-1.5 leading-relaxed max-w-md mx-auto">
               Thank you, <span className="font-bold">{guestName}</span>! Your acceptance has been saved in your browser and locked in for the hosts.

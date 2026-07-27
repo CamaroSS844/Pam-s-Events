@@ -6,7 +6,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Check, ArrowLeft, ArrowRight, Sparkles, Calendar, MapPin, 
+  Check, ArrowLeft, ArrowRight, Wand2, Calendar, MapPin, 
   ChevronRight, Laptop, Tablet, Smartphone, UploadCloud, X, Plus, 
   Trash2, Search, HelpCircle, FileSpreadsheet, FileText, CheckCircle2, Eye, Palette,
   GripVertical, Clock, Music, Volume2, Play, Pause, Disc, Radio, AlertTriangle
@@ -21,18 +21,18 @@ import { ThemeLibraryModal } from '../../components/ThemeLibraryModal';
 import { MUSIC_PRESETS } from '../../components/BackgroundMusicPlayer';
 
 const DEFAULT_WEDDING_AGENDA = [
-  { id: 'agenda-1', time: "3:30 PM", title: "Ceremonial Reception & Guest Entrance", desc: "Arrive at the glass conservatory garden paths, soundscape piano acoustics begin." },
-  { id: 'agenda-2', time: "4:00 PM", title: "Vows Exchange & Sand Distribution", desc: "The couples deliver customized letters beneath the timber flower arch." },
-  { id: 'agenda-3', time: "5:00 PM", title: "Cocktails & Photo Session", desc: "Enjoy champagne, botanic mocktails, and fresh visual portrait captures." },
-  { id: 'agenda-4', time: "6:30 PM", title: "Dinner Banquets & Heartfelt Speeches", desc: "A curated three-course dinner, followed by sibling and parent toasts." },
-  { id: 'agenda-5', time: "8:30 PM", title: "DJ Grooves & Dancefloor Expansion", desc: "Live music mixers, high energy visual lights, and late-night visual cake service." }
+  { id: 'agenda-1', time: "3:30 PM", title: "Guest Arrival & Welcome", desc: "Guests arrive and take their seats before the ceremony begins." },
+  { id: 'agenda-2', time: "4:00 PM", title: "Wedding Ceremony", desc: "Exchange of vows and rings surrounded by family and friends." },
+  { id: 'agenda-3', time: "5:00 PM", title: "Cocktail Hour & Photos", desc: "Enjoy drinks, appetizers, and photos with the wedding party." },
+  { id: 'agenda-4', time: "6:30 PM", title: "Dinner & Speeches", desc: "A delicious dinner followed by toasts from family and friends." },
+  { id: 'agenda-5', time: "8:30 PM", title: "Dancing & Celebration", desc: "Music, dancing, and late-night cake cutting." }
 ];
 
 const DEFAULT_BIRTHDAY_AGENDA = [
-  { id: 'agenda-1', time: "7:30 PM", title: "Speakeasy Secret Ingress", desc: "Unlock the gate coordinates, dress code credential validations." },
-  { id: 'agenda-2', time: "8:00 PM", title: "Jazz Quintet & Mixology Pairings", desc: "Craft cocktails served beside comfortable leather lounge chairs." },
-  { id: 'agenda-3', time: "9:30 PM", title: "Gala Toasting & Roast Speeches", desc: "Friends deliver retrospective stories of Benjamin’s decades." },
-  { id: 'agenda-4', time: "10:30 PM", title: "Midnight Beats & Dynamic DJ Tunnels", desc: "Dance and celebrate into the late hours under custom neon arches." }
+  { id: 'agenda-1', time: "7:00 PM", title: "Guest Arrival & Drinks", desc: "Welcome drinks and mingling as guests arrive." },
+  { id: 'agenda-2', time: "8:00 PM", title: "Dinner & Music", desc: "Enjoy dinner served with background music." },
+  { id: 'agenda-3', time: "9:30 PM", title: "Toasts & Speeches", desc: "Speeches and birthday toasts celebrating the occasion." },
+  { id: 'agenda-4', time: "10:30 PM", title: "Music & Dancing", desc: "Dance and celebrate into the evening." }
 ];
 
 interface EventWizardProps {
@@ -446,7 +446,7 @@ export const EventWizard: React.FC<EventWizardProps> = ({ onComplete, onCancel, 
         <div className="md:w-1/4 bg-stone-900 text-white p-8 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-amber-400 mb-8 font-serif font-bold">
-              <Sparkles className="w-5 h-5" />
+              <Wand2 className="w-5 h-5" />
               <span>Event Builder</span>
             </div>
 
@@ -1356,7 +1356,7 @@ export const EventWizard: React.FC<EventWizardProps> = ({ onComplete, onCancel, 
                     onClick={() => setIsThemeLibraryOpen(true)}
                     className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:scale-[1.02]"
                   >
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                    <Palette className="w-3.5 h-3.5" />
                     <span>Open Theme Library</span>
                   </button>
                 </div>

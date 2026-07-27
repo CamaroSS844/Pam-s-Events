@@ -169,6 +169,44 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* High-fidelity printing stylesheet for Event Details Summary PDF */
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+/* Screen Preview Canvas - simulates physical paper layout with exact print rules */
+.pdf-paper-preview {
+  background-color: #ffffff;
+  color: #0f172a;
+  font-family: 'Inter', system-ui, sans-serif;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  max-width: 210mm; /* Standard A4 width in screen preview */
+  margin: 0 auto;
+  padding: 10mm 12mm;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Watermark element on paper */
+.print-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 4rem;
+  font-weight: 900;
+  color: rgba(226, 232, 240, 0.4);
+  pointer-events: none;
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+  z-index: 0;
+}
+
 @media print {
   body {
     background-color: #ffffff !important;
@@ -188,6 +226,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   input,
   textarea,
   .no-print,
+  .modal-overlay-no-print,
   #root > div > header,
   #root > div > header + div,
   #root > div > div > header,
@@ -206,7 +245,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     height: auto !important;
     background-color: #ffffff !important;
     color: #0f172a !important;
-    padding: 2rem !important;
+    padding: 10mm 12mm !important;
     margin: 0 !important;
     z-index: 9999999 !important;
     box-shadow: none !important;

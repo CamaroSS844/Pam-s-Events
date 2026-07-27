@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Sparkles, Palette, Check, Eye, Heart, BookOpen, Layers } from 'lucide-react';
+import { X, Palette, Check, Eye, Heart, BookOpen, Layers } from 'lucide-react';
 import { THEMES } from '../data/themes';
 import { ThemeId } from '../types';
 
@@ -16,39 +16,39 @@ interface ThemeLibraryModalProps {
 // Map each ThemeId to a gorgeous custom visual thumbnail representing that specific design archetype
 const THEME_THUMBNAILS: Record<ThemeId, { image: string; tag: string; features: string[] }> = {
   luxury: {
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600',
-    tag: 'Classic & Royal',
-    features: ['Gold Foliage & Borders', 'Serif Display Fonts', 'Double Thin Grid Outlines']
+    image: '/10.png',
+    tag: 'Gold & Metallic Wreath',
+    features: ['Gold Wreath Monogram', 'Royal Gold Crest', 'Shimmering Art Deco Frame']
   },
   elegant: {
-    image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600',
-    tag: 'Clean Minimalist',
-    features: ['High Negative Space', 'Ultra Thin Lines', 'Crisp Editorial Vibe']
+    image: '/1.png',
+    tag: 'Pristine Filigree',
+    features: ['Silver Filigree Corners', 'Tactile Linen Texture', 'High Couture Editorial']
   },
   modern: {
-    image: 'https://images.unsplash.com/photo-1519225495810-7512c696505a?auto=format&fit=crop&q=80&w=600',
-    tag: 'Geometric & Bold',
-    features: ['Cobalt & Marine Tones', 'Rounded Card Corners', 'Clean Sans-Serif Layout']
+    image: '/7.png',
+    tag: 'Geometric Bronze',
+    features: ['Bronze Geometric Frame', 'Art Deco Vertical Lines', 'Cobalt & Gold Contrast']
   },
   rustic: {
-    image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=600',
-    tag: 'Woodland & Earthy',
-    features: ['Forest Green Accents', 'Natural Sage Surfaces', 'Beige/Brown Board Tiles']
+    image: '/4.png',
+    tag: 'Sage & Eucalyptus',
+    features: ['Dense Botanical Greenery', 'Sage Leaf Arch Garland', 'Deckled Board Cards']
   },
   floral: {
-    image: 'https://images.unsplash.com/photo-1533618561172-e190343a45c3?auto=format&fit=crop&q=80&w=600',
-    tag: 'Botanical Watercolor',
-    features: ['Blossoming Pink Borders', 'Chic Script Typography', 'Pastel Gradient Overlays']
+    image: '/flowers.png',
+    tag: 'Watercolor Peonies',
+    features: ['Masterpiece Floral Banner', 'Dusty Rose Watercolor Wash', 'Hanging Lavender Canopy']
   },
   traditional: {
-    image: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=600',
-    tag: 'Rich & Center-aligned',
-    features: ['Mahogany & Cream Colors', 'Centered Copy Compositions', 'Classic Framed Grids']
+    image: '/8.png',
+    tag: 'Earthy Terracotta',
+    features: ['Terracotta Arch Frame', 'Traditional Gold Crest', 'Mahogany & Sand Tones']
   },
   minimal: {
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=600',
-    tag: 'Pure Type Accent',
-    features: ['Zero Clutter Layouts', 'Mono-spaced Elements', 'Raw Ink Aesthetic']
+    image: '/13.png',
+    tag: 'Pure Type & Linen',
+    features: ['Subtle Linen Texture', 'Architectural Type Ratio', 'Spacious Negative Space']
   }
 };
 
@@ -222,7 +222,7 @@ export const ThemeLibraryModal: React.FC<ThemeLibraryModalProps> = ({
                             </>
                           ) : (
                             <>
-                              <Sparkles className="w-3.5 h-3.5" />
+                              <Palette className="w-3.5 h-3.5" />
                               <span>Apply Style</span>
                             </>
                           )}

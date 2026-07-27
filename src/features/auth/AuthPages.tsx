@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, Mail, Lock, User, CheckCircle2, ArrowLeft, Send, ShieldCheck, Eye, EyeOff, KeyRound } from 'lucide-react';
+import { Award, Mail, Lock, User, CheckCircle2, ArrowLeft, Send, ShieldCheck, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { mockApi } from '../../services/mockApi';
 import { User as UserModel } from '../../types';
 
@@ -158,7 +158,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({
 
           <div className="relative z-10 max-w-lg my-auto py-12">
             <div className="mb-4 inline-flex items-center gap-2 text-amber-400 text-xs font-mono uppercase tracking-widest">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Award className="w-3.5 h-3.5" />
               <span>Event Excellence</span>
             </div>
             <p className="text-2xl xl:text-3xl font-serif italic leading-relaxed text-stone-100 mb-8 font-light">

@@ -3,8 +3,9 @@ import { APIProvider, Map, AdvancedMarker, Pin, useMap, useMapsLibrary } from '@
 import { MapPin, Search, HelpCircle, Loader2 } from 'lucide-react';
 
 const rawApiKey = (
-  process.env.GOOGLE_MAPS_PLATFORM_KEY ||
-  (import.meta as any).env?.VITE_GOOGLE_MAPS_PLATFORM_KEY ||
+  import.meta.env.VITE_GOOGLE_MAPS_PLATFORM_KEY ||
+  import.meta.env.GOOGLE_MAPS_PLATFORM_KEY ||
+  import.meta.env.VITE_GOOGLE_API_KEY ||
   (globalThis as any).GOOGLE_MAPS_PLATFORM_KEY ||
   ''
 ).trim();

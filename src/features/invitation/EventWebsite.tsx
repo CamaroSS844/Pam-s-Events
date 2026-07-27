@@ -4,12 +4,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Heart, CalendarCheck, EyeOff } from 'lucide-react';
+import { Heart, CalendarCheck, EyeOff, Printer } from 'lucide-react';
 import { getTheme } from '../../data/themes';
 import { EventModel, Guest, GuestbookEntry } from '../../types';
 import { mockApi } from '../../services/mockApi';
 import { ThemeRenderer } from './ThemeRenderers';
 import { BackgroundMusicPlayer } from '../../components/BackgroundMusicPlayer';
+import { PrintPdfPreviewModal } from '../../components/PrintPdfPreviewModal';
 
 interface EventWebsiteProps {
   eventId: string;
@@ -29,6 +30,7 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [guest, setGuest] = useState<Guest | null>(null);
   const [guestbook, setGuestbook] = useState<GuestbookEntry[]>([]);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   
   // RSVP Form States
   const [rsvpStatus, setRsvpStatus] = useState<'accepted' | 'declined'>('accepted');
@@ -271,23 +273,23 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
 
   // Use customized timeline steps if available, otherwise fall back to defaults
   const timelineSteps = event.timelineSteps || (event.type === 'wedding' ? [
-    { time: "3:30 PM", title: "Ceremonial Reception & Guest Entrance", desc: "Arrive at the glass conservatory garden paths, soundscape piano acoustics begin." },
-    { time: "4:00 PM", title: "Vows Exchange & Sand Distribution", desc: "The couples deliver customized letters beneath the timber flower arch." },
-    { time: "5:00 PM", title: "Cocktails & Photo Session Session", desc: "Enjoy champagne, botanic mocktails, and fresh visual portrait captures." },
-    { time: "6:30 PM", title: "Dinner Banquets & Heartfelt Speeches", desc: "A curated three-course dinner, followed by sibling and parent toasts." },
-    { time: "8:30 PM", title: "DJ Grooves & Dancefloor Expansion", desc: "Live music mixers, high energy visual lights, and late-night visual cake service." }
+    { time: "3:30 PM", title: "Guest Arrival & Welcome", desc: "Guests arrive and take their seats before the ceremony begins." },
+    { time: "4:00 PM", title: "Wedding Ceremony", desc: "Exchange of vows and rings surrounded by family and friends." },
+    { time: "5:00 PM", title: "Cocktail Hour & Photos", desc: "Enjoy drinks, appetizers, and photos with the wedding party." },
+    { time: "6:30 PM", title: "Dinner & Speeches", desc: "A delicious dinner followed by toasts from family and friends." },
+    { time: "8:30 PM", title: "Dancing & Celebration", desc: "Music, dancing, and late-night cake cutting." }
   ] : [
-    { time: "7:30 PM", title: "Speakeasy Secret Ingress", desc: "Unlock the gate coordinates, dress code credential validations." },
-    { time: "8:00 PM", title: "Jazz Quintet & Mixology Pairings", desc: "Craft cocktails served beside comfortable leather lounge chairs." },
-    { time: "9:30 PM", title: "Gala Toasting & Roast Speeches", desc: "Friends deliver retrospective stories of Benjamin’s decades." },
-    { time: "10:30 PM", title: "Midnight Beats & Dynamic DJ Tunnels", desc: "Dance and celebrate into the late hours under custom neon arches." }
+    { time: "7:00 PM", title: "Guest Arrival & Drinks", desc: "Welcome drinks and mingling as guests arrive." },
+    { time: "8:00 PM", title: "Dinner & Music", desc: "Enjoy dinner served with background music." },
+    { time: "9:30 PM", title: "Toasts & Speeches", desc: "Speeches and birthday toasts celebrating the occasion." },
+    { time: "10:30 PM", title: "Music & Dancing", desc: "Dance and celebrate into the evening." }
   ]);
 
   // Registry options
   const registryItems = [
-    { store: "Crate & Barrel Wedding", link: "https://www.crateandbarrel.com", note: "Kitchen utensils, fine glass collection, and organic dining linens." },
-    { store: "Amazon Global Register", link: "https://www.amazon.com/wedding", note: "Home robotics, travel luggage arrays, and garden furniture." },
-    { store: "Honeyfund Honeymoon Escape", link: "https://www.honeyfund.com", note: "Contribute to our flight coordinates and food tasting tours across Italy." }
+    { store: "Crate & Barrel", link: "https://www.crateandbarrel.com", note: "Kitchenware, dining accessories, and home decor." },
+    { store: "Amazon Registry", link: "https://www.amazon.com/wedding", note: "Home goods, travel gear, and household essentials." },
+    { store: "Honeyfund", link: "https://www.honeyfund.com", note: "Contribute toward our honeymoon trip and experiences." }
   ];
 
   const handleRsvpSubmit = async (e: React.FormEvent) => {
@@ -358,36 +360,47 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
     <div className={`min-h-screen ${theme.bgColor} ${theme.textColor} ${theme.fontBody} flex flex-col justify-between selection:bg-stone-900 selection:text-white transition-all duration-300`}>
       
       {/* Personalized Welcome Header Bar (Float) */}
-      <div className="sticky top-0 z-30 bg-white/70 backdrop-blur-md border-b border-zinc-150 py-3.5 px-6 flex flex-wrap items-center justify-between gap-4 text-xs font-semibold shadow-sm text-zinc-800">
-        <div className="flex items-center gap-2">
-          <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-          <span className="font-serif italic text-zinc-900 font-bold">{event.name}</span>
+      <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-zinc-200 py-2.5 sm:py-3.5 px-3 sm:px-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4 text-xs font-semibold shadow-sm text-zinc-800">
+        <div className="flex items-center gap-2 truncate max-w-full">
+          <Heart className="w-4 h-4 text-rose-500 fill-rose-500 shrink-0" />
+          <span className="font-serif italic text-zinc-900 font-bold truncate max-w-[200px] sm:max-w-xs">{event.name}</span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-4">
           {/* Personalized Welcomer Callout */}
-          <div className="flex items-center gap-2">
-            <span className="text-zinc-400">Greeting Tone:</span>
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs">
+            <span className="text-zinc-400 hidden sm:inline">Greeting:</span>
             {guest ? (
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-250 py-1 px-3 rounded-full font-bold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                Welcome, {guest.name}
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-250 py-0.5 sm:py-1 px-2.5 sm:px-3 rounded-full font-bold flex items-center gap-1.5 truncate max-w-[150px] sm:max-w-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                <span className="truncate">Welcome, {guest.name}</span>
               </span>
             ) : (
-              <span className="bg-stone-100 text-zinc-600 border border-zinc-200 py-1 px-3 rounded-full font-bold">
+              <span className="bg-stone-100 text-zinc-600 border border-zinc-200 py-0.5 sm:py-1 px-2.5 sm:px-3 rounded-full font-bold">
                 Dear Guest
               </span>
             )}
           </div>
 
+          {/* Print as PDF Button */}
+          <button
+            type="button"
+            onClick={() => setIsPrintModalOpen(true)}
+            className="bg-zinc-100 hover:bg-zinc-200 border border-zinc-250 py-1 px-2.5 rounded-lg text-[10px] sm:text-[11px] font-medium text-zinc-800 hover:text-black flex items-center gap-1.5 transition-all shadow-2xs"
+            title="Print as PDF preview for invitation summary"
+          >
+            <Printer className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span className="hidden xs:inline">Print as PDF</span>
+          </button>
+
           {/* Guest Selector Widget for testing */}
           {!isGuestPreview && availableGuests.length > 0 && (
-            <div className="flex items-center gap-2">
-              <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase">Test Guest Token:</label>
+            <div className="flex items-center gap-1.5">
+              <label className="text-[9px] sm:text-[10px] font-mono font-bold text-zinc-400 uppercase hidden md:inline">Test Guest:</label>
               <select 
                 value={activeGuestToken} 
                 onChange={(e) => setActiveGuestToken(e.target.value)}
-                className="bg-white border border-zinc-250 py-1 px-2.5 rounded-lg text-[11px] font-medium outline-none focus:ring-1 focus:ring-amber-400"
+                className="bg-white border border-zinc-250 py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-medium outline-none focus:ring-1 focus:ring-amber-400 max-w-[140px] sm:max-w-none"
               >
                 <option value="">Generic (Dear Guest)</option>
                 {availableGuests.map(g => (
@@ -431,7 +444,7 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
       />
 
       {/* Floating RSVP Quick Access Button */}
-      <div className="fixed bottom-8 right-8 z-40">
+      <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-40">
         <div className="relative group">
           {/* Animated pulsing background glow ring */}
           <div 
@@ -441,22 +454,32 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
           <button
             id="rsvp-fab-button"
             onClick={handleScrollToRsvp}
-            className="relative px-5 py-3.5 rounded-full flex items-center gap-2.5 text-white font-bold text-xs shadow-2xl hover:scale-105 active:scale-95 hover:shadow-xl transition-all duration-300"
+            className="relative px-3.5 sm:px-5 py-2.5 sm:py-3.5 rounded-full flex items-center gap-2 text-white font-bold text-[11px] sm:text-xs shadow-2xl hover:scale-105 active:scale-95 hover:shadow-xl transition-all duration-300"
             style={{ 
               backgroundColor: theme.primaryColor, 
               color: '#ffffff',
               boxShadow: `0 10px 25px -5px ${theme.primaryColor}50`
             }}
           >
-            <CalendarCheck className="w-4 h-4 text-white animate-bounce" />
+            <CalendarCheck className="w-4 h-4 text-white animate-bounce shrink-0" />
             <span className="tracking-wider uppercase font-semibold">RSVP Quick Access</span>
-            <span className="flex h-2 w-2 relative">
+            <span className="flex h-2 w-2 relative shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
             </span>
           </button>
         </div>
       </div>
+
+      {/* Print as PDF Preview Modal */}
+      {event && (
+        <PrintPdfPreviewModal
+          isOpen={isPrintModalOpen}
+          onClose={() => setIsPrintModalOpen(false)}
+          event={event}
+          guests={availableGuests.length > 0 ? availableGuests : (guest ? [guest] : [])}
+        />
+      )}
 
     </div>
   );

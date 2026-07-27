@@ -10,7 +10,7 @@ import {
   ArrowLeft, ArrowRight, Eye, Edit2, Play, Trash2, Archive, Users, CheckCircle2, 
   XCircle, Clock, BookOpen, Search, Filter, SortAsc, Plus, Download, 
   Trash, Link2, QrCode, FileSpreadsheet, Upload, Film, EyeOff, Heart, Star,
-  HelpCircle, Globe, AlertTriangle
+  HelpCircle, Globe, AlertTriangle, Printer
 } from 'lucide-react';
 import { mockApi } from '../../services/mockApi';
 import { THEMES } from '../../data/themes';
@@ -18,6 +18,7 @@ import { Countdown } from '../../components/Countdown';
 import { EventModel, Guest, RecentActivity, ThemeConfig, ThemeId } from '../../types';
 import { RSVPLineChart, GuestCategoryDonut } from '../../components/AnalyticsCharts';
 import { ThemePreviewModal } from '../../components/ThemePreviewModal';
+import { PrintPdfPreviewModal } from '../../components/PrintPdfPreviewModal';
 import { exportEventToGoogleSheets, GoogleSheetsExportResult } from '../../services/googleSheetsService';
 
 interface EventDashboardProps {
@@ -120,6 +121,8 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
   const [eventRating, setEventRating] = useState<number>(5);
   const [feedbackComments, setFeedbackComments] = useState<string>('');
   const [showSheetsModal, setShowSheetsModal] = useState(false);
+  const [showPrintPdfModal, setShowPrintPdfModal] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleSheetsExport = async (deleteAfter: boolean = false) => {
     if (!event) return;
@@ -342,7 +345,6 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
   };
 
   // Drag & drop & file upload handlers for gallery & cover images
-  const [isDragging, setIsDragging] = useState(false);
 
   const processUploadedPictureFiles = (files: FileList | File[], targetField: 'gallery' | 'cover' | 'hero' = 'gallery') => {
     if (!event || !files || files.length === 0) return;
@@ -484,15 +486,12 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
 
             <button 
               onClick={() => {
-                toast("Compiling event brief & guest ledger summary...", "info");
-                setTimeout(() => {
-                  window.print();
-                }, 400);
+                setShowPrintPdfModal(true);
               }}
               className="inline-flex items-center gap-1.5 px-4 py-2 border border-amber-200/60 bg-amber-50/75 hover:bg-amber-100/90 dark:bg-amber-950/20 dark:border-amber-900/30 text-amber-700 dark:text-amber-400 rounded-xl text-xs font-bold shadow-sm transition-all hover:scale-[1.01]"
             >
-              <Download className="w-4 h-4 text-amber-500" />
-              <span>Download PDF Summary</span>
+              <Printer className="w-4 h-4 text-amber-500" />
+              <span>Print as PDF Preview</span>
             </button>
 
             <button 
@@ -899,6 +898,13 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
                   >
                     <Download className="w-4 h-4 text-zinc-500" />
                     <span>Export CSV</span>
+                  </button>
+                  <button 
+                    onClick={() => setShowPrintPdfModal(true)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 border border-amber-300/80 bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 rounded-xl text-xs font-bold shadow-sm transition-all hover:scale-[1.01]"
+                  >
+                    <Printer className="w-4 h-4 text-amber-600" />
+                    <span>Print PDF Ledger</span>
                   </button>
                   <button 
                     onClick={() => setIsAddingGuest(true)}
@@ -2144,6 +2150,17 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* High-Fidelity Print as PDF Preview Modal */}
+      {event && (
+        <PrintPdfPreviewModal
+          isOpen={showPrintPdfModal}
+          onClose={() => setShowPrintPdfModal(false)}
+          event={event}
+          guests={guests}
+          activities={activities as any}
+        />
       )}
     </div>
   );

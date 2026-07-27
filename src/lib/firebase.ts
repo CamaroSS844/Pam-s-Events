@@ -3,7 +3,14 @@ import { getAuth } from 'firebase/auth';
 import { doc, getDocFromServer, getFirestore } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
-const app = initializeApp(firebaseConfig);
+const firebaseApiKey = import.meta.env.VITE_FIREBASE_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY || firebaseConfig.apiKey || '';
+
+const appConfig = {
+  ...firebaseConfig,
+  apiKey: firebaseApiKey,
+};
+
+const app = initializeApp(appConfig);
 const databaseId = (firebaseConfig as any).firestoreDatabaseId || 'ai-studio-pamsevents-80446b20-4923-47ea-b1e4-e8d8c93d55d1';
 export const db = getFirestore(app, databaseId);
 export const auth = getAuth(app);

@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
-  Sparkles, Calendar, Plus, Users, ClipboardCheck, ArrowRight, 
+  Calendar, Plus, Users, ClipboardCheck, ArrowRight, 
   HelpCircle, FileCheck2, Clock, CheckCircle2, ShieldAlert, BookOpen,
   Search, X, EyeOff, Globe, Trash2, Power, AlertTriangle
 } from 'lucide-react';
