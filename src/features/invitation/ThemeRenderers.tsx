@@ -502,47 +502,24 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
         </FadeInSection>
       )}
 
-      {/* Interactive FAQ & Event Guidelines */}
-      <FadeInSection className="py-12 sm:py-20 bg-white relative border-t border-[#D4AF37]/20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8 sm:mb-12">
-            <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">Guidelines</span>
-            <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Event Details & FAQ</h2>
-            <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
-          </div>
-
-          <InteractiveFaqAccordion
-            themeId="luxury"
-            accentColor="#D4AF37"
-            borderColor="border-[#D4AF37]/30"
-            textColor="text-[#2C2C2C]"
-            headingFont="font-luxury-heading"
-          />
-        </div>
-      </FadeInSection>
-
       {/* Venue Section (Luxury Gold) */}
-      <FadeInSection 
-        className="py-12 sm:py-20 md:py-24 bg-white border-b border-[#D4AF37]/20 relative"
-      >
+      <FadeInSection className="py-12 sm:py-20 md:py-24 bg-white text-left relative border-t border-[#D4AF37]/20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
-          <div className="text-left flex flex-col gap-4 sm:gap-6">
-            <div>
-              <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] font-bold block mb-2 uppercase font-luxury-body">Location & Venue</span>
-              <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-wider leading-tight break-words">{getVenueFirstLine(event.venue)}</h2>
-              <div className="w-12 h-1 bg-[#D4AF37] mt-3" />
-            </div>
+          <div className="flex flex-col gap-4 sm:gap-6">
+            <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase font-semibold block">Venue & Location</span>
+            <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">{getVenueFirstLine(event.venue)}</h2>
+            <div className="w-16 h-0.5 bg-[#D4AF37]" />
             
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-light break-words">
-              We look forward to seeing you here. Tap below to view location details or open directions in Google Maps.
+            <p className="text-xs text-stone-600 leading-relaxed font-light font-luxury-heading break-words">
+              We look forward to welcoming you to our celebration. Tap below to copy the address or view the venue location on Google Maps.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 border-y border-[#D4AF37]/20 py-4 sm:py-6 my-1 sm:my-2 text-xs text-[#2C2C2C]">
-              <div className="flex items-start gap-3 sm:col-span-2">
+            <div className="flex flex-col gap-3 sm:gap-4 text-xs text-[#2C2C2C] border-y border-[#D4AF37]/20 py-6 my-1 font-light">
+              <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-[10px] text-[#CD7F32] uppercase tracking-wider font-semibold block">Address</span>
-                  <span className="font-light break-words">{event.venue || 'Venue TBD'}</span>
+                  <span className="text-[9px] text-[#CD7F32] uppercase tracking-widest font-semibold block mb-0.5">Venue Address</span>
+                  <span className="break-words">{event.venue || 'Venue TBD'}</span>
                 </div>
               </div>
 
@@ -550,28 +527,18 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
                 <div className="flex items-start gap-3">
                   <Calendar className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] text-[#CD7F32] uppercase tracking-wider font-semibold block">Date</span>
-                    <span className="font-light">{formatDateSafe(event.date)}</span>
-                  </div>
-                </div>
-              )}
-
-              {event.time && (
-                <div className="flex items-start gap-3">
-                  <Clock className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
-                  <div>
-                    <span className="text-[10px] text-[#CD7F32] uppercase tracking-wider font-semibold block">Time</span>
-                    <span className="font-light">{event.time}</span>
+                    <span className="text-[9px] text-[#CD7F32] uppercase tracking-widest font-semibold block mb-0.5">Date & Time</span>
+                    <span>{formatDateSafe(event.date)} {event.time ? `• ${event.time}` : ''}</span>
                   </div>
                 </div>
               )}
 
               {event.dressCode && (
-                <div className="flex items-start gap-3 sm:col-span-2">
+                <div className="flex items-start gap-3">
                   <Tag className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] text-[#CD7F32] uppercase tracking-wider font-semibold block">Dress Code</span>
-                    <span className="font-semibold uppercase text-xs text-[#CD7F32] tracking-wider">{event.dressCode}</span>
+                    <span className="text-[9px] text-[#CD7F32] uppercase tracking-widest font-semibold block mb-0.5">Dress Code</span>
+                    <span className="font-semibold uppercase tracking-wider text-[11px] text-[#2C2C2C]">{event.dressCode}</span>
                   </div>
                 </div>
               )}
@@ -584,7 +551,7 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
                 href={event.mapLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue || '')}`} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#2C2C2C] text-white hover:bg-[#D4AF37] hover:text-[#2C2C2C] text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 rounded shadow-lg"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2C2C2C] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white text-[10px] font-luxury-heading tracking-[0.15em] uppercase transition-colors rounded-lg shadow-md"
               >
                 <MapIcon className="w-4 h-4 shrink-0" />
                 <span>Open in Google Maps</span>
@@ -592,7 +559,7 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
 
               <CopyAddressButton
                 address={event.venue || ''}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 border border-[#D4AF37]/50 text-[#2C2C2C] hover:bg-[#D4AF37]/10 text-xs font-semibold uppercase tracking-[0.15em] transition-all rounded"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-[#D4AF37]/40 text-[#2C2C2C] hover:bg-[#F5F5DC] text-[10px] font-luxury-heading tracking-[0.15em] uppercase transition-colors rounded-lg"
                 iconColor="text-[#D4AF37]"
               />
             </div>
@@ -600,15 +567,15 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
 
           <motion.div 
             whileHover={{ scale: 1.01 }}
-            className="border border-[#D4AF37]/40 p-2 sm:p-3 bg-white shadow-2xl rounded-xl h-[280px] sm:h-[320px] overflow-hidden"
+            className="border border-[#D4AF37]/30 bg-[#2C2C2C] p-2 rounded-lg h-[260px] sm:h-[300px] overflow-hidden"
           >
-            <EventGoogleMap address={event.venue || ''} className="w-full h-full rounded-lg" />
+            <EventGoogleMap address={event.venue || ''} className="w-full h-full rounded-md" />
           </motion.div>
         </div>
       </FadeInSection>
 
-      {/* Gift Registries */}
-      <FadeInSection className="py-12 sm:py-20 md:py-24 bg-[#F5F5DC]/40 relative">
+      {/* Gift Registry */}
+      <FadeInSection className="py-12 sm:py-20 md:py-24 bg-[#F5F5DC]/40 border-t border-[#D4AF37]/20 relative">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <div className="mb-10 sm:mb-16">
             <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">Registry</span>
@@ -616,16 +583,15 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
             <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-left">
             {(registryItems || []).map((item, idx) => (
-              <div key={idx} className="bg-white border border-[#D4AF37]/20 p-5 sm:p-8 shadow-xl rounded-xl flex flex-col justify-between min-h-[12rem] h-auto hover:border-[#D4AF37]/60 hover:shadow-[#D4AF37]/5 transition-all duration-300">
+              <div key={idx} className="bg-white border border-[#D4AF37]/20 p-5 sm:p-8 rounded-lg flex flex-col justify-between min-h-[11rem] sm:h-48 hover:border-[#D4AF37]/50 transition-colors shadow-sm">
                 <div>
-                  <h3 className="text-xs font-bold text-[#2C2C2C] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-luxury-body border-b border-stone-100 pb-3 break-words">{item.store}</h3>
-                  <p className="text-xs text-stone-500 leading-relaxed mt-3 sm:mt-4 font-light break-words">{item.note}</p>
+                  <h3 className="text-xs font-bold text-[#2C2C2C] uppercase tracking-wider pb-2 border-b border-[#D4AF37]/20 font-luxury-heading break-words">{item.store}</h3>
+                  <p className="text-xs text-stone-600 leading-relaxed mt-3 sm:mt-4 font-light break-words">{item.note}</p>
                 </div>
-                <a href={item.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#D4AF37] hover:text-[#CD7F32] uppercase tracking-wider flex items-center gap-1.5 pt-3 sm:pt-4 border-t border-stone-100 mt-3 sm:mt-4 transition-colors">
-                  <span>View Registry</span>
-                  <span className="text-xs">→</span>
+                <a href={item.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#CD7F32] hover:text-[#D4AF37] uppercase tracking-wider pt-2 flex items-center gap-1 transition-colors font-luxury-heading mt-3 sm:mt-0">
+                  VIEW REGISTRY →
                 </a>
               </div>
             ))}
@@ -633,14 +599,15 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
         </div>
       </FadeInSection>
 
-      {/* RSVP */}
-      <FadeInSection id="rsvp-anchor" className="py-12 sm:py-20 md:py-24 bg-white relative">
-        <div className="max-w-xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8 sm:mb-12">
+      {/* RSVP Section */}
+      <FadeInSection id="rsvp-anchor" className="py-12 sm:py-20 md:py-24 bg-white border-t border-[#D4AF37]/20 relative">
+        <div className="max-w-lg mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 sm:mb-16">
             <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">RSVP</span>
             <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Confirm Attendance</h2>
+            <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
           </div>
- 
+
           <RsvpForm
             event={event}
             guest={guest}
@@ -681,6 +648,25 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
               ))
             )}
           </div>
+        </div>
+      </FadeInSection>
+
+      {/* Interactive FAQ & Event Guidelines */}
+      <FadeInSection className="py-12 sm:py-20 bg-white relative border-t border-[#D4AF37]/20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-12">
+            <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">Guidelines</span>
+            <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Event Details & FAQ</h2>
+            <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
+          </div>
+
+          <InteractiveFaqAccordion
+            themeId="luxury"
+            accentColor="#D4AF37"
+            borderColor="border-[#D4AF37]/30"
+            textColor="text-[#2C2C2C]"
+            headingFont="font-luxury-heading"
+          />
         </div>
       </FadeInSection>
 
@@ -919,26 +905,7 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
         </div>
       </FadeInSection>
 
-      {/* Interactive FAQ & Event Details */}
-      <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#C0C0C0]/40">
-        <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center">
-          <div className="mb-10 sm:mb-16">
-            <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">Guidelines</span>
-            <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light break-words">Event Details & FAQ</h2>
-            <div className="w-8 h-[0.5px] bg-[#3A3A3A] mx-auto mt-3 sm:mt-4" />
-          </div>
-
-          <InteractiveFaqAccordion
-            themeId="elegant"
-            accentColor="#3A3A3A"
-            borderColor="border-[#C0C0C0]/40"
-            textColor="text-[#3A3A3A]"
-            headingFont="font-elegant-heading"
-          />
-        </div>
-      </FadeInSection>
-
-      {/* Registry Vouchers */}
+      {/* Gift Registry */}
       <FadeInSection className="py-16 sm:py-24 md:py-32 bg-[#F7F7F7] border-t border-[#C0C0C0]/40">
         <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center">
           <div className="mb-12 sm:mb-20">
@@ -963,14 +930,14 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
         </div>
       </FadeInSection>
 
-       {/* RSVP Minimal form */}
-      <FadeInSection id="rsvp-anchor" className="py-16 sm:py-24 md:py-32 bg-white relative">
+      {/* RSVP Minimal form */}
+      <FadeInSection id="rsvp-anchor" className="py-16 sm:py-24 md:py-32 bg-white relative border-t border-[#C0C0C0]/40">
         <div className="max-w-lg mx-auto px-4 sm:px-8">
           <div className="text-center mb-10 sm:mb-16">
             <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">RSVP</span>
             <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light break-words">Confirm Attendance</h2>
           </div>
- 
+
           <RsvpForm
             event={event}
             guest={guest}
@@ -1010,6 +977,25 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
               ))
             )}
           </div>
+        </div>
+      </FadeInSection>
+
+      {/* Interactive FAQ & Event Details */}
+      <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#C0C0C0]/40">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center">
+          <div className="mb-10 sm:mb-16">
+            <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">Guidelines</span>
+            <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light break-words">Event Details & FAQ</h2>
+            <div className="w-8 h-[0.5px] bg-[#3A3A3A] mx-auto mt-3 sm:mt-4" />
+          </div>
+
+          <InteractiveFaqAccordion
+            themeId="elegant"
+            accentColor="#3A3A3A"
+            borderColor="border-[#C0C0C0]/40"
+            textColor="text-[#3A3A3A]"
+            headingFont="font-elegant-heading"
+          />
         </div>
       </FadeInSection>
 
@@ -1289,18 +1275,6 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
           </motion.div>
         )}
 
-        {/* Tile 6.5: Interactive FAQ Accordion (span 12) */}
-        <FadeInSection className="md:col-span-12 bg-white rounded-2xl p-5 sm:p-8 border border-[#C9A961]/30 shadow-md">
-          <span className="text-[9px] sm:text-[10px] font-modern-heading text-[#1A2B4A] font-bold uppercase tracking-[0.2em] block mb-4 sm:mb-6">EVENT DETAILS & FAQ</span>
-          <InteractiveFaqAccordion
-            themeId="modern"
-            accentColor="#C9A961"
-            borderColor="border-[#5B7C99]/30"
-            textColor="text-[#1A2B4A]"
-            headingFont="font-modern-heading"
-          />
-        </FadeInSection>
-
         {/* Tile 7: Digital Registries (span 12) */}
         <FadeInSection className="md:col-span-12 bg-white rounded-2xl p-5 sm:p-8 border border-[#5B7C99]/30 shadow-md">
           <span className="text-[9px] sm:text-[10px] font-modern-heading text-[#1A2B4A] font-bold uppercase tracking-[0.2em] block mb-4 sm:mb-6">GIFT REGISTRY</span>
@@ -1363,6 +1337,18 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
               ))
             )}
           </div>
+        </FadeInSection>
+
+        {/* Tile 10: Interactive FAQ Accordion (span 12) */}
+        <FadeInSection className="md:col-span-12 bg-white rounded-2xl p-5 sm:p-8 border border-[#C9A961]/30 shadow-md">
+          <span className="text-[9px] sm:text-[10px] font-modern-heading text-[#1A2B4A] font-bold uppercase tracking-[0.2em] block mb-4 sm:mb-6">EVENT DETAILS & FAQ</span>
+          <InteractiveFaqAccordion
+            themeId="modern"
+            accentColor="#C9A961"
+            borderColor="border-[#5B7C99]/30"
+            textColor="text-[#1A2B4A]"
+            headingFont="font-modern-heading"
+          />
         </FadeInSection>
 
       </div>
@@ -1508,22 +1494,6 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
         </FadeInSection>
       )}
 
-      {/* Interactive FAQ Accordion */}
-      <FadeInSection className="py-16 sm:py-20 bg-[#FFF8E7] border-t border-[#D4C4B0]/40">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#9CAF88] font-bold uppercase block mb-2">DETAILS</span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase mb-8 sm:mb-12 break-words">EVENT DETAILS & FAQ</h2>
-          
-          <InteractiveFaqAccordion
-            themeId="rustic"
-            accentColor="#5C4033"
-            borderColor="border-[#D4C4B0]/40"
-            textColor="text-[#5C4033]"
-            headingFont="font-rustic-heading"
-          />
-        </div>
-      </FadeInSection>
-
       {/* Venue Section (Rustic Organic) */}
       <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#D4C4B0]/40 text-left">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
@@ -1668,6 +1638,22 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
               ))
             )}
           </div>
+        </div>
+      </FadeInSection>
+
+      {/* Interactive FAQ Accordion */}
+      <FadeInSection className="py-16 sm:py-20 bg-[#FFF8E7] border-t border-[#D4C4B0]/40">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#9CAF88] font-bold uppercase block mb-2">DETAILS</span>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase mb-8 sm:mb-12 break-words">EVENT DETAILS & FAQ</h2>
+          
+          <InteractiveFaqAccordion
+            themeId="rustic"
+            accentColor="#5C4033"
+            borderColor="border-[#D4C4B0]/40"
+            textColor="text-[#5C4033]"
+            headingFont="font-rustic-heading"
+          />
         </div>
       </FadeInSection>
 
@@ -1819,22 +1805,6 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
         </FadeInSection>
       )}
 
-      {/* Interactive FAQ Accordion */}
-      <FadeInSection className="py-16 sm:py-20 bg-[#FFF9F5] border-t border-[#F4E4E6]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#A8B5A0] font-bold uppercase block mb-2">GUIDELINES</span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic mb-8 sm:mb-12 break-words">Event Details & FAQ</h2>
-          
-          <InteractiveFaqAccordion
-            themeId="floral"
-            accentColor="#C97064"
-            borderColor="border-[#F4E4E6]"
-            textColor="text-[#3D5A3D]"
-            headingFont="font-floral-heading"
-          />
-        </div>
-      </FadeInSection>
-
       {/* Venue Section (Floral Botanical) */}
       <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#F4E4E6]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
@@ -1982,6 +1952,22 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
         </div>
       </FadeInSection>
 
+      {/* Interactive FAQ Accordion */}
+      <FadeInSection className="py-16 sm:py-20 bg-[#FFF9F5] border-t border-[#F4E4E6]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#A8B5A0] font-bold uppercase block mb-2">GUIDELINES</span>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic mb-8 sm:mb-12 break-words">Event Details & FAQ</h2>
+          
+          <InteractiveFaqAccordion
+            themeId="floral"
+            accentColor="#C97064"
+            borderColor="border-[#F4E4E6]"
+            textColor="text-[#3D5A3D]"
+            headingFont="font-floral-heading"
+          />
+        </div>
+      </FadeInSection>
+
       {/* Floral Footer */}
       <footer className="bg-[#3D5A3D] text-[#FFF9F5]/90 py-12 sm:py-16 text-center border-t border-[#F4E4E6] text-xs">
         <div className="max-w-xl mx-auto px-4 sm:px-6 flex flex-col gap-4 font-sans">
@@ -2109,22 +2095,6 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
         </FadeInSection>
       )}
 
-      {/* Interactive FAQ Accordion */}
-      <FadeInSection className="py-14 sm:py-20 bg-amber-50/20 border-t border-amber-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <span className="text-[9px] tracking-widest text-amber-800 uppercase font-bold block mb-2">INFORMATION</span>
-          <h2 className="text-lg sm:text-2xl font-bold text-amber-950 uppercase tracking-wide mb-8 sm:mb-12 break-words">EVENT DETAILS & FAQ</h2>
-          
-          <InteractiveFaqAccordion
-            themeId="traditional"
-            accentColor="#78350f"
-            borderColor="border-amber-200"
-            textColor="text-amber-950"
-            headingFont="font-serif"
-          />
-        </div>
-      </FadeInSection>
-
       {/* Venue Section (Traditional Heritage) */}
       <FadeInSection className="py-14 sm:py-20 bg-white border-t border-amber-200 text-left">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -2197,7 +2167,7 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* RSVP Section */}
-      <FadeInSection id="rsvp-anchor" className="py-14 sm:py-20 bg-amber-50/20">
+      <FadeInSection id="rsvp-anchor" className="py-14 sm:py-20 bg-amber-50/20 border-t border-amber-200">
         <div className="max-w-lg mx-auto px-4 sm:px-6">
           <h2 className="text-lg sm:text-2xl font-bold text-amber-950 text-center uppercase mb-8 sm:mb-10 break-words">CONFIRM ATTENDANCE</h2>
  
@@ -2235,6 +2205,22 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
               ))
             )}
           </div>
+        </div>
+      </FadeInSection>
+
+      {/* Interactive FAQ Accordion */}
+      <FadeInSection className="py-14 sm:py-20 bg-amber-50/20 border-t border-amber-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <span className="text-[9px] tracking-widest text-amber-800 uppercase font-bold block mb-2">INFORMATION</span>
+          <h2 className="text-lg sm:text-2xl font-bold text-amber-950 uppercase tracking-wide mb-8 sm:mb-12 break-words">EVENT DETAILS & FAQ</h2>
+          
+          <InteractiveFaqAccordion
+            themeId="traditional"
+            accentColor="#78350f"
+            borderColor="border-amber-200"
+            textColor="text-amber-950"
+            headingFont="font-serif"
+          />
         </div>
       </FadeInSection>
 
@@ -2334,18 +2320,6 @@ const MinimalTheme: React.FC<ThemeRendererProps> = ({
           </FadeInSection>
         )}
 
-        {/* Interactive FAQ Accordion */}
-        <FadeInSection className="border-b border-black pb-8 sm:pb-12">
-          <span className="text-[9px] uppercase tracking-widest text-stone-400 block mb-4">EVENT DETAILS & FAQ</span>
-          <InteractiveFaqAccordion
-            themeId="minimal"
-            accentColor="#000000"
-            borderColor="border-black"
-            textColor="text-black"
-            headingFont="font-mono"
-          />
-        </FadeInSection>
-
         {/* Venue Location Section (Stark Minimalist) */}
         <FadeInSection className="border-b border-black pb-8 sm:pb-12">
           <span className="text-[9px] uppercase tracking-widest text-stone-400 block mb-4 font-mono">
@@ -2427,6 +2401,18 @@ const MinimalTheme: React.FC<ThemeRendererProps> = ({
               ))
             )}
           </div>
+        </FadeInSection>
+
+        {/* Interactive FAQ Accordion */}
+        <FadeInSection className="border-b border-black pb-8 sm:pb-12">
+          <span className="text-[9px] uppercase tracking-widest text-stone-400 block mb-4">EVENT DETAILS & FAQ</span>
+          <InteractiveFaqAccordion
+            themeId="minimal"
+            accentColor="#000000"
+            borderColor="border-black"
+            textColor="text-black"
+            headingFont="font-mono"
+          />
         </FadeInSection>
 
         {/* Footer */}
