@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { motion, useScroll, useSpring } from 'motion/react';
+import { motion, useScroll, useSpring, useTransform } from 'motion/react';
 import { 
   Calendar, MapPin, Gift, Clock, Tag, MessageSquare, 
   MapIcon, User, Heart, HelpCircle, Check, Copy, ExternalLink, Navigation,
@@ -343,20 +343,34 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
 }) => {
   const isDeadlinePassed = event.rsvpDeadline ? isRsvpDeadlinePassed(event.rsvpDeadline) : false;
   const showProgram = event.type !== 'wedding' || isProgramRevealed(event.date);
+
+  const { scrollYProgress } = useScroll();
+  const parallaxYSlow = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  const parallaxYMedium = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const parallaxYReverse = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  const parallaxYFast = useTransform(scrollYProgress, [0, 1], [0, -130]);
   return (
     <div className="flex-1 flex flex-col font-luxury-body bg-[#F5F5DC] text-[#2C2C2C] selection:bg-[#D4AF37] selection:text-white relative">
       <GoldShimmerParticles />
 
       {/* Hero / Header with Gold Metallic Gradients & Art Deco details */}
-      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 text-center overflow-hidden border-b-4 border-[#D4AF37] bg-gradient-to-b from-[#1C1C1C] via-[#2D2D2D] to-[#1C1C1C] text-white">
-        {/* Decorative Art Deco Grid overlay at 4% opacity */}
-        <div className="absolute inset-0 z-0 opacity-10 mix-blend-overlay" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, #D4AF37 1px, transparent 0), linear-gradient(to right, rgba(212,175,55,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(212,175,55,0.1) 1px, transparent 1px)`,
+      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 text-center overflow-hidden border-b-4 border-[#D4AF37] bg-[#1C1C1C] text-white min-h-[500px] sm:min-h-[600px] flex flex-col justify-center items-center">
+        {/* Full-bleed Hero Background Image Backdrop */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={event.coverImage || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200'} 
+            className="w-full h-full object-cover filter brightness-[0.50] contrast-[1.1] scale-105 pointer-events-none" 
+            alt="Luxury Hero Background" 
+          />
+          {/* Subtle dark gold gradient overlay ensuring rich text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#121212]/80 via-[#1C1C1C]/65 to-[#1C1C1C]/95 pointer-events-none" />
+        </div>
+
+        {/* Decorative Art Deco Grid overlay */}
+        <div className="absolute inset-0 z-0 opacity-15 mix-blend-overlay pointer-events-none" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, #D4AF37 1px, transparent 0), linear-gradient(to right, rgba(212,175,55,0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(212,175,55,0.15) 1px, transparent 1px)`,
           backgroundSize: '40px 40px, 20px 20px, 20px 20px'
         }} />
-        <div className="absolute inset-0 z-0 opacity-30">
-          <img src={event.coverImage} className="w-full h-full object-cover filter brightness-[0.35] contrast-[1.1] blur-[1px]" alt="Luxury BG" />
-        </div>
         
         {/* Top/Bottom Art Deco Border */}
         <div className="absolute top-3 left-3 right-3 bottom-3 sm:top-6 sm:left-6 sm:right-6 sm:bottom-6 border border-[#D4AF37]/30 pointer-events-none z-10" />
@@ -378,16 +392,27 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
             accentColor="#D4AF37"
           />
 
-          {/* Majestic Monogram Frame with Gold Wreath */}
+          {/* Decorative Gold Rings Accent */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="w-20 h-20 sm:w-28 sm:h-28 my-1 flex items-center justify-center relative pointer-events-none"
+          >
+            <img 
+              src="/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png" 
+              className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(212,175,55,0.4)] mix-blend-screen opacity-90" 
+              alt="Decorative Gold Rings" 
+            />
+          </motion.div>
+
+          {/* Majestic Monogram Frame */}
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8 }}
             className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full border-2 border-[#D4AF37] p-1.5 sm:p-2 bg-[#2C2C2C] shadow-[0_0_30px_rgba(212,175,55,0.3)] mt-2 flex items-center justify-center"
           >
-            {/* Real Gold Wreath Ring overlay from public asset library */}
-            <img src="/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png" className="absolute -inset-6 w-[calc(100%+3rem)] h-[calc(100%+3rem)] object-contain pointer-events-none drop-shadow-lg mix-blend-screen opacity-90 animate-pulse" alt="Gold Wreath Frame" />
-            
             <div className="w-full h-full rounded-full border border-[#D4AF37]/50 overflow-hidden relative z-10">
               <img src={event.coverImage} className="w-full h-full object-cover rounded-full filter hover:scale-110 transition-transform duration-700" alt="Portrait" />
             </div>
@@ -430,25 +455,57 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
       {/* Luxury Ticker Countdown */}
       <FadeInSection className="bg-[#2C2C2C] border-b border-[#D4AF37]/30 py-6 sm:py-10 text-center relative overflow-hidden px-3">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer pointer-events-none" />
-        <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#D4AF37] uppercase block mb-2 sm:mb-3">Time Remaining</span>
-        <Countdown targetDate={`${event.date || ''}T${event.time || ''}:00`} themeFontHeading="font-luxury-heading" themeColor="#D4AF37" />
+        
+        {/* Subtle Side Filigree Corner Accents */}
+        <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-6 -left-6 w-24 h-24 object-contain pointer-events-none opacity-25 mix-blend-screen" alt="Filigree Corner" />
+        <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-6 -right-6 w-24 h-24 object-contain pointer-events-none opacity-25 mix-blend-screen -scale-x-100" alt="Filigree Corner" />
+
+        <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
+          <img src="/IMG-20260728-WA0007.png" className="w-6 h-10 object-contain opacity-75 mb-1 pointer-events-none" alt="Gold Vine" />
+          <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#D4AF37] uppercase block mb-2 sm:mb-3">Time Remaining</span>
+          <Countdown targetDate={`${event.date || ''}T${event.time || ''}:00`} themeFontHeading="font-luxury-heading" themeColor="#D4AF37" />
+        </div>
       </FadeInSection>
 
-      {/* Ornate Letters Block */}
-      <FadeInSection className="py-12 sm:py-20 md:py-24 px-4 sm:px-6 relative overflow-hidden bg-cover bg-center" style={{
-        backgroundImage: `radial-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 0)`,
+      {/* Ornate Letters Block (Our Story) */}
+      <FadeInSection className="py-16 sm:py-24 md:py-28 px-4 sm:px-6 relative overflow-hidden bg-cover bg-center" style={{
+        backgroundImage: `radial-gradient(rgba(212, 175, 55, 0.04) 1px, transparent 0)`,
         backgroundSize: '24px 24px'
       }}>
-        <div className="max-w-2xl mx-auto border-2 border-[#D4AF37]/40 p-6 sm:p-12 md:p-16 bg-white shadow-[0_12px_40px_rgba(0,0,0,0.06)] rounded-lg relative text-center">
-          {/* Filigree Corner Accents */}
-          <div className="absolute top-3 left-3 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-[#D4AF37]/50" />
-          <div className="absolute top-3 right-3 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-[#D4AF37]/50" />
-          <div className="absolute bottom-3 left-3 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-[#D4AF37]/50" />
-          <div className="absolute bottom-3 right-3 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-[#D4AF37]/50" />
+        {/* Long Golden Ribbon Flowing Across Background */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/long-golden-ribbon-transparent.png" 
+          className="absolute -top-8 left-1/2 -translate-x-1/2 w-full max-w-4xl h-auto object-contain pointer-events-none opacity-40 mix-blend-multiply drop-shadow-md z-0 rotate-[-2deg]" 
+          alt="Golden Ribbon Accent" 
+        />
+
+        {/* Botanical Rose Arrangement Peeking From Top-Left Corner */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0014.png" 
+          className="absolute -top-12 -left-12 sm:-top-16 sm:-left-16 w-48 sm:w-72 h-auto object-contain pointer-events-none opacity-85 mix-blend-multiply z-10 filter drop-shadow-sm" 
+          alt="Rose Floral Accent" 
+        />
+
+        {/* Sage Leaves Peeking From Bottom-Right Corner */}
+        <motion.img 
+          style={{ y: parallaxYReverse }}
+          src="/IMG-20260728-WA0003.png" 
+          className="absolute -bottom-10 -right-10 sm:-bottom-14 sm:-right-14 w-40 sm:w-56 h-auto object-contain pointer-events-none opacity-80 mix-blend-multiply z-10" 
+          alt="Sage Leaf Accent" 
+        />
+
+        <div className="max-w-2xl mx-auto border-2 border-[#D4AF37]/40 p-6 sm:p-12 md:p-16 bg-white/95 backdrop-blur-sm shadow-[0_12px_40px_rgba(0,0,0,0.08)] rounded-lg relative text-center z-20">
+          {/* Filigree Lace Corner Overlays */}
+          <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-3 -left-3 w-16 h-16 sm:w-20 sm:h-20 object-contain pointer-events-none opacity-40 mix-blend-multiply" alt="Filigree Corner" />
+          <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-3 -right-3 w-16 h-16 sm:w-20 sm:h-20 object-contain pointer-events-none opacity-40 mix-blend-multiply -scale-x-100" alt="Filigree Corner" />
+          <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -bottom-3 -left-3 w-16 h-16 sm:w-20 sm:h-20 object-contain pointer-events-none opacity-40 mix-blend-multiply -scale-y-100" alt="Filigree Corner" />
+          <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -bottom-3 -right-3 w-16 h-16 sm:w-20 sm:h-20 object-contain pointer-events-none opacity-40 mix-blend-multiply rotate-180" alt="Filigree Corner" />
 
           <div className="flex items-center justify-center gap-2 text-[#D4AF37] mb-3">
             <Heart className="w-3.5 h-3.5 fill-current opacity-80" />
-            <Crown className="w-5 h-5" />
+            <Crown className="w-5 h-5 text-[#D4AF37]" />
             <Heart className="w-3.5 h-3.5 fill-current opacity-80" />
           </div>
           <h2 className="text-xl sm:text-3xl font-luxury-heading font-medium text-[#2C2C2C] uppercase tracking-widest break-words">Our Story</h2>
@@ -463,9 +520,26 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Interactive Program Timeline Section */}
       {showProgram && (
-        <FadeInSection className="py-12 sm:py-20 md:py-24 bg-white border-y border-[#D4AF37]/20 relative">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-10 sm:mb-16">
+        <FadeInSection className="py-16 sm:py-24 md:py-28 bg-white border-y border-[#D4AF37]/20 relative overflow-hidden">
+          {/* Hanging Botanical Garland Peeking From Top-Right Edge */}
+          <motion.img 
+            style={{ y: parallaxYMedium }}
+            src="/IMG-20260728-WA0005.png" 
+            className="absolute -top-10 -right-12 sm:-right-16 w-52 sm:w-80 h-auto object-contain pointer-events-none opacity-85 mix-blend-multiply z-10" 
+            alt="Eucalyptus Garland" 
+          />
+
+          {/* Golden Ribbon accent behind title */}
+          <motion.img 
+            style={{ y: parallaxYSlow }}
+            src="/long-golden-ribbon-transparent.png" 
+            className="absolute top-8 left-1/2 -translate-x-1/2 w-full max-w-2xl h-auto object-contain pointer-events-none opacity-30 mix-blend-multiply z-0" 
+            alt="Golden Ribbon Accent" 
+          />
+
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 relative z-20">
+            <div className="text-center mb-10 sm:mb-16 flex flex-col items-center">
+              <img src="/IMG-20260728-WA0007.png" className="w-5 h-9 object-contain opacity-75 mb-1 pointer-events-none" alt="Gold Vine" />
               <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">Schedule</span>
               <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Event Schedule</h2>
               <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
@@ -484,9 +558,25 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Interactive Gallery Section */}
       {event.galleryImages && event.galleryImages.length > 0 && (
-        <FadeInSection className="py-12 sm:py-20 md:py-24 bg-[#F5F5DC]/40 relative">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-10 sm:mb-16">
+        <FadeInSection className="py-16 sm:py-24 md:py-28 bg-[#F5F5DC]/40 relative overflow-hidden">
+          {/* Art Deco Pattern Overlay */}
+          <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{
+            backgroundImage: `url("/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }} />
+
+          {/* Rose Floral Arrangement Peeking From Bottom-Left Corner */}
+          <motion.img 
+            style={{ y: parallaxYFast }}
+            src="/IMG-20260728-WA0014.png" 
+            className="absolute -bottom-16 -left-16 w-52 sm:w-80 h-auto object-contain pointer-events-none opacity-85 mix-blend-multiply z-10 rotate-90" 
+            alt="Rose Floral Accent" 
+          />
+
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-20">
+            <div className="text-center mb-10 sm:mb-16 flex flex-col items-center">
+              <img src="/ChatGPT Image Jul 28, 2026, 12_21_45 PM.png" className="w-16 h-auto object-contain opacity-80 mb-2 pointer-events-none" alt="Royal Crest" />
               <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">Photos</span>
               <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Photo Gallery</h2>
               <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
@@ -503,10 +593,29 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
       )}
 
       {/* Venue Section (Luxury Gold) */}
-      <FadeInSection className="py-12 sm:py-20 md:py-24 bg-white text-left relative border-t border-[#D4AF37]/20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+      <FadeInSection className="py-16 sm:py-24 md:py-28 bg-white text-left relative border-t border-[#D4AF37]/20 overflow-hidden">
+        {/* Long Golden Ribbon Floating Across Top Boundary */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/long-golden-ribbon-transparent.png" 
+          className="absolute -top-10 right-0 w-full max-w-3xl h-auto object-contain pointer-events-none opacity-35 mix-blend-multiply z-0 rotate-[1deg]" 
+          alt="Golden Ribbon Accent" 
+        />
+
+        {/* Botanical Eucalyptus Garland Peeking From Top-Left */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0005.png" 
+          className="absolute -top-12 -left-12 sm:-top-16 sm:-left-16 w-48 sm:w-72 h-auto object-contain pointer-events-none opacity-80 mix-blend-multiply z-10" 
+          alt="Botanical Garland" 
+        />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20">
           <div className="flex flex-col gap-4 sm:gap-6">
-            <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase font-semibold block">Venue & Location</span>
+            <div className="flex items-center gap-2">
+              <img src="/IMG-20260728-WA0007.png" className="w-4 h-8 object-contain opacity-80 pointer-events-none" alt="Gold Vine" />
+              <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase font-semibold block">Venue & Location</span>
+            </div>
             <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">{getVenueFirstLine(event.venue)}</h2>
             <div className="w-16 h-0.5 bg-[#D4AF37]" />
             
@@ -567,7 +676,7 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
 
           <motion.div 
             whileHover={{ scale: 1.01 }}
-            className="border border-[#D4AF37]/30 bg-[#2C2C2C] p-2 rounded-lg h-[260px] sm:h-[300px] overflow-hidden"
+            className="border border-[#D4AF37]/30 bg-[#2C2C2C] p-2 rounded-lg h-[260px] sm:h-[300px] overflow-hidden relative shadow-lg"
           >
             <EventGoogleMap address={event.venue || ''} className="w-full h-full rounded-md" />
           </motion.div>
@@ -575,9 +684,22 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* Gift Registry */}
-      <FadeInSection className="py-12 sm:py-20 md:py-24 bg-[#F5F5DC]/40 border-t border-[#D4AF37]/20 relative">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
-          <div className="mb-10 sm:mb-16">
+      <FadeInSection className="py-16 sm:py-24 md:py-28 bg-[#F5F5DC]/40 border-t border-[#D4AF37]/20 relative overflow-hidden">
+        {/* Subtle Filigree Corner Accents */}
+        <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute top-2 left-2 w-20 h-20 object-contain pointer-events-none opacity-30 mix-blend-multiply" alt="Filigree Corner" />
+        <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute bottom-2 right-2 w-20 h-20 object-contain pointer-events-none opacity-30 mix-blend-multiply rotate-180" alt="Filigree Corner" />
+
+        {/* Botanical Sage Leaf Accent Peeking Bottom-Right */}
+        <motion.img 
+          style={{ y: parallaxYReverse }}
+          src="/IMG-20260728-WA0003.png" 
+          className="absolute -bottom-8 -right-8 w-44 h-44 object-contain pointer-events-none opacity-70 mix-blend-multiply" 
+          alt="Sage Leaf" 
+        />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-10">
+          <div className="mb-10 sm:mb-16 flex flex-col items-center">
+            <img src="/IMG-20260728-WA0007.png" className="w-5 h-9 object-contain opacity-75 mb-1 pointer-events-none" alt="Gold Vine" />
             <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">Registry</span>
             <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Gift Registry</h2>
             <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
@@ -585,7 +707,8 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-left">
             {(registryItems || []).map((item, idx) => (
-              <div key={idx} className="bg-white border border-[#D4AF37]/20 p-5 sm:p-8 rounded-lg flex flex-col justify-between min-h-[11rem] sm:h-48 hover:border-[#D4AF37]/50 transition-colors shadow-sm">
+              <div key={idx} className="bg-white/95 backdrop-blur-sm border border-[#D4AF37]/30 p-5 sm:p-8 rounded-lg flex flex-col justify-between min-h-[11rem] sm:h-48 hover:border-[#D4AF37]/60 transition-colors shadow-md relative overflow-hidden group">
+                <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-4 -right-4 w-14 h-14 object-contain pointer-events-none opacity-15 mix-blend-multiply group-hover:opacity-35 transition-opacity" alt="Filigree Corner" />
                 <div>
                   <h3 className="text-xs font-bold text-[#2C2C2C] uppercase tracking-wider pb-2 border-b border-[#D4AF37]/20 font-luxury-heading break-words">{item.store}</h3>
                   <p className="text-xs text-stone-600 leading-relaxed mt-3 sm:mt-4 font-light break-words">{item.note}</p>
@@ -600,9 +723,26 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* RSVP Section */}
-      <FadeInSection id="rsvp-anchor" className="py-12 sm:py-20 md:py-24 bg-white border-t border-[#D4AF37]/20 relative">
-        <div className="max-w-lg mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10 sm:mb-16">
+      <FadeInSection id="rsvp-anchor" className="py-16 sm:py-24 md:py-28 bg-white border-t border-[#D4AF37]/20 relative overflow-hidden">
+        {/* Long Golden Ribbon Flowing Across Top */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/long-golden-ribbon-transparent.png" 
+          className="absolute -top-6 left-1/2 -translate-x-1/2 w-full max-w-3xl h-auto object-contain pointer-events-none opacity-45 mix-blend-multiply z-0" 
+          alt="Golden Ribbon Accent" 
+        />
+
+        {/* Rose Floral Arch Peeking From Top-Right Corner */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0014.png" 
+          className="absolute -top-12 -right-12 sm:-top-16 sm:-right-16 w-52 sm:w-80 h-auto object-contain pointer-events-none opacity-85 mix-blend-multiply z-10 -scale-x-100" 
+          alt="Rose Floral Accent" 
+        />
+
+        <div className="max-w-lg mx-auto px-4 sm:px-6 relative z-20">
+          <div className="text-center mb-10 sm:mb-16 flex flex-col items-center">
+            <img src="/ChatGPT Image Jul 28, 2026, 12_21_45 PM.png" className="w-16 h-auto object-contain opacity-85 mb-2 pointer-events-none" alt="Royal Crest" />
             <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">RSVP</span>
             <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Confirm Attendance</h2>
             <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
@@ -619,9 +759,18 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* Guestbook section with elegant cards */}
-      <FadeInSection className="py-12 sm:py-20 md:py-24 bg-[#F5F5DC]/40 border-t border-[#D4AF37]/20 relative">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10 sm:mb-16">
+      <FadeInSection className="py-16 sm:py-24 md:py-28 bg-[#F5F5DC]/40 border-t border-[#D4AF37]/20 relative overflow-hidden">
+        {/* Hanging Floral Canopy Peeking From Top-Left */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0011.png" 
+          className="absolute -top-8 -left-8 w-56 sm:w-80 h-auto object-contain pointer-events-none opacity-50 mix-blend-multiply z-10" 
+          alt="Hanging Lavender Canopy" 
+        />
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-20">
+          <div className="text-center mb-10 sm:mb-16 flex flex-col items-center">
+            <img src="/IMG-20260728-WA0007.png" className="w-5 h-9 object-contain opacity-75 mb-1 pointer-events-none" alt="Gold Vine" />
             <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">Guestbook</span>
             <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Guestbook Messages</h2>
             <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
@@ -634,6 +783,7 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
               (guestbook || []).map((entry) => (
                 <div key={entry.id} className="p-5 sm:p-8 bg-white border border-[#D4AF37]/20 shadow-xl rounded-lg flex flex-col justify-between min-h-[10rem] h-auto relative overflow-hidden group hover:border-[#D4AF37]/50 transition-all duration-300">
                   <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[#D4AF37] to-[#CD7F32]" />
+                  <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute top-1 right-1 w-12 h-12 object-contain pointer-events-none opacity-20 mix-blend-multiply" alt="Filigree Corner" />
                   {entry.imageUrl && (
                     <div className="mb-4 rounded-lg overflow-hidden border border-[#D4AF37]/30 max-h-48">
                       <img src={entry.imageUrl} alt="Attached blessing memory" className="w-full h-40 object-cover" />
@@ -652,9 +802,18 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* Interactive FAQ & Event Guidelines */}
-      <FadeInSection className="py-12 sm:py-20 bg-white relative border-t border-[#D4AF37]/20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8 sm:mb-12">
+      <FadeInSection className="py-16 sm:py-24 bg-white relative border-t border-[#D4AF37]/20 overflow-hidden">
+        {/* Subtle Golden Ribbon Flowing Across Bottom */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/long-golden-ribbon-transparent.png" 
+          className="absolute -bottom-10 left-0 w-full max-w-3xl h-auto object-contain pointer-events-none opacity-30 mix-blend-multiply z-0" 
+          alt="Golden Ribbon Accent" 
+        />
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-8 sm:mb-12 flex flex-col items-center">
+            <img src="/ChatGPT Image Jul 28, 2026, 12_21_45 PM.png" className="w-14 h-auto object-contain opacity-80 mb-2 pointer-events-none" alt="Royal Crest" />
             <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase block mb-2 font-semibold">Guidelines</span>
             <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">Event Details & FAQ</h2>
             <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
@@ -671,11 +830,15 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* Footer */}
-      <footer className="bg-[#2C2C2C] text-white py-16 text-center border-t-2 border-[#D4AF37] text-xs">
-        <div className="max-w-xl mx-auto px-6 flex flex-col gap-4">
+      <footer className="bg-[#2C2C2C] text-white py-16 text-center border-t-2 border-[#D4AF37] text-xs relative overflow-hidden">
+        <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute top-2 left-2 w-20 h-20 object-contain pointer-events-none opacity-15 mix-blend-screen" alt="Filigree Corner" />
+        <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute top-2 right-2 w-20 h-20 object-contain pointer-events-none opacity-15 mix-blend-screen -scale-x-100" alt="Filigree Corner" />
+
+        <div className="max-w-xl mx-auto px-6 flex flex-col gap-4 items-center relative z-10">
+          <img src="/IMG-20260728-WA0007.png" className="w-6 h-10 object-contain opacity-75 pointer-events-none" alt="Gold Vine" />
           <span className="text-lg font-luxury-script text-[#D4AF37] font-medium">Pam's Events</span>
           <p className="text-stone-400 leading-relaxed text-[11px] font-light tracking-wide">Creating memorable events, seamless RSVPs, and beautiful digital invitations.</p>
-          <div className="h-[1px] bg-white/10 my-6" />
+          <div className="h-[1px] bg-white/10 my-4 w-full" />
           <span className="text-[10px] text-stone-500 tracking-[0.25em] font-mono">© 2026 PAM'S EVENTS PLATFORM LLC. ALL RIGHTS RESERVED.</span>
         </div>
       </footer>
@@ -693,8 +856,15 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
 }) => {
   const isDeadlinePassed = event.rsvpDeadline ? isRsvpDeadlinePassed(event.rsvpDeadline) : false;
   const showProgram = event.type !== 'wedding' || isProgramRevealed(event.date);
+
+  const { scrollYProgress } = useScroll();
+  const parallaxYSlow = useTransform(scrollYProgress, [0, 1], [0, -30]);
+  const parallaxYMedium = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const parallaxYReverse = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const parallaxYFast = useTransform(scrollYProgress, [0, 1], [0, -110]);
+
   return (
-    <div className="flex-1 flex flex-col font-elegant-body bg-[#FEFEFE] text-[#3A3A3A] selection:bg-[#3A3A3A] selection:text-white relative">
+    <div className="flex-1 flex flex-col font-elegant-body bg-[#FEFEFE] text-[#3A3A3A] selection:bg-[#3A3A3A] selection:text-white relative overflow-hidden">
       <PearlescentFlourishBG />
 
       {/* Pristine Gallery Hero Section */}
@@ -768,16 +938,32 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
       </section>
 
       {/* Whisper-Quiet Minimalist Ticker Countdown */}
-      <FadeInSection className="bg-[#F7F7F7] border-b border-[#C0C0C0]/40 py-6 sm:py-8 px-4 sm:px-8 text-left">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+      <FadeInSection className="bg-[#F7F7F7] border-b border-[#C0C0C0]/40 py-6 sm:py-8 px-4 sm:px-8 text-left relative overflow-hidden">
+        <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-6 -left-6 w-20 h-20 object-contain pointer-events-none opacity-15 mix-blend-multiply" alt="Filigree Corner" />
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 relative z-10">
           <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-light">Time Remaining</span>
           <Countdown targetDate={`${event.date || ''}T${event.time || ''}:00`} themeFontHeading="font-elegant-heading" themeColor="#3A3A3A" />
         </div>
       </FadeInSection>
 
       {/* Quiet Gallery Story Block */}
-      <FadeInSection className="py-16 sm:py-24 md:py-32 px-4 sm:px-8 bg-white relative">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 text-left items-start">
+      <FadeInSection className="py-16 sm:py-24 md:py-32 px-4 sm:px-8 bg-white relative overflow-hidden">
+        {/* Parallax Floating Ribbon Background */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/long-golden-ribbon-transparent.png" 
+          className="absolute -top-8 left-1/2 -translate-x-1/2 w-full max-w-3xl h-auto object-contain pointer-events-none opacity-20 mix-blend-multiply z-0 rotate-[2deg]" 
+          alt="Silk Ribbon Accent" 
+        />
+        {/* Parallax Botanical Garland */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0005.png" 
+          className="absolute -top-12 -left-12 w-44 sm:w-64 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+          alt="Botanical Garland Accent" 
+        />
+
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 text-left items-start relative z-20">
           <div className="md:col-span-7 flex flex-col gap-4 sm:gap-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light leading-tight break-words">About Our Event</h2>
             <div className="w-12 h-[0.5px] bg-[#3A3A3A]" />
@@ -795,8 +981,16 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Itinerary / Program Timeline */}
       {showProgram && (
-        <FadeInSection className="py-16 sm:py-24 md:py-32 bg-[#F7F7F7] border-y border-[#C0C0C0]/40 text-left relative">
-          <div className="max-w-4xl mx-auto px-4 sm:px-8">
+        <FadeInSection className="py-16 sm:py-24 md:py-32 bg-[#F7F7F7] border-y border-[#C0C0C0]/40 text-left relative overflow-hidden">
+          {/* Parallax Sage Leaves Peeking Right */}
+          <motion.img 
+            style={{ y: parallaxYReverse }}
+            src="/IMG-20260728-WA0003.png" 
+            className="absolute -top-10 -right-10 w-40 sm:w-56 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+            alt="Sage Leaf Accent" 
+          />
+
+          <div className="max-w-4xl mx-auto px-4 sm:px-8 relative z-20">
             <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">Schedule</span>
             <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light mb-10 sm:mb-16 break-words">Event Timeline</h2>
             
@@ -813,8 +1007,16 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Gallery / Visual Stream */}
       {event.galleryImages && event.galleryImages.length > 0 && (
-        <FadeInSection className="py-16 sm:py-24 md:py-32 bg-white border-b border-[#C0C0C0]/40">
-          <div className="max-w-6xl mx-auto px-4 sm:px-8">
+        <FadeInSection className="py-16 sm:py-24 md:py-32 bg-white border-b border-[#C0C0C0]/40 relative overflow-hidden">
+          {/* Parallax Rose Floral Accent */}
+          <motion.img 
+            style={{ y: parallaxYFast }}
+            src="/IMG-20260728-WA0014.png" 
+            className="absolute -bottom-12 -left-12 w-48 sm:w-72 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+            alt="Rose Accent" 
+          />
+
+          <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-20">
             <div className="text-center mb-12 sm:mb-20">
               <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">Photos</span>
               <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light break-words">Photo Gallery</h2>
@@ -833,9 +1035,12 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Venue Section (Elegant Grayscale/Charcoal) */}
       <FadeInSection 
-        className="py-16 sm:py-24 md:py-32 bg-white text-left relative"
+        className="py-16 sm:py-24 md:py-32 bg-white text-left relative overflow-hidden"
       >
-        <div className="max-w-5xl mx-auto px-4 sm:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+        {/* Silver Filigree Corner Overlay */}
+        <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute top-2 left-2 w-20 h-20 object-contain pointer-events-none opacity-20 mix-blend-multiply" alt="Filigree Corner" />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center relative z-10">
           <div className="flex flex-col gap-4 sm:gap-6">
             <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] block uppercase font-semibold">Location & Venue</span>
             <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light leading-tight break-words">{getVenueFirstLine(event.venue)}</h2>
@@ -906,8 +1111,16 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* Gift Registry */}
-      <FadeInSection className="py-16 sm:py-24 md:py-32 bg-[#F7F7F7] border-t border-[#C0C0C0]/40">
-        <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center">
+      <FadeInSection className="py-16 sm:py-24 md:py-32 bg-[#F7F7F7] border-t border-[#C0C0C0]/40 relative overflow-hidden">
+        {/* Parallax Ribbon */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/long-golden-ribbon-transparent.png" 
+          className="absolute -top-6 left-0 w-full max-w-3xl h-auto object-contain pointer-events-none opacity-15 mix-blend-multiply z-0" 
+          alt="Ribbon Accent" 
+        />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center relative z-10">
           <div className="mb-12 sm:mb-20">
             <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">Registry</span>
             <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light break-words">Gift Registry</h2>
@@ -916,7 +1129,8 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-12 text-left">
             {(registryItems || []).map((item, idx) => (
-              <div key={idx} className="bg-white border border-[#C0C0C0]/30 p-5 sm:p-8 flex flex-col justify-between min-h-[12rem] h-auto hover:border-[#3A3A3A] transition-colors duration-300 shadow-sm">
+              <div key={idx} className="bg-white border border-[#C0C0C0]/30 p-5 sm:p-8 flex flex-col justify-between min-h-[12rem] h-auto hover:border-[#3A3A3A] transition-colors duration-300 shadow-sm relative group overflow-hidden">
+                <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-3 -right-3 w-12 h-12 object-contain pointer-events-none opacity-15 mix-blend-multiply group-hover:opacity-35 transition-opacity" alt="Filigree Corner" />
                 <div>
                   <h3 className="text-xs font-semibold text-[#3A3A3A] uppercase tracking-[0.15em] sm:tracking-[0.2em] pb-3 border-b border-[#C0C0C0]/20 break-words">{item.store}</h3>
                   <p className="text-xs text-[#9E9E9E] leading-relaxed mt-3 sm:mt-4 font-light tracking-wide break-words">{item.note}</p>
@@ -931,8 +1145,16 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* RSVP Minimal form */}
-      <FadeInSection id="rsvp-anchor" className="py-16 sm:py-24 md:py-32 bg-white relative border-t border-[#C0C0C0]/40">
-        <div className="max-w-lg mx-auto px-4 sm:px-8">
+      <FadeInSection id="rsvp-anchor" className="py-16 sm:py-24 md:py-32 bg-white relative border-t border-[#C0C0C0]/40 overflow-hidden">
+        {/* Parallax Botanical Garland */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0005.png" 
+          className="absolute -top-10 -right-10 w-48 sm:w-64 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+          alt="Garland Accent" 
+        />
+
+        <div className="max-w-lg mx-auto px-4 sm:px-8 relative z-20">
           <div className="text-center mb-10 sm:mb-16">
             <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">RSVP</span>
             <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light break-words">Confirm Attendance</h2>
@@ -949,8 +1171,16 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* Guestbook registers */}
-      <FadeInSection className="py-16 sm:py-24 md:py-32 bg-[#F7F7F7] border-t border-[#C0C0C0]/40">
-        <div className="max-w-4xl mx-auto px-4 sm:px-8">
+      <FadeInSection className="py-16 sm:py-24 md:py-32 bg-[#F7F7F7] border-t border-[#C0C0C0]/40 relative overflow-hidden">
+        {/* Parallax Canopy */}
+        <motion.img 
+          style={{ y: parallaxYFast }}
+          src="/IMG-20260728-WA0011.png" 
+          className="absolute -top-8 -left-8 w-48 sm:w-64 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+          alt="Canopy Accent" 
+        />
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 relative z-20">
           <div className="text-center mb-10 sm:mb-16">
             <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">Guestbook</span>
             <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light break-words">Guestbook Messages</h2>
@@ -962,7 +1192,8 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
               <div className="col-span-1 sm:col-span-2 text-center text-xs text-[#9E9E9E] py-6 font-light italic">No messages yet. Be the first to sign the guestbook and leave a message.</div>
             ) : (
               (guestbook || []).map((entry) => (
-                <div key={entry.id} className="p-5 sm:p-8 bg-white border border-[#C0C0C0]/30 flex flex-col justify-between min-h-[10rem] h-auto hover:border-[#3A3A3A] transition-all duration-300 shadow-sm rounded-none">
+                <div key={entry.id} className="p-5 sm:p-8 bg-white border border-[#C0C0C0]/30 flex flex-col justify-between min-h-[10rem] h-auto hover:border-[#3A3A3A] transition-all duration-300 shadow-sm rounded-none relative overflow-hidden">
+                  <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute top-1 right-1 w-10 h-10 object-contain pointer-events-none opacity-15 mix-blend-multiply" alt="Filigree Corner" />
                   {entry.imageUrl && (
                     <div className="mb-4 rounded-none overflow-hidden border border-[#C0C0C0]/40 max-h-48">
                       <img src={entry.imageUrl} alt="Attached blessing memory" className="w-full h-40 object-cover" />
@@ -981,8 +1212,8 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* Interactive FAQ & Event Details */}
-      <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#C0C0C0]/40">
-        <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center">
+      <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#C0C0C0]/40 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center relative z-10">
           <div className="mb-10 sm:mb-16">
             <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] uppercase font-semibold block mb-2">Guidelines</span>
             <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light break-words">Event Details & FAQ</h2>
@@ -1022,12 +1253,19 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
 }) => {
   const isDeadlinePassed = event.rsvpDeadline ? isRsvpDeadlinePassed(event.rsvpDeadline) : false;
   const showProgram = event.type !== 'wedding' || isProgramRevealed(event.date);
+
+  const { scrollYProgress } = useScroll();
+  const parallaxYSlow = useTransform(scrollYProgress, [0, 1], [0, -30]);
+  const parallaxYMedium = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const parallaxYReverse = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const parallaxYFast = useTransform(scrollYProgress, [0, 1], [0, -100]);
+
   return (
-    <div className="flex-1 flex flex-col font-modern-body bg-[#FAF8F3] text-[#2D2D2D] selection:bg-[#1A2B4A] selection:text-[#FAF8F3] relative">
+    <div className="flex-1 flex flex-col font-modern-body bg-[#FAF8F3] text-[#2D2D2D] selection:bg-[#1A2B4A] selection:text-[#FAF8F3] relative overflow-hidden">
       <GeometricGridLinesBG />
       
       {/* Editorial Splitscreen Bento-Grid Header */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16 w-full grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 text-left">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16 w-full grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 text-left relative z-10">
         
         {/* Tile 1: Master Hero card (span 8) in Deep Navy */}
         <div className="md:col-span-8 bg-[#1A2B4A] text-[#FAF8F3] rounded-2xl p-5 sm:p-8 md:p-12 border border-[#C9A961]/40 shadow-xl flex flex-col justify-between min-h-[300px] sm:min-h-[360px] relative overflow-hidden group">
@@ -1078,15 +1316,21 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
         </div>
 
         {/* Tile 2: Countdown ticker (span 4) */}
-        <div className="md:col-span-4 bg-white rounded-2xl p-5 sm:p-8 border border-[#5B7C99]/30 shadow-md flex flex-col justify-between items-center text-center min-h-[260px] sm:min-h-[300px]">
-          <span className="text-[9px] sm:text-[10px] font-modern-heading text-[#1A2B4A] font-bold tracking-[0.2em] uppercase">Time Remaining</span>
+        <div className="md:col-span-4 bg-white rounded-2xl p-5 sm:p-8 border border-[#5B7C99]/30 shadow-md flex flex-col justify-between items-center text-center min-h-[260px] sm:min-h-[300px] relative overflow-hidden">
+          <motion.img 
+            style={{ y: parallaxYSlow }}
+            src="/long-golden-ribbon-transparent.png" 
+            className="absolute -top-4 left-0 w-full h-auto object-contain pointer-events-none opacity-20 mix-blend-multiply" 
+            alt="Golden Ribbon Accent" 
+          />
+          <span className="text-[9px] sm:text-[10px] font-modern-heading text-[#1A2B4A] font-bold tracking-[0.2em] uppercase relative z-10">Time Remaining</span>
           
-          <div className="my-auto py-4 sm:py-6 w-full">
+          <div className="my-auto py-4 sm:py-6 w-full relative z-10">
             <Countdown targetDate={`${event.date || ''}T${event.time || ''}:00`} themeFontHeading="font-modern-heading text-xl sm:text-2xl font-bold" themeColor="#1A2B4A" />
           </div>
           
-          <div className="w-12 h-[2px] bg-[#C9A961] mb-2" />
-          <span className="text-[9px] font-mono text-[#5B7C99] uppercase tracking-wider">Countdown</span>
+          <div className="w-12 h-[2px] bg-[#C9A961] mb-2 relative z-10" />
+          <span className="text-[9px] font-mono text-[#5B7C99] uppercase tracking-wider relative z-10">Countdown</span>
         </div>
 
         {/* Tile 3: Lookbook Image Portrait (span 4) */}
@@ -1101,15 +1345,22 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
         </div>
 
         {/* Tile 4: Deep story description (span 8) */}
-        <div className="md:col-span-8 bg-white rounded-2xl p-5 sm:p-8 md:p-10 border border-[#5B7C99]/20 shadow-md flex flex-col justify-between">
-          <div>
+        <div className="md:col-span-8 bg-white rounded-2xl p-5 sm:p-8 md:p-10 border border-[#5B7C99]/20 shadow-md flex flex-col justify-between relative overflow-hidden">
+          {/* Parallax Sage Accent */}
+          <motion.img 
+            style={{ y: parallaxYMedium }}
+            src="/IMG-20260728-WA0003.png" 
+            className="absolute -top-8 -right-8 w-40 h-auto object-contain pointer-events-none opacity-20 mix-blend-multiply z-0" 
+            alt="Sage Accent" 
+          />
+          <div className="relative z-10">
             <span className="text-[9px] sm:text-[10px] font-modern-heading tracking-[0.2em] text-[#5B7C99] uppercase font-bold">OUR STORY</span>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-modern-heading font-bold tracking-tight text-[#1A2B4A] uppercase mt-2 sm:mt-4 mb-3 sm:mb-4 break-words">WELCOME TO OUR CELEBRATION</h2>
             <p className="text-xs sm:text-sm text-[#2D2D2D] leading-relaxed max-w-xl font-light break-words">
               We are so excited to bring together our friends and family for this special occasion. Join us for good food, music, and wonderful memories as we celebrate together.
             </p>
           </div>
-          <div className="text-[9px] sm:text-[10px] font-modern-heading text-[#C9A961] font-bold mt-4 sm:mt-6 tracking-widest border-t border-[#FAF8F3] pt-3 sm:pt-4 uppercase truncate">
+          <div className="text-[9px] sm:text-[10px] font-modern-heading text-[#C9A961] font-bold mt-4 sm:mt-6 tracking-widest border-t border-[#FAF8F3] pt-3 sm:pt-4 uppercase truncate relative z-10">
             CELEBRATE WITH US
           </div>
         </div>
@@ -1376,8 +1627,15 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
 }) => {
   const isDeadlinePassed = event.rsvpDeadline ? isRsvpDeadlinePassed(event.rsvpDeadline) : false;
   const showProgram = event.type !== 'wedding' || isProgramRevealed(event.date);
+
+  const { scrollYProgress } = useScroll();
+  const parallaxYSlow = useTransform(scrollYProgress, [0, 1], [0, -30]);
+  const parallaxYMedium = useTransform(scrollYProgress, [0, 1], [0, -75]);
+  const parallaxYReverse = useTransform(scrollYProgress, [0, 1], [0, 45]);
+  const parallaxYFast = useTransform(scrollYProgress, [0, 1], [0, -110]);
+
   return (
-    <div className="flex-1 flex flex-col font-rustic-body bg-[#FFF8E7] text-[#3E3E3E] selection:bg-[#5C4033] selection:text-[#FFF8E7] relative">
+    <div className="flex-1 flex flex-col font-rustic-body bg-[#FFF8E7] text-[#3E3E3E] selection:bg-[#5C4033] selection:text-[#FFF8E7] relative overflow-hidden">
       <FallingLeavesBG />
 
       {/* Handcrafted Golden-Hour Hero Section */}
@@ -1437,14 +1695,29 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
       </section>
 
       {/* Countdown (Rustic barn style) */}
-      <FadeInSection className="bg-[#9CAF88]/10 border-b border-[#D4C4B0]/50 py-6 sm:py-8 px-4 text-center">
-        <span className="text-[9px] sm:text-[10px] tracking-widest text-[#5C4033] uppercase font-bold block mb-2 font-sans">Time Remaining</span>
+      <FadeInSection className="bg-[#9CAF88]/10 border-b border-[#D4C4B0]/50 py-6 sm:py-8 px-4 text-center relative overflow-hidden">
+        <span className="text-[9px] sm:text-[10px] tracking-widest text-[#5C4033] uppercase font-bold block mb-2 font-sans relative z-10">Time Remaining</span>
         <Countdown targetDate={`${event.date || ''}T${event.time || ''}:00`} themeFontHeading="font-rustic-heading font-bold" themeColor="#5C4033" />
       </FadeInSection>
 
       {/* Rustic Journal Story */}
-      <FadeInSection className="py-16 sm:py-24 bg-white relative">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center flex flex-col gap-4 sm:gap-6 items-center">
+      <FadeInSection className="py-16 sm:py-24 bg-white relative overflow-hidden">
+        {/* Parallax Hanging Botanical Garland */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/IMG-20260728-WA0005.png" 
+          className="absolute -top-10 -left-10 w-48 sm:w-64 h-auto object-contain pointer-events-none opacity-30 mix-blend-multiply z-10" 
+          alt="Botanical Garland" 
+        />
+        {/* Parallax Sage Leaves Peeking Right */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0003.png" 
+          className="absolute -bottom-10 -right-10 w-40 sm:w-56 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+          alt="Sage Leaves" 
+        />
+
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center flex flex-col gap-4 sm:gap-6 items-center relative z-20">
           <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] sm:tracking-[0.25em] text-[#C97064] font-bold uppercase">OUR STORY</span>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase tracking-wide break-words">Welcome To Our Event</h2>
           <div className="w-16 h-0.5 bg-[#9CAF88]" />
@@ -1459,8 +1732,16 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Interactive Timeline */}
       {showProgram && (
-        <FadeInSection className="py-16 sm:py-24 bg-[#FFF8E7] border-y border-[#D4C4B0]/40">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <FadeInSection className="py-16 sm:py-24 bg-[#FFF8E7] border-y border-[#D4C4B0]/40 relative overflow-hidden">
+          {/* Parallax Hanging Lavender Canopy */}
+          <motion.img 
+            style={{ y: parallaxYReverse }}
+            src="/IMG-20260728-WA0011.png" 
+            className="absolute -top-8 left-0 right-0 w-full h-auto max-h-36 object-cover opacity-25 mix-blend-multiply pointer-events-none z-10" 
+            alt="Lavender Canopy" 
+          />
+
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 relative z-20">
             <div className="text-center mb-10 sm:mb-16">
               <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#9CAF88] font-bold uppercase block mb-2">SCHEDULE</span>
               <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase tracking-wide break-words">EVENT TIMELINE</h2>
@@ -1479,8 +1760,16 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Cozy snap lookbook gallery */}
       {event.galleryImages && event.galleryImages.length > 0 && (
-        <FadeInSection className="py-16 sm:py-24 bg-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        <FadeInSection className="py-16 sm:py-24 bg-white relative overflow-hidden">
+          {/* Parallax Rose Floral Accent */}
+          <motion.img 
+            style={{ y: parallaxYFast }}
+            src="/IMG-20260728-WA0014.png" 
+            className="absolute -bottom-10 -left-10 w-48 sm:w-64 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+            alt="Rose Accent" 
+          />
+
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-20">
             <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#9CAF88] font-bold uppercase block mb-2">PHOTOS</span>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase mb-10 sm:mb-16 break-words">PHOTO GALLERY</h2>
             
@@ -1495,8 +1784,16 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
       )}
 
       {/* Venue Section (Rustic Organic) */}
-      <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#D4C4B0]/40 text-left">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+      <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#D4C4B0]/40 text-left relative overflow-hidden">
+        {/* Parallax Garland Top */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/IMG-20260728-WA0005.png" 
+          className="absolute -top-12 -right-12 w-48 sm:w-64 h-auto object-contain pointer-events-none opacity-30 mix-blend-multiply z-10" 
+          alt="Eucalyptus Garland" 
+        />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20">
           <div className="flex flex-col gap-4 sm:gap-6">
             <span className="text-[9px] sm:text-[10px] tracking-widest text-[#9CAF88] font-bold block uppercase font-sans">Venue & Location</span>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase leading-tight break-words">{getVenueFirstLine(event.venue)}</h2>
@@ -1680,8 +1977,15 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
 }) => {
   const isDeadlinePassed = event.rsvpDeadline ? isRsvpDeadlinePassed(event.rsvpDeadline) : false;
   const showProgram = event.type !== 'wedding' || isProgramRevealed(event.date);
+
+  const { scrollYProgress } = useScroll();
+  const parallaxYSlow = useTransform(scrollYProgress, [0, 1], [0, -35]);
+  const parallaxYMedium = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const parallaxYReverse = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  const parallaxYFast = useTransform(scrollYProgress, [0, 1], [0, -120]);
+
   return (
-    <div className="flex-1 flex flex-col font-floral-body bg-[#FFF9F5] text-[#3D5A3D] selection:bg-[#D4A5A5] selection:text-white relative">
+    <div className="flex-1 flex flex-col font-floral-body bg-[#FFF9F5] text-[#3D5A3D] selection:bg-[#D4A5A5] selection:text-white relative overflow-hidden">
       <FloatingPetalsBG />
 
       {/* Whimsical Romantic Arch Hero */}
@@ -1749,14 +2053,29 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
       </section>
 
       {/* Countdown (Romantic floral bloom circles) */}
-      <FadeInSection className="bg-[#F4E4E6]/30 border-b border-[#F4E4E6]/60 py-6 sm:py-8 px-4 text-center">
-        <span className="text-[9px] sm:text-[10px] tracking-widest text-[#D4A5A5] uppercase font-bold block mb-2 font-sans">Time Remaining</span>
+      <FadeInSection className="bg-[#F4E4E6]/30 border-b border-[#F4E4E6]/60 py-6 sm:py-8 px-4 text-center relative overflow-hidden">
+        <span className="text-[9px] sm:text-[10px] tracking-widest text-[#D4A5A5] uppercase font-bold block mb-2 font-sans relative z-10">Time Remaining</span>
         <Countdown targetDate={`${event.date || ''}T${event.time || ''}:00`} themeFontHeading="font-floral-heading italic" themeColor="#D4A5A5" />
       </FadeInSection>
 
       {/* Story (Lush watercolored journal entry) */}
-      <FadeInSection className="py-16 sm:py-24 bg-white relative">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center flex flex-col gap-4 sm:gap-6 items-center">
+      <FadeInSection className="py-16 sm:py-24 bg-white relative overflow-hidden">
+        {/* Parallax Rose Blossom Arch Accent */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0014.png" 
+          className="absolute -top-12 -right-12 w-56 sm:w-80 h-auto object-contain pointer-events-none opacity-30 mix-blend-multiply z-10" 
+          alt="Rose Arch Accent" 
+        />
+        {/* Parallax Sage Leaf Spray */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/IMG-20260728-WA0003.png" 
+          className="absolute -bottom-10 -left-10 w-44 sm:w-60 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+          alt="Sage Spray" 
+        />
+
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center flex flex-col gap-4 sm:gap-6 items-center relative z-20">
           <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-[#D4A5A5] fill-[#F4E4E6] animate-pulse" />
           <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#A8B5A0] font-bold uppercase">OUR STORY</span>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic break-words">Welcome To Our Celebration</h2>
@@ -1770,8 +2089,16 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Itinerary (Botanical Leaf timeline nodes) */}
       {showProgram && (
-        <FadeInSection className="py-16 sm:py-24 bg-[#FFF9F5] border-y border-[#F4E4E6] text-left">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        <FadeInSection className="py-16 sm:py-24 bg-[#FFF9F5] border-y border-[#F4E4E6] text-left relative overflow-hidden">
+          {/* Parallax Hanging Lavender Canopy */}
+          <motion.img 
+            style={{ y: parallaxYReverse }}
+            src="/IMG-20260728-WA0011.png" 
+            className="absolute -top-10 left-0 right-0 w-full h-auto max-h-40 object-cover opacity-30 mix-blend-multiply pointer-events-none z-10" 
+            alt="Lavender Canopy" 
+          />
+
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 relative z-20">
             <div className="text-center mb-10 sm:mb-16">
               <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#A8B5A0] font-bold uppercase block mb-2">SCHEDULE</span>
               <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic break-words">Event Timeline</h2>
@@ -1790,8 +2117,16 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Gallery (Botanical portraits) */}
       {event.galleryImages && event.galleryImages.length > 0 && (
-        <FadeInSection className="py-16 sm:py-24 bg-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        <FadeInSection className="py-16 sm:py-24 bg-white relative overflow-hidden">
+          {/* Parallax White Lace Ribbon Accent */}
+          <motion.img 
+            style={{ y: parallaxYFast }}
+            src="/white-lace-ribbon-transparent.png" 
+            className="absolute -bottom-10 right-0 w-64 sm:w-96 h-auto object-contain pointer-events-none opacity-25 mix-blend-multiply z-10" 
+            alt="White Lace Accent" 
+          />
+
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-20">
             <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.2em] text-[#A8B5A0] font-bold uppercase block mb-2">PHOTOS</span>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic mb-10 sm:mb-16 break-words">Photo Gallery</h2>
             
@@ -1806,8 +2141,16 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
       )}
 
       {/* Venue Section (Floral Botanical) */}
-      <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#F4E4E6]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+      <FadeInSection className="py-16 sm:py-24 bg-white border-t border-[#F4E4E6] relative overflow-hidden">
+        {/* Parallax Eucalyptus Garland Top */}
+        <motion.img 
+          style={{ y: parallaxYSlow }}
+          src="/IMG-20260728-WA0005.png" 
+          className="absolute -top-12 -left-12 w-52 sm:w-72 h-auto object-contain pointer-events-none opacity-30 mix-blend-multiply z-10" 
+          alt="Eucalyptus Garland" 
+        />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20">
           <div className="text-left flex flex-col gap-4 sm:gap-6">
             <span className="text-[9px] sm:text-[10px] font-sans tracking-widest text-[#A8B5A0] font-bold block uppercase">Venue & Location</span>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic leading-tight break-words">{getVenueFirstLine(event.venue)}</h2>
@@ -1991,8 +2334,15 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
 }) => {
   const isDeadlinePassed = event.rsvpDeadline ? isRsvpDeadlinePassed(event.rsvpDeadline) : false;
   const showProgram = event.type !== 'wedding' || isProgramRevealed(event.date);
+
+  const { scrollYProgress } = useScroll();
+  const parallaxYSlow = useTransform(scrollYProgress, [0, 1], [0, -30]);
+  const parallaxYMedium = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const parallaxYReverse = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const parallaxYFast = useTransform(scrollYProgress, [0, 1], [0, -100]);
+
   return (
-    <div className="flex-1 flex flex-col font-serif bg-amber-50/20 text-amber-950 relative">
+    <div className="flex-1 flex flex-col font-serif bg-amber-50/20 text-amber-950 relative overflow-hidden">
       <GoldShimmerParticles />
 
       {/* Heritage Letterpress Hero */}
@@ -2046,15 +2396,23 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
       </section>
 
       {/* Countdown (Traditional clock) */}
-      <FadeInSection className="bg-amber-100/40 border-b-2 border-double border-amber-900/30 py-6 px-4 text-center">
-        <span className="text-[9px] tracking-widest text-amber-900 uppercase font-bold block mb-2">Time Remaining</span>
+      <FadeInSection className="bg-amber-100/40 border-b-2 border-double border-amber-900/30 py-6 px-4 text-center relative overflow-hidden">
+        <span className="text-[9px] tracking-widest text-amber-900 uppercase font-bold block mb-2 relative z-10">Time Remaining</span>
         <Countdown targetDate={`${event.date || ''}T${event.time || ''}:00`} themeFontHeading="font-serif font-bold" themeColor="#78350f" />
       </FadeInSection>
 
       {/* Traditional Letter Announcement */}
-      <FadeInSection className="py-14 sm:py-20 bg-white text-center">
-        <div className="max-w-xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col gap-4 border border-amber-200 p-6 sm:p-10 bg-white">
+      <FadeInSection className="py-14 sm:py-20 bg-white text-center relative overflow-hidden">
+        {/* Parallax Terracotta Filigree Left Accent */}
+        <motion.img 
+          style={{ y: parallaxYMedium }}
+          src="/IMG-20260728-WA0002.png" 
+          className="absolute -top-10 -left-10 w-48 sm:w-64 h-auto object-contain pointer-events-none opacity-20 mix-blend-multiply z-10" 
+          alt="Terracotta Filigree" 
+        />
+
+        <div className="max-w-xl mx-auto px-4 sm:px-6 relative z-20">
+          <div className="flex flex-col gap-4 border border-amber-200 p-6 sm:p-10 bg-white relative">
             <h2 className="text-base sm:text-xl font-bold text-amber-950 uppercase break-words">Dear Friends and Family</h2>
             <p className="text-xs text-amber-850 leading-relaxed italic break-words">
               "We take great joy in announcing our upcoming event. We hope you will join us in celebrating this special occasion together."
@@ -2066,8 +2424,16 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Double column timeline */}
       {showProgram && (
-        <FadeInSection className="py-14 sm:py-20 bg-amber-50/10 border-y border-amber-200 text-left">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        <FadeInSection className="py-14 sm:py-20 bg-amber-50/10 border-y border-amber-200 text-left relative overflow-hidden">
+          {/* Parallax Gold Vine Accent */}
+          <motion.img 
+            style={{ y: parallaxYReverse }}
+            src="/IMG-20260728-WA0007.png" 
+            className="absolute top-4 right-4 w-12 sm:w-16 h-auto object-contain pointer-events-none opacity-40 mix-blend-multiply z-10" 
+            alt="Gold Vine" 
+          />
+
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 relative z-20">
             <h2 className="text-lg sm:text-2xl font-bold text-amber-950 text-center uppercase tracking-wide mb-8 sm:mb-12 break-words">Event Schedule</h2>
             <InteractiveProgramTimeline
               steps={timelineSteps || []}
@@ -2082,8 +2448,16 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Gallery */}
       {event.galleryImages && event.galleryImages.length > 0 && (
-        <FadeInSection className="py-14 sm:py-20 bg-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        <FadeInSection className="py-14 sm:py-20 bg-white relative overflow-hidden">
+          {/* Parallax Ribbon Footer Accent */}
+          <motion.img 
+            style={{ y: parallaxYFast }}
+            src="/long-golden-ribbon-transparent.png" 
+            className="absolute -bottom-6 left-0 right-0 w-full h-auto max-h-20 object-contain pointer-events-none opacity-20 mix-blend-multiply z-10" 
+            alt="Golden Ribbon Accent" 
+          />
+
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-20">
             <h2 className="text-lg sm:text-2xl font-bold text-amber-950 uppercase tracking-wider mb-8 sm:mb-12 break-words">Photo Gallery</h2>
             <InteractiveGalleryGrid
               images={event.galleryImages || []}
@@ -2096,8 +2470,8 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
       )}
 
       {/* Venue Section (Traditional Heritage) */}
-      <FadeInSection className="py-14 sm:py-20 bg-white border-t border-amber-200 text-left">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+      <FadeInSection className="py-14 sm:py-20 bg-white border-t border-amber-200 text-left relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center relative z-20">
           <div>
             <span className="text-[9px] sm:text-[10px] tracking-widest text-amber-800 font-bold block mb-2 uppercase">Venue & Location</span>
             <h2 className="text-lg sm:text-2xl font-bold text-amber-950 uppercase mb-3 break-words">{getVenueFirstLine(event.venue)}</h2>
@@ -2167,8 +2541,8 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* RSVP Section */}
-      <FadeInSection id="rsvp-anchor" className="py-14 sm:py-20 bg-amber-50/20 border-t border-amber-200">
-        <div className="max-w-lg mx-auto px-4 sm:px-6">
+      <FadeInSection id="rsvp-anchor" className="py-14 sm:py-20 bg-amber-50/20 border-t border-amber-200 relative overflow-hidden">
+        <div className="max-w-lg mx-auto px-4 sm:px-6 relative z-20">
           <h2 className="text-lg sm:text-2xl font-bold text-amber-950 text-center uppercase mb-8 sm:mb-10 break-words">CONFIRM ATTENDANCE</h2>
  
           <RsvpForm
@@ -2182,8 +2556,8 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
       </FadeInSection>
 
       {/* Guestbook signature register */}
-      <FadeInSection className="py-14 sm:py-20 bg-white border-t border-amber-200">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-left">
+      <FadeInSection className="py-14 sm:py-20 bg-white border-t border-amber-200 relative overflow-hidden">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-left relative z-20">
           <h2 className="text-lg sm:text-2xl font-bold text-amber-950 text-center uppercase tracking-wide mb-8 sm:mb-12 break-words">Guestbook Messages</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {(guestbook || []).length === 0 ? (
@@ -2247,16 +2621,31 @@ const MinimalTheme: React.FC<ThemeRendererProps> = ({
 }) => {
   const isDeadlinePassed = event.rsvpDeadline ? isRsvpDeadlinePassed(event.rsvpDeadline) : false;
   const showProgram = event.type !== 'wedding' || isProgramRevealed(event.date);
+
+  const { scrollYProgress } = useScroll();
+  const parallaxYSlow = useTransform(scrollYProgress, [0, 1], [0, -25]);
+  const parallaxYMedium = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const parallaxYReverse = useTransform(scrollYProgress, [0, 1], [0, 30]);
+  const parallaxYFast = useTransform(scrollYProgress, [0, 1], [0, -80]);
+
   return (
-    <div className="flex-1 flex flex-col font-mono bg-white text-black text-left select-none p-4 sm:p-8 md:p-12 relative">
+    <div className="flex-1 flex flex-col font-mono bg-white text-black text-left select-none p-4 sm:p-8 md:p-12 relative overflow-hidden">
       <MinimalArchitecturalLines />
 
       {/* Brutalist Raw Stack */}
       <div className="max-w-4xl mx-auto w-full flex flex-col gap-8 sm:gap-12 font-mono text-xs relative z-10">
         
         {/* Hero Section */}
-        <header className="border-b border-black pb-8 sm:pb-12 flex flex-col gap-3 sm:gap-4">
-          <span className="text-[9px] text-stone-400 uppercase tracking-widest break-all">YOU ARE INVITED</span>
+        <header className="border-b border-black pb-8 sm:pb-12 flex flex-col gap-3 sm:gap-4 relative">
+          {/* Subtle Architectural Grid Overlay with Parallax */}
+          <motion.img 
+            style={{ y: parallaxYSlow }}
+            src="/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png" 
+            className="absolute -top-10 right-0 w-64 h-64 object-cover opacity-10 filter grayscale pointer-events-none" 
+            alt="Architectural Grid Accent" 
+          />
+
+          <span className="text-[9px] text-stone-400 uppercase tracking-widest break-all relative z-10">YOU ARE INVITED</span>
 
           <InteractiveEnvelopeHero
             title="INVITATION_RECORD"
@@ -2265,20 +2654,20 @@ const MinimalTheme: React.FC<ThemeRendererProps> = ({
             accentColor="#000000"
           />
 
-          <h1 className="text-2xl sm:text-5xl md:text-6xl uppercase tracking-widest font-bold text-black leading-tight sm:leading-none my-2 sm:my-4 break-words">
+          <h1 className="text-2xl sm:text-5xl md:text-6xl uppercase tracking-widest font-bold text-black leading-tight sm:leading-none my-2 sm:my-4 break-words relative z-10">
             {event.type === 'wedding' ? `${event.brideName} & ${event.groomName}` : event.birthdayPerson}
           </h1>
-          <p className="leading-relaxed text-black max-w-xl border-l-2 border-black pl-3 sm:pl-4 break-words">
+          <p className="leading-relaxed text-black max-w-xl border-l-2 border-black pl-3 sm:pl-4 break-words relative z-10">
             {event.description}
           </p>
-          <div className="flex flex-col gap-1 text-[10px] mt-2 text-stone-500 font-mono">
+          <div className="flex flex-col gap-1 text-[10px] mt-2 text-stone-500 font-mono relative z-10">
             <div>DATE: {formatDateSafe(event.date)}</div>
             <div>TIME: {event.time} PM</div>
           </div>
         </header>
 
         {/* Countdown Ticker */}
-        <FadeInSection className="border-b border-black pb-8 sm:pb-12">
+        <FadeInSection className="border-b border-black pb-8 sm:pb-12 relative overflow-hidden">
           <span className="text-[9px] uppercase tracking-widest text-stone-400 block mb-3">TIME REMAINING</span>
           <div className="flex justify-start overflow-x-auto pb-2">
             <Countdown targetDate={`${event.date || ''}T${event.time || ''}:00`} themeFontHeading="font-mono font-bold" themeColor="#000000" />
@@ -2286,9 +2675,15 @@ const MinimalTheme: React.FC<ThemeRendererProps> = ({
         </FadeInSection>
 
         {/* Narrative */}
-        <FadeInSection className="border-b border-black pb-8 sm:pb-12">
+        <FadeInSection className="border-b border-black pb-8 sm:pb-12 relative overflow-hidden">
+          {/* Parallax Minimal Corner Marker */}
+          <motion.div 
+            style={{ y: parallaxYMedium }}
+            className="absolute top-0 right-0 w-16 h-16 border-t border-r border-black/30 pointer-events-none" 
+          />
+
           <span className="text-[9px] uppercase tracking-widest text-stone-400 block mb-4">ABOUT THE EVENT</span>
-          <p className="leading-relaxed max-w-xl break-words">
+          <p className="leading-relaxed max-w-xl break-words relative z-10">
             We look forward to celebrating this event with you. Please review the schedule and venue details below, and confirm your attendance using the RSVP form.
           </p>
         </FadeInSection>
