@@ -41,7 +41,8 @@ export default defineConfig(() => {
       },
     },
     define: {
-      'process.env.GOOGLE_MAPS_PLATFORM_KEY': JSON.stringify(googleMapsKey),
+      'import.meta.env.VITE_GOOGLE_MAPS_PLATFORM_KEY': JSON.stringify(googleMapsKey),
+      'import.meta.env.GOOGLE_MAPS_PLATFORM_KEY': JSON.stringify(googleMapsKey),
     },
     server: {
       host: '0.0.0.0',
