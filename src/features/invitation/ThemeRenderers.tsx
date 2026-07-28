@@ -378,7 +378,7 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
             accentColor="#D4AF37"
           />
 
-          {/* Majestic Monogram Frame with Gold Wreath (10.png) */}
+          {/* Majestic Monogram Frame with Gold Wreath */}
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -386,16 +386,16 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
             className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full border-2 border-[#D4AF37] p-1.5 sm:p-2 bg-[#2C2C2C] shadow-[0_0_30px_rgba(212,175,55,0.3)] mt-2 flex items-center justify-center"
           >
             {/* Real Gold Wreath Ring overlay from public asset library */}
-            <img src="/10.png" className="absolute -inset-6 w-[calc(100%+3rem)] h-[calc(100%+3rem)] object-contain pointer-events-none drop-shadow-lg mix-blend-screen opacity-90 animate-pulse" alt="Gold Wreath Frame" />
+            <img src="/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png" className="absolute -inset-6 w-[calc(100%+3rem)] h-[calc(100%+3rem)] object-contain pointer-events-none drop-shadow-lg mix-blend-screen opacity-90 animate-pulse" alt="Gold Wreath Frame" />
             
             <div className="w-full h-full rounded-full border border-[#D4AF37]/50 overflow-hidden relative z-10">
               <img src={event.coverImage} className="w-full h-full object-cover rounded-full filter hover:scale-110 transition-transform duration-700" alt="Portrait" />
             </div>
           </motion.div>
 
-          {/* Royal Gold Crest Ornament (9.png) */}
+          {/* Royal Gold Crest Ornament */}
           <div className="w-28 sm:w-36 h-auto my-1 opacity-90">
-            <img src="/9.png" className="w-full h-auto object-contain filter drop-shadow-md" alt="Gold Crest Ornament" />
+            <img src="/ChatGPT Image Jul 28, 2026, 12_21_45 PM.png" className="w-full h-auto object-contain filter drop-shadow-md" alt="Gold Crest Ornament" />
           </div>
 
           <h1 className="text-2xl sm:text-4xl md:text-6xl font-luxury-heading tracking-wide text-white leading-tight mt-1 sm:mt-2 break-words max-w-full">
@@ -765,9 +765,9 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
           {/* Right Block - Portrait layout Lookbook */}
           <div className="flex items-center justify-center w-full md:w-2/5">
             <div className="relative p-2.5 sm:p-3 bg-[#F7F7F7] border border-[#C0C0C0]/30 max-w-[280px] sm:max-w-[320px] w-full aspect-[3/4] shadow-sm flex flex-col justify-between overflow-hidden">
-              {/* Real Silver Filigree Accent (1.png) */}
-              <img src="/1.png" className="absolute -top-4 -right-4 w-28 h-28 object-contain pointer-events-none opacity-30 mix-blend-multiply" alt="Filigree Corner" />
-              <img src="/1.png" className="absolute -bottom-4 -left-4 w-28 h-28 object-contain pointer-events-none opacity-30 mix-blend-multiply rotate-180" alt="Filigree Corner" />
+              {/* Real Silver & Gold Lace Corner Accents */}
+              <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-4 -right-4 w-28 h-28 object-contain pointer-events-none opacity-30 mix-blend-multiply" alt="Filigree Corner" />
+              <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -bottom-4 -left-4 w-28 h-28 object-contain pointer-events-none opacity-30 mix-blend-multiply rotate-180" alt="Filigree Corner" />
 
               <div className="w-full h-[90%] overflow-hidden bg-white z-10 relative">
                 <img src={event.coverImage} className="w-full h-full object-cover filter grayscale contrast-115 transition-all duration-700 hover:grayscale-0" alt="Editorial Frame" />
@@ -1045,8 +1045,8 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
         
         {/* Tile 1: Master Hero card (span 8) in Deep Navy */}
         <div className="md:col-span-8 bg-[#1A2B4A] text-[#FAF8F3] rounded-2xl p-5 sm:p-8 md:p-12 border border-[#C9A961]/40 shadow-xl flex flex-col justify-between min-h-[300px] sm:min-h-[360px] relative overflow-hidden group">
-          {/* Real Art Deco Geometric Frame Overlay (7.png) */}
-          <img src="/7.png" className="absolute inset-0 w-full h-full object-cover opacity-15 mix-blend-screen pointer-events-none" alt="Geometric Frame" />
+          {/* Real Art Deco Geometric Frame Overlay */}
+          <img src="/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png" className="absolute inset-0 w-full h-full object-cover opacity-15 mix-blend-screen pointer-events-none" alt="Geometric Frame" />
           
           {/* Subtle geometric line overlays */}
           <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 border-b border-l border-[#C9A961]/20 rounded-bl-full pointer-events-none" />
@@ -1415,8 +1415,8 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
             <div className="absolute inset-1.5 sm:inset-2 border border-dashed border-[#D4C4B0]/60 rounded-xl pointer-events-none" />
             
             {/* Real Eucalyptus Garland Arch Overlay */}
-            <img src="/4.png" className="absolute top-0 left-0 right-0 w-full h-auto max-h-24 object-cover opacity-25 mix-blend-multiply pointer-events-none" alt="Botanical Garland" />
-            <img src="/6.png" className="absolute bottom-0 right-0 w-32 h-32 object-contain opacity-20 mix-blend-multiply pointer-events-none" alt="Sage Leaves" />
+            <img src="/IMG-20260728-WA0005.png" className="absolute top-0 left-0 right-0 w-full h-auto max-h-24 object-cover opacity-25 mix-blend-multiply pointer-events-none" alt="Botanical Garland" />
+            <img src="/IMG-20260728-WA0003.png" className="absolute bottom-0 right-0 w-32 h-32 object-contain opacity-20 mix-blend-multiply pointer-events-none" alt="Sage Leaves" />
 
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-rustic-heading text-[#5C4033] tracking-tight leading-tight sm:leading-none font-bold break-words relative z-10 pt-4">
               {event.type === 'wedding' ? (
@@ -1700,8 +1700,8 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
 
       {/* Whimsical Romantic Arch Hero */}
       <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 text-center border-b border-[#F4E4E6] bg-[#FFF9F5] overflow-hidden">
-        {/* Hanging Lavender Canopy Overlay (12.png) */}
-        <img src="/12.png" className="absolute top-0 left-0 right-0 w-full h-auto max-h-40 object-cover opacity-35 mix-blend-multiply pointer-events-none z-0" alt="Hanging Lavender Canopy" />
+        {/* Hanging Lavender & Rose Canopy Overlay */}
+        <img src="/IMG-20260728-WA0011.png" className="absolute top-0 left-0 right-0 w-full h-auto max-h-40 object-cover opacity-35 mix-blend-multiply pointer-events-none z-0" alt="Hanging Lavender Canopy" />
 
         {/* Subtle romantic organic backdrop graphics */}
         <div className="absolute top-0 right-0 w-60 sm:w-80 h-60 sm:h-80 rounded-full bg-[#F4E4E6]/45 blur-3xl -z-10 pointer-events-none" />
@@ -1721,9 +1721,9 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
             accentColor="#C97064"
           />
           
-          {/* Portrait Curved Arch Frame with Rose Arch Overlay (3.png) */}
+          {/* Portrait Curved Arch Frame with Dusty Rose Arch Overlay */}
           <div className="relative my-2 sm:my-4">
-            <img src="/3.png" className="absolute -top-12 -left-12 -right-12 w-[calc(100%+6rem)] max-w-none h-auto object-contain pointer-events-none z-20 mix-blend-multiply opacity-90" alt="Rose Floral Arch" />
+            <img src="/IMG-20260728-WA0014.png" className="absolute -top-12 -left-12 -right-12 w-[calc(100%+6rem)] max-w-none h-auto object-contain pointer-events-none z-20 mix-blend-multiply opacity-90" alt="Rose Floral Arch" />
             
             <div className="w-48 sm:w-60 h-64 sm:h-80 rounded-t-full border-4 border-[#F4E4E6] p-2 bg-white shadow-xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-500 relative z-10">
               <img src={event.coverImage} className="w-full h-full object-cover rounded-t-full" alt="Lush Romantic Arch Portrait" />
@@ -2025,16 +2025,16 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
             accentColor="#78350f"
           />
           
-          {/* Print Stock Card with Terracotta Filigree Frame (8.png) */}
+          {/* Print Stock Card with Terracotta Filigree Frame */}
           <div className="p-5 sm:p-8 border-4 border-double border-amber-900/30 bg-white shadow-md w-full flex flex-col gap-4 relative overflow-hidden">
             {/* Real Terracotta Filigree Arch Background Overlay */}
-            <img src="/8.png" className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-multiply pointer-events-none" alt="Terracotta Arch Frame" />
+            <img src="/IMG-20260728-WA0002.png" className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-multiply pointer-events-none" alt="Terracotta Arch Frame" />
 
             <div className="relative z-10 flex flex-col items-center">
               <span className="text-amber-800 text-xs tracking-widest uppercase font-serif block mb-1">Heritage Crest</span>
               
-              {/* Vertical Gold Vine Divider (11.png) */}
-              <img src="/11.png" className="w-6 h-12 object-contain opacity-60 my-1" alt="Gold Vine Ornament" />
+              {/* Vertical Gold Vine Divider */}
+              <img src="/IMG-20260728-WA0007.png" className="w-6 h-12 object-contain opacity-60 my-1" alt="Gold Vine Ornament" />
 
               <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-amber-950 uppercase leading-tight sm:leading-none break-words my-2">
                 {event.type === 'wedding' ? `${event.brideName} & ${event.groomName}` : event.birthdayPerson}

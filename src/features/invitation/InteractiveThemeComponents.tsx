@@ -335,7 +335,7 @@ export const InteractiveEnvelopeHero: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
 
   // Asset selection according to theme
-  const envelopeBgImage = themeId === 'floral' ? '/5.png' : themeId === 'rustic' ? '/flowers.png' : '/13.png';
+  const envelopeBgImage = themeId === 'floral' ? '/IMG-20260728-WA0014.png' : themeId === 'rustic' ? '/IMG-20260728-WA0005.png' : '/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png';
 
   return (
     <div className="w-full flex flex-col items-center justify-center my-4">
@@ -366,11 +366,11 @@ export const InteractiveEnvelopeHero: React.FC<{
             className="mt-4 p-6 sm:p-8 rounded-2xl bg-white/95 shadow-2xl border border-stone-200 max-w-lg w-full text-center space-y-4 overflow-hidden relative"
           >
             {/* Background texture from public */}
-            <div className="absolute inset-0 opacity-10 mix-blend-multiply pointer-events-none" style={{ backgroundImage: `url(${envelopeBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+            <div className="absolute inset-0 opacity-10 mix-blend-multiply pointer-events-none" style={{ backgroundImage: `url("${envelopeBgImage}")`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
 
             <div className="relative z-10 flex flex-col items-center space-y-3">
               <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-amber-300 via-amber-500 to-amber-200 shadow-md">
-                <img src="/istockphoto-1426222506-612x612.jpg" className="w-full h-full rounded-full object-cover" alt="Gold Rings" />
+                <img src="/IMG-20260728-WA0003.png" className="w-full h-full rounded-full object-cover" alt="Botanical Ring Seal" />
               </div>
 
               <h4 className="text-base font-bold text-stone-900 uppercase tracking-widest">{title}</h4>
@@ -405,17 +405,17 @@ export const GoldShimmerParticles: React.FC = () => {
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-[#D4AF37]/20 via-[#FFF3A8]/10 to-transparent blur-3xl"
       />
-      {/* Floating 10.png Gold Wreath Watermark */}
+      {/* Floating Gold Wreath Watermark */}
       <motion.img
-        src="/10.png"
+        src="/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png"
         alt=""
         animate={{ rotate: [0, 360] }}
         transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
         className="absolute -top-16 -left-16 w-64 h-64 opacity-15 mix-blend-screen"
       />
-      {/* Floating 9.png Gold Crest Watermark */}
+      {/* Floating Gold Crest Watermark */}
       <motion.img
-        src="/9.png"
+        src="/ChatGPT Image Jul 28, 2026, 12_21_45 PM.png"
         alt=""
         animate={{ y: [0, 15, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
@@ -431,10 +431,10 @@ export const PearlescentFlourishBG: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <div 
         className="absolute inset-0 opacity-15 mix-blend-multiply" 
-        style={{ backgroundImage: `url(/13.png)`, backgroundSize: 'cover' }} 
+        style={{ backgroundImage: `url("/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png")`, backgroundSize: 'cover' }} 
       />
       <motion.img
-        src="/1.png"
+        src="/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png"
         alt=""
         animate={{ opacity: [0.1, 0.25, 0.1] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
@@ -449,7 +449,7 @@ export const GeometricGridLinesBG: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <motion.img
-        src="/7.png"
+        src="/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png"
         alt=""
         animate={{ opacity: [0.08, 0.18, 0.08] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
@@ -464,14 +464,14 @@ export const FallingLeavesBG: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <motion.img
-        src="/6.png"
+        src="/IMG-20260728-WA0003.png"
         alt=""
         animate={{ y: [0, 12, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute top-0 left-0 w-full max-w-xl opacity-20 mix-blend-multiply"
       />
       <motion.img
-        src="/4.png"
+        src="/IMG-20260728-WA0005.png"
         alt=""
         animate={{ y: [0, -12, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
@@ -487,10 +487,10 @@ export const FloatingPetalsBG: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <div 
         className="absolute inset-0 opacity-25 mix-blend-multiply"
-        style={{ backgroundImage: `url(/5.png)`, backgroundSize: 'cover' }}
+        style={{ backgroundImage: `url("/IMG-20260728-WA0014.png")`, backgroundSize: 'cover' }}
       />
       <motion.img
-        src="/12.png"
+        src="/IMG-20260728-WA0011.png"
         alt=""
         animate={{ y: [-5, 10, -5] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
@@ -505,7 +505,7 @@ export const FiligreeMandalaBG: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 opacity-25 flex items-center justify-center">
       <motion.img
-        src="/8.png"
+        src="/IMG-20260728-WA0007.png"
         alt=""
         animate={{ scale: [1, 1.03, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
@@ -521,7 +521,7 @@ export const MinimalArchitecturalLines: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 opacity-20">
       <div 
         className="w-full h-full"
-        style={{ backgroundImage: `url(/13.png)`, backgroundSize: 'cover' }}
+        style={{ backgroundImage: `url("/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png")`, backgroundSize: 'cover' }}
       />
     </div>
   );

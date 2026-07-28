@@ -16,39 +16,39 @@ interface ThemeLibraryModalProps {
 // Map each ThemeId to a gorgeous custom visual thumbnail representing that specific design archetype
 const THEME_THUMBNAILS: Record<ThemeId, { image: string; tag: string; features: string[] }> = {
   luxury: {
-    image: '/10.png',
-    tag: 'Gold & Metallic Wreath',
-    features: ['Gold Wreath Monogram', 'Royal Gold Crest', 'Shimmering Art Deco Frame']
+    image: '/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png',
+    tag: 'Gold Wreath & Crest',
+    features: ['Royal Gold Crest Wreath', 'Majestic Gold Scrollwork', 'Shimmering Metallic Frame']
   },
   elegant: {
-    image: '/1.png',
-    tag: 'Pristine Filigree',
-    features: ['Silver Filigree Corners', 'Tactile Linen Texture', 'High Couture Editorial']
+    image: '/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png',
+    tag: 'Ivory Botanical Lace',
+    features: ['Ivory Botanical Lace Border', 'Subtle Parchment Vignette', 'Couture Monogram Seal']
   },
   modern: {
-    image: '/7.png',
-    tag: 'Geometric Bronze',
-    features: ['Bronze Geometric Frame', 'Art Deco Vertical Lines', 'Cobalt & Gold Contrast']
+    image: '/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png',
+    tag: 'Geometric Gold Vines',
+    features: ['Geometric Gold Vine Frame', 'Refined Minimal Scrollwork', 'Cobalt & Gold Contrast']
   },
   rustic: {
-    image: '/4.png',
-    tag: 'Sage & Eucalyptus',
-    features: ['Dense Botanical Greenery', 'Sage Leaf Arch Garland', 'Deckled Board Cards']
+    image: '/IMG-20260728-WA0005.png',
+    tag: 'Eucalyptus Garland',
+    features: ['Sage Eucalyptus Garland', 'Botanical Leaf Arch', 'Organic Leaf Wreath']
   },
   floral: {
-    image: '/flowers.png',
-    tag: 'Watercolor Peonies',
-    features: ['Masterpiece Floral Banner', 'Dusty Rose Watercolor Wash', 'Hanging Lavender Canopy']
+    image: '/IMG-20260728-WA0014.png',
+    tag: 'Dusty Rose Botanical',
+    features: ['Dusty Rose Floral Arch', 'Blush Rose Corner Accents', 'Lavender Bottom Garland']
   },
   traditional: {
-    image: '/8.png',
-    tag: 'Earthy Terracotta',
-    features: ['Terracotta Arch Frame', 'Traditional Gold Crest', 'Mahogany & Sand Tones']
+    image: '/IMG-20260728-WA0007.png',
+    tag: 'Heritage Gold Scroll',
+    features: ['Traditional Gold Vine Scroll', 'Royal Crest Ornament', 'Mahogany & Sand Accents']
   },
   minimal: {
-    image: '/13.png',
-    tag: 'Pure Type & Linen',
-    features: ['Subtle Linen Texture', 'Architectural Type Ratio', 'Spacious Negative Space']
+    image: '/IMG-20260728-WA0003.png',
+    tag: 'Minimal Botanical Ring',
+    features: ['Restrained Monogram Ring', 'Spacious Negative Space', 'Crisp Type Hierarchy']
   }
 };
 
