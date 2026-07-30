@@ -529,15 +529,41 @@ export const mockApi = {
 
   // Events API
   async getEvents(): Promise<EventModel[]> {
-    await delay(400);
-    const eventsStr = localStorage.getItem('event_platform_events') || '[]';
-    const events: EventModel[] = JSON.parse(eventsStr);
-    
+    await delay(300);
+    let localEvents: EventModel[] = [];
+    try {
+      const eventsStr = localStorage.getItem('event_platform_events') || '[]';
+      localEvents = JSON.parse(eventsStr);
+    } catch (e) {
+      localEvents = [];
+    }
+
+    // Sync events from Firestore to ensure multi-device & public availability
+    try {
+      const eventsSnap = await getDocs(collection(db, 'events'));
+      if (!eventsSnap.empty) {
+        const firestoreEvents: EventModel[] = [];
+        eventsSnap.forEach(docSnap => {
+          firestoreEvents.push({ id: docSnap.id, ...docSnap.data() } as EventModel);
+        });
+
+        const eventMap = new Map<string, EventModel>();
+        localEvents.forEach(e => eventMap.set(e.id, e));
+        firestoreEvents.forEach(e => eventMap.set(e.id, e));
+
+        const mergedEvents = Array.from(eventMap.values());
+        localStorage.setItem('event_platform_events', JSON.stringify(mergedEvents));
+        localEvents = mergedEvents;
+      }
+    } catch (e) {
+      console.warn("Firestore sync skipped in getEvents:", e);
+    }
+
     // Recalculate guest count & rsvp count dynamically from guests table
     const guestsStr = localStorage.getItem('event_platform_guests') || '[]';
     const guests: Guest[] = JSON.parse(guestsStr);
 
-    return events.map(evt => {
+    return localEvents.map(evt => {
       const evtGuests = guests.filter(g => g.eventId === evt.id);
       return {
         ...evt,
@@ -548,13 +574,117 @@ export const mockApi = {
   },
 
   async getEventById(id: string): Promise<EventModel | null> {
-    await delay(250);
+    await delay(150);
+    if (!id) return null;
+    let decodedId = id;
+    try {
+      decodedId = decodeURIComponent(id);
+    } catch (e) {
+      // ignore decode error
+    }
+    const cleanId = decodedId.trim().toLowerCase().replace(/^\/+/, '').replace(/\/+$/, '');
+    const alphaNum = cleanId.replace(/[^a-z0-9]/g, '');
+
+    if (!cleanId) return null;
+
+    // Helper to cache event into localStorage so future lookups find it instantly
+    const cacheEvent = (evt: EventModel) => {
+      try {
+        const eventsStr = localStorage.getItem('event_platform_events') || '[]';
+        const currEvents: EventModel[] = JSON.parse(eventsStr);
+        const idx = currEvents.findIndex(e => e.id === evt.id);
+        if (idx >= 0) {
+          currEvents[idx] = { ...currEvents[idx], ...evt };
+        } else {
+          currEvents.push(evt);
+        }
+        localStorage.setItem('event_platform_events', JSON.stringify(currEvents));
+      } catch (e) {
+        // ignore storage error
+      }
+    };
+
+    // 1. Search in memory / local state
     const events = await this.getEvents();
-    return events.find(e => 
-      e.id === id || 
-      e.clientNumber === id || 
-      (e.slug && e.slug.toLowerCase() === id.toLowerCase())
-    ) || null;
+    
+    let matched = events.find(e => {
+      const eId = (e.id || '').toLowerCase();
+      const eNum = (e.clientNumber || '').toLowerCase();
+      const eSlug = (e.slug || '').toLowerCase();
+      const eSlugAlpha = eSlug.replace(/[^a-z0-9]/g, '');
+
+      return (
+        eId === cleanId ||
+        (eNum && eNum === cleanId) ||
+        (eSlug && eSlug === cleanId) ||
+        (eSlug && eSlug.replace(/_/g, '-') === cleanId.replace(/_/g, '-')) ||
+        (eSlug && eSlug.replace(/-/g, '_') === cleanId.replace(/-/g, '_')) ||
+        (alphaNum.length > 0 && eSlugAlpha === alphaNum)
+      );
+    });
+
+    if (matched) return matched;
+
+    // 2. Query Firestore directly by slug field
+    try {
+      const slugQuery = query(collection(db, 'events'), where('slug', '==', cleanId));
+      const slugSnap = await getDocs(slugQuery);
+      if (!slugSnap.empty) {
+        const docSnap = slugSnap.docs[0];
+        const evt = { id: docSnap.id, ...docSnap.data() } as EventModel;
+        cacheEvent(evt);
+        return evt;
+      }
+
+      // Try slug with _ or - swapped (e.g., lulu_n_muzi vs lulu-n-muzi)
+      const swappedSlug = cleanId.includes('_') ? cleanId.replace(/_/g, '-') : cleanId.replace(/-/g, '_');
+      if (swappedSlug !== cleanId) {
+        const swappedQuery = query(collection(db, 'events'), where('slug', '==', swappedSlug));
+        const swappedSnap = await getDocs(swappedQuery);
+        if (!swappedSnap.empty) {
+          const docSnap = swappedSnap.docs[0];
+          const evt = { id: docSnap.id, ...docSnap.data() } as EventModel;
+          cacheEvent(evt);
+          return evt;
+        }
+      }
+
+      // Try clientNumber
+      const numQuery = query(collection(db, 'events'), where('clientNumber', '==', cleanId));
+      const numSnap = await getDocs(numQuery);
+      if (!numSnap.empty) {
+        const docSnap = numSnap.docs[0];
+        const evt = { id: docSnap.id, ...docSnap.data() } as EventModel;
+        cacheEvent(evt);
+        return evt;
+      }
+
+      // Try direct Document ID
+      const eventDoc = await getDoc(doc(db, 'events', cleanId));
+      if (eventDoc.exists()) {
+        const evt = { id: eventDoc.id, ...eventDoc.data() } as EventModel;
+        cacheEvent(evt);
+        return evt;
+      }
+
+      // Broad scan of Firestore events for normalized match
+      if (alphaNum.length > 0) {
+        const allSnap = await getDocs(collection(db, 'events'));
+        for (const d of allSnap.docs) {
+          const data = d.data() as EventModel;
+          const fsSlugAlpha = (data.slug || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (fsSlugAlpha === alphaNum) {
+            const evt = { id: d.id, ...data };
+            cacheEvent(evt);
+            return evt;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Firestore slug fallback search failed:", e);
+    }
+
+    return null;
   },
 
   async createEvent(eventData: Omit<EventModel, 'id' | 'createdAt' | 'clientId' | 'guestCount' | 'rsvpCount'>): Promise<EventModel> {
@@ -662,10 +792,34 @@ export const mockApi = {
 
   // Guests API
   async getGuests(eventId: string): Promise<Guest[]> {
-    await delay(300);
-    const guestsStr = localStorage.getItem('event_platform_guests') || '[]';
-    const guests: Guest[] = JSON.parse(guestsStr);
-    return guests.filter(g => g.eventId === eventId);
+    await delay(200);
+    let localGuests: Guest[] = [];
+    try {
+      const guestsStr = localStorage.getItem('event_platform_guests') || '[]';
+      localGuests = JSON.parse(guestsStr);
+    } catch (e) {
+      localGuests = [];
+    }
+
+    try {
+      const guestsSnap = await getDocs(collection(db, 'events', eventId, 'guests'));
+      if (!guestsSnap.empty) {
+        const fsGuests: Guest[] = [];
+        guestsSnap.forEach(d => fsGuests.push({ id: d.id, ...d.data() } as Guest));
+
+        const guestMap = new Map<string, Guest>();
+        localGuests.forEach(g => guestMap.set(g.id, g));
+        fsGuests.forEach(g => guestMap.set(g.id, g));
+
+        const merged = Array.from(guestMap.values());
+        localStorage.setItem('event_platform_guests', JSON.stringify(merged));
+        localGuests = merged;
+      }
+    } catch (e) {
+      console.warn("Firestore guests sync warning:", e);
+    }
+
+    return localGuests.filter(g => g.eventId === eventId);
   },
 
   async getAllGuests(): Promise<Guest[]> {
@@ -793,9 +947,33 @@ export const mockApi = {
   // Guestbook API
   async getGuestbook(eventId: string): Promise<GuestbookEntry[]> {
     await delay(200);
-    const entriesStr = localStorage.getItem('event_platform_guestbook') || '[]';
-    const entries: GuestbookEntry[] = JSON.parse(entriesStr);
-    return entries.filter(e => e.eventId === eventId);
+    let localEntries: GuestbookEntry[] = [];
+    try {
+      const entriesStr = localStorage.getItem('event_platform_guestbook') || '[]';
+      localEntries = JSON.parse(entriesStr);
+    } catch (e) {
+      localEntries = [];
+    }
+
+    try {
+      const gbSnap = await getDocs(collection(db, 'events', eventId, 'guestbook'));
+      if (!gbSnap.empty) {
+        const fsEntries: GuestbookEntry[] = [];
+        gbSnap.forEach(d => fsEntries.push({ id: d.id, ...d.data() } as GuestbookEntry));
+
+        const entryMap = new Map<string, GuestbookEntry>();
+        localEntries.forEach(e => entryMap.set(e.id, e));
+        fsEntries.forEach(e => entryMap.set(e.id, e));
+
+        const merged = Array.from(entryMap.values());
+        localStorage.setItem('event_platform_guestbook', JSON.stringify(merged));
+        localEntries = merged;
+      }
+    } catch (e) {
+      console.warn("Firestore guestbook sync warning:", e);
+    }
+
+    return localEntries.filter(e => e.eventId === eventId);
   },
 
   async getGuestbookEntries(eventId: string): Promise<GuestbookEntry[]> {

@@ -105,11 +105,11 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
         const matchedEvent = await mockApi.getEventById(eventId);
         if (matchedEvent) {
           setEvent(matchedEvent);
-          const gb = await mockApi.getGuestbook(eventId);
+          const gb = await mockApi.getGuestbook(matchedEvent.id);
           setGuestbook(gb);
 
           // Load Event Guests to allow interactive switching
-          const allGuests = await mockApi.getGuests(eventId);
+          const allGuests = await mockApi.getGuests(matchedEvent.id);
           setAvailableGuests(allGuests);
 
           // Find current guest
@@ -127,7 +127,7 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
                   invitationOpened: true,
                   lastOpenedTime: new Date().toISOString()
                 });
-                mockApi.addRecentActivity(eventId, matchedGuest.name, 'opened_invitation', 'opened the invitation microsite');
+                mockApi.addRecentActivity(matchedEvent.id, matchedGuest.name, 'opened_invitation', 'opened the invitation microsite');
               }
             }
           } else {
@@ -218,21 +218,42 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
 
   if (!event) {
     return (
-      <div className="py-24 text-center bg-stone-50 min-h-screen flex flex-col items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white dark:bg-stone-900 border border-zinc-200 dark:border-stone-850 rounded-2xl p-8 shadow-sm">
-          <div className="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center mx-auto mb-4">
-            <span className="text-xl font-bold text-amber-600">?</span>
+      <div className="py-24 text-center bg-stone-50 dark:bg-stone-950 min-h-screen flex flex-col items-center justify-center px-4 font-sans">
+        <div className="max-w-md w-full bg-white dark:bg-stone-900 border border-zinc-200 dark:border-stone-800 rounded-3xl p-8 shadow-xl relative overflow-hidden">
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4 text-amber-600 dark:text-amber-400">
+            <span className="text-2xl font-black">?</span>
           </div>
-          <h2 className="text-lg font-bold text-zinc-800 dark:text-stone-100 mb-2">Microsite Not Found</h2>
+          <span className="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-widest inline-block mb-3">
+            Microsite Not Found
+          </span>
+          <h2 className="text-xl font-bold font-serif text-zinc-900 dark:text-stone-100 mb-2">Invalid or Missing Event URL</h2>
           <p className="text-xs text-zinc-500 dark:text-stone-400 mb-6 leading-relaxed">
-            The celebration microsite with reference or custom URL <code className="bg-stone-100 dark:bg-stone-950 px-1.5 py-0.5 rounded font-mono font-semibold">/{eventId}</code> was not found. Please verify the URL, or register a new site slug in your dashboard.
+            The celebration microsite for address <code className="bg-stone-100 dark:bg-stone-950 px-2 py-0.5 rounded font-mono font-bold text-amber-600 dark:text-amber-400">/{eventId}</code> could not be located in our database.
           </p>
-          <a
-            href="/"
-            className="inline-flex justify-center items-center w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-5 py-3 rounded-xl transition-all"
-          >
-            Go to SaaS Console
-          </a>
+
+          <div className="p-4 bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-2xl text-[11px] text-zinc-600 dark:text-stone-300 mb-6 text-left space-y-2 font-mono">
+            <span className="text-stone-400 dark:text-stone-500 font-bold uppercase text-[9px] block">Troubleshooting Suggestions:</span>
+            <ul className="list-disc list-inside space-y-1 text-[11px] font-sans">
+              <li>Check for spelling typos or spaces in the URL (e.g. <code className="font-mono font-bold">lulu_n_muzi</code> vs <code className="font-mono font-bold">lulu-n-muzi</code>).</li>
+              <li>Verify that the event proposal has been created and saved in your account.</li>
+              <li>If created recently, ensure design approval or publication status is active.</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2.5">
+            <button
+              onClick={() => window.location.reload()}
+              className="flex-1 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-750 text-zinc-800 dark:text-stone-200 font-bold text-xs px-4 py-3 rounded-xl transition-all border border-stone-200 dark:border-stone-700"
+            >
+              Retry Connection
+            </button>
+            <a
+              href="/"
+              className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-4 py-3 rounded-xl transition-all shadow-md text-center"
+            >
+              Back to SaaS Console
+            </a>
+          </div>
         </div>
       </div>
     );
