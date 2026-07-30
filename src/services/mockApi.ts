@@ -334,6 +334,7 @@ export const mockApi = {
     if (refreshed) {
       if (refreshed.isBlocked) {
         localStorage.removeItem('event_platform_current_user');
+        localStorage.removeItem('pamsevents_logged_in_user');
         localStorage.removeItem('wokemedia_logged_in_user');
         return null;
       }
@@ -364,13 +365,14 @@ export const mockApi = {
 
     // Keep logged-in user state in sync across keys
     localStorage.setItem('event_platform_current_user', JSON.stringify(matchedUser));
-    localStorage.setItem('wokemedia_logged_in_user', JSON.stringify(matchedUser));
+    localStorage.setItem('pamsevents_logged_in_user', JSON.stringify(matchedUser));
     return matchedUser;
   },
 
   async logout(): Promise<void> {
     await delay(100);
     localStorage.removeItem('event_platform_current_user');
+    localStorage.removeItem('pamsevents_logged_in_user');
     localStorage.removeItem('wokemedia_logged_in_user');
   },
 

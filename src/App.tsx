@@ -24,7 +24,7 @@ import { Toast, ToastType } from './components/Toast';
 import { User } from './types';
 
 const readStoredUser = (): User | null => {
-  const storedUser = localStorage.getItem('wokemedia_logged_in_user');
+  const storedUser = localStorage.getItem('pamsevents_logged_in_user') || localStorage.getItem('wokemedia_logged_in_user');
 
   if (!storedUser) {
     return null;
@@ -33,6 +33,7 @@ const readStoredUser = (): User | null => {
   try {
     return JSON.parse(storedUser) as User;
   } catch {
+    localStorage.removeItem('pamsevents_logged_in_user');
     localStorage.removeItem('wokemedia_logged_in_user');
     return null;
   }
@@ -41,7 +42,7 @@ const readStoredUser = (): User | null => {
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => readStoredUser());
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const stored = localStorage.getItem('wokemedia_theme');
+    const stored = localStorage.getItem('pamsevents_theme') || localStorage.getItem('wokemedia_theme');
     if (stored === 'dark' || stored === 'light') return stored;
     return 'light';
   });
@@ -54,7 +55,7 @@ export default function App() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('wokemedia_theme', theme);
+    localStorage.setItem('pamsevents_theme', theme);
   }, [theme]);
 
   const triggerToast = (text: string, type: ToastType = 'info') => {
@@ -234,12 +235,13 @@ function AppRoutes({
 
   const handleAuthSuccess = (user: User) => {
     setCurrentUser(user);
-    localStorage.setItem('wokemedia_logged_in_user', JSON.stringify(user));
+    localStorage.setItem('pamsevents_logged_in_user', JSON.stringify(user));
     triggerToast(`Welcome back, ${user.email}!`, 'success');
     navigate(user.role === 'admin' ? '/admin-dashboard' : '/client-dashboard', { replace: true });
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('pamsevents_logged_in_user');
     localStorage.removeItem('wokemedia_logged_in_user');
     setCurrentUser(null);
     triggerToast('Logged out of SaaS console successfully.', 'info');

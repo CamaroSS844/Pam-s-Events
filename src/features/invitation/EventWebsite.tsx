@@ -514,6 +514,7 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
           onClose={() => setIsPrintModalOpen(false)}
           event={event}
           guests={availableGuests.length > 0 ? availableGuests : (guest ? [guest] : [])}
+          isPublicInvitationView={true}
         />
       )}
 

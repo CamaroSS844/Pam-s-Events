@@ -5,9 +5,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, X, Music, MessageSquare, Phone, User, AlertTriangle, CheckCircle2, Clock, Trash2, Edit3, RotateCcw, Image, Camera, Upload } from 'lucide-react';
+import { Check, X, Music, MessageSquare, Phone, User, AlertTriangle, CheckCircle2, Clock, Trash2, Edit3, RotateCcw, Camera, Upload, Info } from 'lucide-react';
 import { EventModel, Guest } from '../../types';
 import { mockApi } from '../../services/mockApi';
+import { COUNTRY_CODES, DEFAULT_COUNTRY, CountryCodeInfo, normalizePhoneNumber, validatePhoneNumber, parsePhoneForDisplay } from '../../utils/phoneUtils';
 
 interface RsvpFormProps {
   event: EventModel;
@@ -27,11 +28,17 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
   // Form input states
   const [rsvpStatus, setRsvpStatusState] = useState<'accepted' | 'declined'>('accepted');
   const [guestName, setGuestName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState<CountryCodeInfo>(DEFAULT_COUNTRY);
+  const [localPhone, setLocalPhone] = useState('');
   const [guestsAttending, setGuestsAttending] = useState(1);
   const [songRequest, setSongRequest] = useState('');
   const [personalMessage, setPersonalMessage] = useState('');
   const [uploadedPhoto, setUploadedPhoto] = useState<string>('');
+
+  // Derived normalized E.164 phone string
+  const phone = React.useMemo(() => {
+    return normalizePhoneNumber(localPhone, selectedCountry.dialCode);
+  }, [localPhone, selectedCountry.dialCode]);
   
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -44,93 +51,81 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
       reader.onload = (ev) => {
         if (ev.target?.result && typeof ev.target.result === 'string') {
           setUploadedPhoto(ev.target.result);
-          setErrorMsg('');
         }
       };
       reader.readAsDataURL(file);
     }
   };
-  
-  // Validation, confirmation and status states
+
+  // Submission & UI States
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
   const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
-  const [savedGuest, setSavedGuest] = useState<Guest | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [savedGuest, setSavedGuest] = useState<Guest | null>(guest);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
-  // Sync with guest object or browser localStorage
-  useEffect(() => {
-    const storageKey = `user_rsvp_${event.id}`;
-    let savedLocal: any = null;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) savedLocal = JSON.parse(raw);
-    } catch (e) {
-      console.error("Error reading local RSVP storage:", e);
-    }
+  // Check if RSVP Deadline has passed
+  const isDeadlinePassed = React.useMemo(() => {
+    if (!event.rsvpDeadline) return false;
+    const deadlineDate = new Date(event.rsvpDeadline);
+    // End of deadline day
+    deadlineDate.setHours(23, 59, 59, 999);
+    return new Date() > deadlineDate;
+  }, [event.rsvpDeadline]);
 
-    if (guest && guest.rsvpStatus && guest.rsvpStatus !== 'pending') {
-      // Prioritize explicit guest token match from URL/DB
+  // Load existing guest or stored RSVP state on mount
+  useEffect(() => {
+    // 1. Check if guest is provided via invitation link token
+    if (guest) {
       setGuestName(guest.name || '');
-      setPhone(guest.phone || '');
+      if (guest.phone) {
+        const parsedP = parsePhoneForDisplay(guest.phone);
+        setSelectedCountry(parsedP.country);
+        setLocalPhone(parsedP.localPart);
+      }
       setRsvpStatusState(guest.rsvpStatus === 'declined' ? 'declined' : 'accepted');
       setGuestsAttending(guest.companionsCount ? guest.companionsCount + 1 : 1);
-      setSongRequest(guest.songRequest || '');
-      setPersonalMessage(guest.personalMessage || '');
+      if (guest.songRequest) setSongRequest(guest.songRequest);
+      if (guest.personalMessage) setPersonalMessage(guest.personalMessage);
       setSavedGuest(guest);
-      setRsvpSubmitted(true);
-
-      // Keep local storage in sync
-      const localData = {
-        rsvpStatus: guest.rsvpStatus,
-        guestName: guest.name || '',
-        phone: guest.phone || '',
-        guestsAttending: guest.companionsCount ? guest.companionsCount + 1 : 1,
-        songRequest: guest.songRequest || '',
-        personalMessage: guest.personalMessage || '',
-        guestObj: guest,
-        timestamp: new Date().toISOString()
-      };
-      localStorage.setItem(storageKey, JSON.stringify(localData));
-    } else if (savedLocal) {
-      // Use saved response from this browser session
-      setGuestName(savedLocal.guestName || (guest?.name || ''));
-      setPhone(savedLocal.phone || (guest?.phone || ''));
-      setRsvpStatusState(savedLocal.rsvpStatus === 'declined' ? 'declined' : 'accepted');
-      setGuestsAttending(savedLocal.guestsAttending || 1);
-      setSongRequest(savedLocal.songRequest || '');
-      setPersonalMessage(savedLocal.personalMessage || '');
-      if (savedLocal.guestObj) {
-        setSavedGuest(savedLocal.guestObj);
+      
+      if (guest.rsvpStatus && guest.rsvpStatus !== 'pending') {
+        setRsvpSubmitted(true);
       }
-      setRsvpSubmitted(true);
-    } else {
-      // Clear or set defaults for fresh guest
-      setGuestName(guest?.name || '');
-      setPhone(guest?.phone || '');
-      setRsvpStatusState('accepted');
-      setGuestsAttending(1);
-      setSongRequest('');
-      setPersonalMessage('');
-      setRsvpSubmitted(false);
-      setSavedGuest(null);
+      return;
+    }
+
+    // 2. Otherwise check browser localStorage for previous response to this specific event
+    const storageKey = `user_rsvp_${event.id}`;
+    const storedRsvpStr = localStorage.getItem(storageKey);
+    if (storedRsvpStr) {
+      try {
+        const parsed = JSON.parse(storedRsvpStr);
+        if (parsed) {
+          if (parsed.guestName) setGuestName(parsed.guestName);
+          if (parsed.phone) {
+            const parsedP = parsePhoneForDisplay(parsed.phone);
+            setSelectedCountry(parsedP.country);
+            setLocalPhone(parsedP.localPart);
+          }
+          if (parsed.rsvpStatus) setRsvpStatusState(parsed.rsvpStatus);
+          if (parsed.guestsAttending) setGuestsAttending(parsed.guestsAttending);
+          if (parsed.songRequest) setSongRequest(parsed.songRequest);
+          if (parsed.personalMessage) setPersonalMessage(parsed.personalMessage);
+          if (parsed.guestObj) setSavedGuest(parsed.guestObj);
+          setRsvpSubmitted(true);
+        }
+      } catch (e) {
+        console.warn("Failed to parse stored RSVP state", e);
+      }
     }
   }, [guest, event.id]);
 
-  // Check if RSVP deadline has passed
-  const isDeadlinePassed = React.useMemo(() => {
-    if (!event.rsvpDeadline) return false;
-    const deadline = new Date(event.rsvpDeadline);
-    deadline.setHours(23, 59, 59, 999);
-    const now = new Date();
-    return now > deadline;
-  }, [event.rsvpDeadline]);
-
-  // Format deadline date for elegant display
+  // Format deadline date cleanly
   const formatDeadlineDate = (dateStr: string) => {
     try {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     } catch {
       return dateStr;
     }
@@ -147,21 +142,23 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
     if (isDeadlinePassed) return;
 
     if (!guestName.trim()) {
-      setErrorMsg('Please provide your full name.');
+      setErrorMsg('Please enter your full name so we can identify your invitation.');
       return;
     }
 
-    if (!phone.trim()) {
-      setErrorMsg('A contact phone number is required.');
+    if (!localPhone.trim()) {
+      setErrorMsg('Please enter your phone number so we can identify your invitation.');
       return;
     }
 
-    const cleanPhone = phone.replace(/\s+/g, '');
-    const phoneRegex = /^[\d\-+()]{7,18}$/;
-    if (!phoneRegex.test(cleanPhone)) {
-      setErrorMsg('Please enter a valid phone number (e.g., +1 555-0100).');
+    // Validate phone number for selected country
+    const phoneVal = validatePhoneNumber(localPhone, selectedCountry);
+    if (!phoneVal.isValid) {
+      setErrorMsg(phoneVal.error || 'Please enter a valid phone number for the selected country.');
       return;
     }
+
+    const normSubmittedPhone = phoneVal.normalized;
 
     setErrorMsg('');
     setIsSubmitting(true);
@@ -174,15 +171,44 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
         year: 'numeric' 
       });
 
+      // Query all existing guests for this event to validate phone number uniqueness
+      const allGuests = await mockApi.getGuests(event.id);
+
+      const existingByPhone = allGuests.find((g) => {
+        if (!g.phone) return false;
+        const normGuestPhone = normalizePhoneNumber(g.phone, selectedCountry.dialCode);
+        return normGuestPhone === normSubmittedPhone;
+      });
+
+      let targetGuestToUpdate: Guest | null = guest || savedGuest || null;
+
+      if (existingByPhone) {
+        const isSameGuest =
+          (guest && guest.id === existingByPhone.id) ||
+          (savedGuest && savedGuest.id === existingByPhone.id) ||
+          (targetGuestToUpdate && targetGuestToUpdate.id === existingByPhone.id);
+
+        if (!isSameGuest) {
+          if (existingByPhone.rsvpStatus === 'pending') {
+            // Host pre-added guest with pending status - claim & update this record
+            targetGuestToUpdate = existingByPhone;
+          } else {
+            // Phone number has already responded
+            setErrorMsg("We've already received an RSVP from this phone number. If you believe this is a mistake, please contact the event organiser.");
+            setIsSubmitting(false);
+            return;
+          }
+        }
+      }
+
       let updatedGuestObj: Guest;
 
-      if (guest || savedGuest) {
-        const targetId = guest?.id || savedGuest?.id;
-        updatedGuestObj = await mockApi.updateGuest(targetId!, {
+      if (targetGuestToUpdate && targetGuestToUpdate.id) {
+        updatedGuestObj = await mockApi.updateGuest(targetGuestToUpdate.id, {
           name: guestName.trim(),
-          phone: phone.trim(),
+          phone: normSubmittedPhone,
           rsvpStatus: rsvpStatus,
-          companionsCount: rsvpStatus === 'accepted' ? guestsAttending - 1 : 0,
+          companionsCount: rsvpStatus === 'accepted' ? Math.max(0, guestsAttending - 1) : 0,
           songRequest: rsvpStatus === 'accepted' ? songRequest.trim() : undefined,
           personalMessage: personalMessage.trim(),
           responseDate: friendlyDateString,
@@ -191,13 +217,13 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
       } else {
         updatedGuestObj = await mockApi.addGuest(event.id, {
           name: guestName.trim(),
-          phone: phone.trim(),
+          phone: normSubmittedPhone,
           email: '',
           isVip: false,
           isFamily: false,
           tableNumber: 'General Assembly',
           rsvpStatus: rsvpStatus,
-          companionsCount: rsvpStatus === 'accepted' ? guestsAttending - 1 : 0,
+          companionsCount: rsvpStatus === 'accepted' ? Math.max(0, guestsAttending - 1) : 0,
           songRequest: rsvpStatus === 'accepted' ? songRequest.trim() : undefined,
           personalMessage: personalMessage.trim(),
           responseDate: friendlyDateString,
@@ -236,7 +262,7 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
       const localData = {
         rsvpStatus,
         guestName: guestName.trim(),
-        phone: phone.trim(),
+        phone: normSubmittedPhone,
         guestsAttending: rsvpStatus === 'accepted' ? guestsAttending : 0,
         songRequest: rsvpStatus === 'accepted' ? songRequest.trim() : '',
         personalMessage: personalMessage.trim(),
@@ -250,7 +276,8 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
       setRsvpSubmitted(true);
       onRsvpSuccess(updatedGuestObj);
     } catch (err: any) {
-      setErrorMsg(err.message || 'An error occurred while submitting your RSVP.');
+      console.error("RSVP Submission Error:", err);
+      setErrorMsg("Something went wrong while submitting your RSVP. Please try again in a moment.");
     } finally {
       setIsSubmitting(false);
     }
@@ -329,7 +356,8 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
         onRsvpSuccess(updatedGuestObj);
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to cancel reservation.');
+      console.error("Cancel Reservation Error:", err);
+      setErrorMsg("Something went wrong while submitting your RSVP. Please try again in a moment.");
     } finally {
       setIsSubmitting(false);
     }
@@ -340,81 +368,158 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
     switch (themeId) {
       case 'luxury':
         return {
-          wrapper: "border-2 border-[#D4AF37]/50 p-6 sm:p-10 bg-[#F5F5DC]/20 text-[#2C2C2C] rounded-xl shadow-2xl relative",
-          input: "w-full bg-white border border-[#D4AF37]/40 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] font-sans text-stone-800 transition-all",
-          radioActiveAccept: "bg-[#2C2C2C] border-[#2C2C2C] text-white",
-          radioActiveDecline: "bg-[#CD7F32] border-[#CD7F32] text-white",
-          radioInactive: "border-[#D4AF37]/30 text-[#8C7A6B] bg-white hover:bg-stone-50",
-          submitBtn: "w-full py-4 rounded-lg text-xs font-bold uppercase tracking-[0.2em] transition-all bg-[#2C2C2C] hover:bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-md",
+          wrapper: "border-2 border-[#D4AF37]/50 p-6 sm:p-10 bg-[#1a1815]/80 text-[#F5F5DC] rounded-xl shadow-2xl relative backdrop-blur-md",
+          input: "w-full bg-[#2C2C2C] border border-[#D4AF37]/40 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30 focus:border-[#D4AF37] font-sans text-[#F5F5DC] placeholder-stone-400 transition-all",
+          radioActiveAccept: "bg-[#D4AF37] border-[#D4AF37] text-stone-950 font-bold shadow-md",
+          radioActiveDecline: "bg-[#CD7F32] border-[#CD7F32] text-white font-bold shadow-md",
+          radioInactive: "border-[#D4AF37]/30 text-[#D4AF37] bg-[#2C2C2C]/60 hover:bg-[#2C2C2C]",
+          submitBtn: "w-full py-4 rounded-lg text-xs font-bold uppercase tracking-[0.2em] transition-all bg-[#D4AF37] hover:bg-[#b8952b] text-stone-950 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#D4AF37]/10",
           accentText: "text-[#CD7F32]",
-          primaryText: "text-[#2C2C2C]"
+          primaryText: "text-[#F5F5DC]",
+          successCard: "p-6 sm:p-8 text-center bg-[#2C2C2C]/90 border-2 border-[#D4AF37]/60 rounded-xl shadow-2xl text-[#F5F5DC]",
+          declineCard: "p-6 sm:p-8 text-center bg-[#2C2C2C]/90 border border-[#CD7F32]/60 rounded-xl shadow-xl text-[#F5F5DC]",
+          successIconBadge: "w-14 h-14 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37] flex items-center justify-center mx-auto mb-4 text-[#D4AF37] shadow-inner",
+          declineIconBadge: "w-14 h-14 rounded-full bg-[#CD7F32]/20 border border-[#CD7F32] flex items-center justify-center mx-auto mb-4 text-[#CD7F32]",
+          statusPill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[10px] font-mono font-bold text-[#D4AF37] uppercase tracking-widest mb-3",
+          declineStatusPill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#CD7F32]/15 border border-[#CD7F32]/40 text-[10px] font-mono font-bold text-[#CD7F32] uppercase tracking-widest mb-3",
+          successHeading: "text-2xl sm:text-3xl font-serif font-bold text-[#F5F5DC] tracking-tight",
+          declineHeading: "text-2xl sm:text-3xl font-serif font-bold text-[#F5F5DC] tracking-tight",
+          detailsBox: "mt-6 p-4 sm:p-5 bg-[#1a1815] border border-[#D4AF37]/30 rounded-xl text-left text-xs text-[#F5F5DC] space-y-2 font-sans shadow-md",
+          errorBox: "p-4 bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs rounded-xl shadow-sm",
+          warningBox: "p-4 bg-amber-950/60 border border-amber-500/50 text-amber-200 text-xs rounded-xl shadow-sm"
         };
       case 'elegant':
         return {
-          wrapper: "border border-zinc-200 p-6 sm:p-10 bg-white text-zinc-800 rounded-none shadow-xl relative",
-          input: "w-full bg-white border border-zinc-300 rounded-none px-4 py-3 text-xs focus:outline-none focus:border-zinc-800 text-zinc-900 transition-all",
-          radioActiveAccept: "bg-zinc-900 border-zinc-900 text-white",
-          radioActiveDecline: "bg-stone-600 border-stone-600 text-white",
+          wrapper: "border border-zinc-200 p-6 sm:p-10 bg-white text-zinc-900 rounded-none shadow-xl relative",
+          input: "w-full bg-white border border-zinc-300 rounded-none px-4 py-3 text-xs focus:outline-none focus:border-zinc-900 text-zinc-900 transition-all",
+          radioActiveAccept: "bg-zinc-900 border-zinc-900 text-white font-medium",
+          radioActiveDecline: "bg-stone-600 border-stone-600 text-white font-medium",
           radioInactive: "border-zinc-200 text-zinc-500 bg-white hover:bg-zinc-50",
           submitBtn: "w-full py-4 rounded-none text-xs font-medium uppercase tracking-[0.15em] transition-all bg-zinc-900 hover:bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed",
           accentText: "text-zinc-500",
-          primaryText: "text-zinc-900"
+          primaryText: "text-zinc-900",
+          successCard: "p-6 sm:p-8 text-center bg-zinc-950 border border-zinc-800 text-white rounded-none shadow-2xl",
+          declineCard: "p-6 sm:p-8 text-center bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-none shadow-xl",
+          successIconBadge: "w-14 h-14 bg-zinc-900 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto mb-4",
+          declineIconBadge: "w-14 h-14 bg-zinc-900 border border-zinc-700 text-zinc-400 flex items-center justify-center mx-auto mb-4",
+          statusPill: "inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-950/80 border border-emerald-500/40 text-[10px] font-mono font-bold text-emerald-300 uppercase tracking-widest mb-3",
+          declineStatusPill: "inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-900 border border-zinc-700 text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest mb-3",
+          successHeading: "text-2xl sm:text-3xl font-serif font-black tracking-tight text-white",
+          declineHeading: "text-2xl sm:text-3xl font-serif font-black tracking-tight text-white",
+          detailsBox: "mt-6 p-4 sm:p-5 bg-zinc-900 border border-zinc-800 text-left text-xs text-zinc-300 font-mono space-y-2",
+          errorBox: "p-4 bg-zinc-900 border border-rose-500/50 text-rose-300 text-xs shadow-sm",
+          warningBox: "p-4 bg-zinc-900 border border-amber-500/50 text-amber-300 text-xs shadow-sm"
         };
       case 'modern':
         return {
           wrapper: "bg-[#111c30] border border-[#2c3d5e]/50 p-6 sm:p-10 rounded-2xl shadow-2xl text-white relative",
           input: "w-full bg-[#0d1525] border border-[#2c3d5e] rounded-xl px-4 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all",
-          radioActiveAccept: "bg-gradient-to-r from-emerald-500 to-teal-600 border-transparent text-white",
-          radioActiveDecline: "bg-gradient-to-r from-rose-500 to-pink-600 border-transparent text-white",
+          radioActiveAccept: "bg-gradient-to-r from-emerald-500 to-teal-600 border-transparent text-white font-bold",
+          radioActiveDecline: "bg-gradient-to-r from-rose-500 to-pink-600 border-transparent text-white font-bold",
           radioInactive: "border-[#2c3d5e] text-zinc-400 bg-[#0d1525]/50 hover:bg-[#0d1525]",
           submitBtn: "w-full py-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all bg-gradient-to-r from-cyan-500 to-indigo-500 hover:opacity-95 text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/10",
           accentText: "text-[#D4AF37]",
-          primaryText: "text-white"
+          primaryText: "text-white",
+          successCard: "p-6 sm:p-8 text-center bg-[#111c30] border border-[#2c3d5e] rounded-2xl text-white shadow-2xl",
+          declineCard: "p-6 sm:p-8 text-center bg-[#111c30] border border-[#2c3d5e] rounded-2xl text-white shadow-xl",
+          successIconBadge: "w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4 text-emerald-400",
+          declineIconBadge: "w-14 h-14 rounded-2xl bg-slate-800 border border-[#2c3d5e] flex items-center justify-center mx-auto mb-4 text-slate-400",
+          statusPill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest mb-3",
+          declineStatusPill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-3",
+          successHeading: "text-2xl sm:text-3xl font-bold tracking-tight text-white",
+          declineHeading: "text-2xl sm:text-3xl font-bold tracking-tight text-white",
+          detailsBox: "mt-6 p-4 sm:p-5 bg-[#0d1525] border border-[#2c3d5e] rounded-xl text-left text-xs text-slate-300 font-mono space-y-2",
+          errorBox: "p-4 bg-[#0d1525] border border-rose-500/40 text-rose-300 text-xs rounded-xl shadow-sm",
+          warningBox: "p-4 bg-[#0d1525] border border-amber-500/40 text-amber-300 text-xs rounded-xl shadow-sm"
         };
       case 'rustic':
         return {
           wrapper: "border border-dashed border-[#D4C4B0] p-6 sm:p-10 bg-[#FAF6F0] rounded-2xl text-stone-850 shadow-md relative",
           input: "w-full bg-white border border-[#D4C4B0]/65 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-[#8c7a6b] text-stone-900 transition-all",
-          radioActiveAccept: "bg-[#8c7a6b] border-[#8c7a6b] text-white",
-          radioActiveDecline: "bg-stone-600 border-stone-600 text-white",
+          radioActiveAccept: "bg-[#8c7a6b] border-[#8c7a6b] text-white font-bold",
+          radioActiveDecline: "bg-stone-600 border-stone-600 text-white font-bold",
           radioInactive: "border-[#D4C4B0]/40 text-stone-500 bg-white hover:bg-[#FAF6F0]/40",
           submitBtn: "w-full py-4 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all bg-[#8c7a6b] hover:bg-[#766659] text-white disabled:opacity-50 disabled:cursor-not-allowed",
           accentText: "text-[#8c7a6b]",
-          primaryText: "text-[#5c4d42]"
+          primaryText: "text-[#5c4d42]",
+          successCard: "p-6 sm:p-8 text-center bg-[#FAF6F0] border border-dashed border-[#8c7a6b]/60 rounded-2xl text-stone-900 shadow-lg",
+          declineCard: "p-6 sm:p-8 text-center bg-[#FAF6F0] border border-dashed border-stone-300 rounded-2xl text-stone-800 shadow-md",
+          successIconBadge: "w-14 h-14 rounded-full bg-[#8c7a6b]/15 border border-[#8c7a6b]/40 flex items-center justify-center mx-auto mb-4 text-[#8c7a6b]",
+          declineIconBadge: "w-14 h-14 rounded-full bg-stone-200 border border-stone-300 flex items-center justify-center mx-auto mb-4 text-stone-500",
+          statusPill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8c7a6b]/15 border border-[#8c7a6b]/30 text-[10px] font-mono font-bold text-[#5c4d42] uppercase tracking-widest mb-3",
+          declineStatusPill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-200 text-[10px] font-mono font-bold text-stone-600 uppercase tracking-widest mb-3",
+          successHeading: "text-2xl sm:text-3xl font-serif font-bold text-[#5c4d42] tracking-tight",
+          declineHeading: "text-2xl sm:text-3xl font-serif font-bold text-[#5c4d42] tracking-tight",
+          detailsBox: "mt-6 p-4 sm:p-5 bg-white/90 border border-[#D4C4B0] rounded-xl text-left text-xs text-stone-800 space-y-2",
+          errorBox: "p-4 bg-white border border-rose-300 text-rose-800 text-xs rounded-xl shadow-sm",
+          warningBox: "p-4 bg-white border border-amber-300 text-amber-900 text-xs rounded-xl shadow-sm"
         };
       case 'floral':
         return {
           wrapper: "border border-[#F4E4E6] p-6 sm:p-10 bg-[#FFFBFB] rounded-3xl text-[#3D5A3D] shadow-xl relative",
           input: "w-full bg-white border border-[#F4E4E6] rounded-full px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-[#D4A5A5] text-stone-850 transition-all",
-          radioActiveAccept: "bg-[#D4A5A5] border-[#D4A5A5] text-white",
-          radioActiveDecline: "bg-stone-500 border-stone-500 text-white",
+          radioActiveAccept: "bg-[#D4A5A5] border-[#D4A5A5] text-white font-semibold",
+          radioActiveDecline: "bg-stone-500 border-stone-500 text-white font-semibold",
           radioInactive: "border-[#F4E4E6] text-stone-400 bg-white hover:bg-stone-50",
           submitBtn: "w-full py-4 rounded-full text-xs font-semibold uppercase tracking-wider transition-all bg-[#D4A5A5] hover:bg-[#c99595] text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-md",
           accentText: "text-[#D4A5A5]",
-          primaryText: "text-[#3D5A3D]"
+          primaryText: "text-[#3D5A3D]",
+          successCard: "p-6 sm:p-8 text-center bg-[#FFFBFB] border border-[#D4A5A5]/60 rounded-3xl text-[#3D5A3D] shadow-xl",
+          declineCard: "p-6 sm:p-8 text-center bg-[#FFFBFB] border border-[#F4E4E6] rounded-3xl text-stone-700 shadow-md",
+          successIconBadge: "w-14 h-14 rounded-full bg-[#D4A5A5]/20 border border-[#D4A5A5]/50 flex items-center justify-center mx-auto mb-4 text-[#3D5A3D]",
+          declineIconBadge: "w-14 h-14 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center mx-auto mb-4 text-stone-500",
+          statusPill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4A5A5]/15 border border-[#D4A5A5]/40 text-[10px] font-mono font-bold text-[#3D5A3D] uppercase tracking-widest mb-3",
+          declineStatusPill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 text-[10px] font-mono font-bold text-stone-600 uppercase tracking-widest mb-3",
+          successHeading: "text-2xl sm:text-3xl font-serif font-bold text-[#3D5A3D] tracking-tight",
+          declineHeading: "text-2xl sm:text-3xl font-serif font-bold text-[#3D5A3D] tracking-tight",
+          detailsBox: "mt-6 p-4 sm:p-5 bg-white border border-[#F4E4E6] rounded-2xl text-left text-xs text-[#3D5A3D] space-y-2",
+          errorBox: "p-4 bg-white border border-rose-300 text-rose-800 text-xs rounded-2xl shadow-sm",
+          warningBox: "p-4 bg-white border border-amber-300 text-amber-900 text-xs rounded-2xl shadow-sm"
         };
       case 'traditional':
         return {
           wrapper: "border-4 border-double border-amber-900/30 p-6 sm:p-8 bg-amber-50/20 text-stone-850 relative",
           input: "w-full bg-white border border-amber-900/30 rounded px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-amber-900 text-stone-900 transition-all",
-          radioActiveAccept: "bg-amber-900 border-amber-900 text-white",
-          radioActiveDecline: "bg-stone-700 border-stone-700 text-white",
+          radioActiveAccept: "bg-amber-900 border-amber-900 text-white font-bold",
+          radioActiveDecline: "bg-stone-700 border-stone-700 text-white font-bold",
           radioInactive: "border-amber-900/20 text-amber-900/60 bg-white hover:bg-stone-50",
           submitBtn: "w-full py-4 rounded text-xs font-bold uppercase tracking-wider transition-all bg-amber-900 hover:bg-amber-950 text-white disabled:opacity-50 disabled:cursor-not-allowed",
           accentText: "text-amber-800",
-          primaryText: "text-[#582f0e]"
+          primaryText: "text-[#582f0e]",
+          successCard: "p-6 sm:p-8 text-center bg-[#FAF6F0] border-4 border-double border-amber-900/40 rounded text-amber-950 shadow-xl",
+          declineCard: "p-6 sm:p-8 text-center bg-[#FAF6F0] border-4 border-double border-stone-400/30 rounded text-stone-850 shadow-md",
+          successIconBadge: "w-14 h-14 rounded bg-amber-900/15 border border-amber-900/30 flex items-center justify-center mx-auto mb-4 text-amber-900",
+          declineIconBadge: "w-14 h-14 rounded bg-stone-200 border border-stone-300 flex items-center justify-center mx-auto mb-4 text-stone-600",
+          statusPill: "inline-flex items-center gap-1.5 px-3 py-1 bg-amber-900/10 border border-amber-900/30 text-[10px] font-mono font-bold text-amber-900 uppercase tracking-widest mb-3",
+          declineStatusPill: "inline-flex items-center gap-1.5 px-3 py-1 bg-stone-200 text-[10px] font-mono font-bold text-stone-700 uppercase tracking-widest mb-3",
+          successHeading: "text-2xl sm:text-3xl font-serif font-bold text-amber-950 tracking-tight",
+          declineHeading: "text-2xl sm:text-3xl font-serif font-bold text-amber-950 tracking-tight",
+          detailsBox: "mt-6 p-4 sm:p-5 bg-white/90 border border-amber-900/20 rounded text-left text-xs text-stone-800 space-y-2",
+          errorBox: "p-4 bg-white border border-rose-300 text-rose-900 text-xs shadow-sm",
+          warningBox: "p-4 bg-white border border-amber-300 text-amber-900 text-xs shadow-sm"
         };
       case 'minimal':
       default:
         return {
           wrapper: "border border-black p-6 sm:p-8 bg-white text-black relative",
           input: "w-full bg-white border border-black rounded-none px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-black font-mono text-black transition-all",
-          radioActiveAccept: "bg-black border-black text-white",
-          radioActiveDecline: "bg-zinc-600 border-zinc-600 text-white",
+          radioActiveAccept: "bg-black border-black text-white font-bold",
+          radioActiveDecline: "bg-zinc-600 border-zinc-600 text-white font-bold",
           radioInactive: "border-zinc-300 text-zinc-500 bg-white hover:bg-zinc-50",
           submitBtn: "w-full py-4 rounded-none text-xs font-bold uppercase tracking-widest transition-all bg-black hover:bg-zinc-900 text-white disabled:opacity-50 disabled:cursor-not-allowed",
           accentText: "text-zinc-600",
-          primaryText: "text-black"
+          primaryText: "text-black",
+          successCard: "p-6 sm:p-8 text-center bg-white border-2 border-black text-black font-mono shadow-none",
+          declineCard: "p-6 sm:p-8 text-center bg-white border border-black text-black font-mono shadow-none",
+          successIconBadge: "w-14 h-14 bg-black text-white flex items-center justify-center mx-auto mb-4 font-bold",
+          declineIconBadge: "w-14 h-14 border border-black bg-zinc-100 text-black flex items-center justify-center mx-auto mb-4",
+          statusPill: "inline-flex items-center gap-1.5 px-3 py-1 bg-black text-white text-[10px] font-mono font-bold uppercase tracking-widest mb-3",
+          declineStatusPill: "inline-flex items-center gap-1.5 px-3 py-1 border border-black text-[10px] font-mono font-bold text-black uppercase tracking-widest mb-3",
+          successHeading: "text-2xl sm:text-3xl font-mono font-bold text-black tracking-tight",
+          declineHeading: "text-2xl sm:text-3xl font-mono font-bold text-black tracking-tight",
+          detailsBox: "mt-6 p-4 sm:p-5 bg-zinc-50 border border-black text-left text-xs text-black font-mono space-y-2",
+          errorBox: "p-4 bg-white border border-rose-600 text-rose-900 font-mono text-xs shadow-sm",
+          warningBox: "p-4 bg-white border border-amber-600 text-amber-900 font-mono text-xs shadow-sm"
         };
     }
   }, [themeId]);
@@ -425,7 +530,7 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
   return (
     <div className={styles.wrapper}>
       {/* RSVP Deadline Banner */}
-      <div className="mb-8 text-center pb-6 border-b border-zinc-200/50">
+      <div className="mb-8 text-center pb-6 border-b border-zinc-200/40">
         <span className="text-[10px] tracking-[0.2em] font-bold uppercase opacity-80 block mb-1">
           RSVP REQUEST
         </span>
@@ -443,77 +548,89 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
       {rsvpSubmitted ? (
         rsvpStatus === 'accepted' ? (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="p-6 sm:p-8 text-center bg-emerald-500/10 border border-emerald-500/25 rounded-xl"
+            initial={{ opacity: 0, y: 15, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className={styles.successCard}
           >
-            <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <CheckCircle2 className="w-7 h-7 text-emerald-600" />
-            </div>
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 240, damping: 18, delay: 0.1 }}
+              className={styles.successIconBadge}
+            >
+              <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+            </motion.div>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600/15 border border-emerald-600/30 text-[10px] font-mono font-bold text-emerald-800 uppercase tracking-widest mb-3">
+            <span className={styles.statusPill}>
               <Check className="w-3.5 h-3.5" /> Reservation Confirmed
-            </div>
+            </span>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-emerald-950 tracking-tight flex items-center justify-center gap-2">
-              <span>See You There!</span>
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 inline-block" />
+            <h3 className={styles.successHeading}>
+              🎉 You're on the guest list!
             </h3>
-            <p className="text-xs text-emerald-800/90 mt-1.5 leading-relaxed max-w-md mx-auto">
-              Thank you, <span className="font-bold">{guestName}</span>! Your acceptance has been saved in your browser and locked in for the hosts.
-            </p>
+            
+            <div className="mt-2 space-y-1">
+              <p className="font-semibold text-sm">Thank you for confirming your attendance.</p>
+              <p className="text-xs opacity-90 leading-relaxed max-w-md mx-auto">
+                We can't wait to celebrate this special day with you. See you soon!
+              </p>
+            </div>
 
             {/* Details Box */}
-            <div className="mt-6 p-4 sm:p-5 bg-white/90 dark:bg-stone-900/90 border border-emerald-500/20 rounded-xl text-left text-xs text-zinc-700 dark:text-stone-300 space-y-2 font-mono shadow-sm">
-              <div className="flex justify-between items-center border-b border-zinc-150 dark:border-stone-800 pb-2 mb-2">
-                <span className="text-zinc-400 uppercase text-[10px]">Guest Name:</span>
-                <span className="font-bold text-zinc-900 dark:text-stone-100">{guestName}</span>
+            <div className={styles.detailsBox}>
+              <div className="flex justify-between items-center border-b border-zinc-500/20 pb-2">
+                <span className="text-[10px] uppercase font-bold opacity-60">Guest Name:</span>
+                <span className="font-bold">{guestName}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-400 uppercase text-[10px]">Status:</span>
-                <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              <div className="flex justify-between items-center border-b border-zinc-500/20 pb-2">
+                <span className="text-[10px] uppercase font-bold opacity-60">Contact Phone:</span>
+                <span className="font-bold font-mono flex items-center gap-1.5">
+                  <span>{selectedCountry.flag}</span>
+                  <span>{phone}</span>
+                </span>
+              </div>
+              <div className="flex justify-between items-center border-b border-zinc-500/20 pb-2">
+                <span className="text-[10px] uppercase font-bold opacity-60">RSVP Status:</span>
+                <span className="font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
                   Joyfully Accepted
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-zinc-400 uppercase text-[10px]">Party Size:</span>
+                <span className="text-[10px] uppercase font-bold opacity-60">Party Size:</span>
                 <span className="font-bold">{guestsAttending} {guestsAttending > 1 ? 'Guests' : 'Guest'}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-400 uppercase text-[10px]">Contact Phone:</span>
-                <span className="font-bold">{phone}</span>
-              </div>
               {songRequest && (
-                <div className="pt-2 border-t border-zinc-150 dark:border-stone-800">
-                  <span className="text-zinc-400 uppercase text-[10px] block mb-0.5">Song Request:</span>
-                  <span className="italic text-zinc-800 dark:text-stone-200">"{songRequest}"</span>
+                <div className="pt-2 border-t border-zinc-500/20">
+                  <span className="text-[10px] uppercase font-bold opacity-60 block mb-0.5">Song Request:</span>
+                  <span className="italic">"{songRequest}"</span>
                 </div>
               )}
               {personalMessage && (
-                <div className="pt-2 border-t border-zinc-150 dark:border-stone-800">
-                  <span className="text-zinc-400 uppercase text-[10px] block mb-0.5">Message to Hosts:</span>
-                  <span className="italic text-zinc-800 dark:text-stone-200">"{personalMessage}"</span>
+                <div className="pt-2 border-t border-zinc-500/20">
+                  <span className="text-[10px] uppercase font-bold opacity-60 block mb-0.5">Message to Hosts:</span>
+                  <span className="italic">"{personalMessage}"</span>
                 </div>
               )}
             </div>
 
             {/* Cancel / Update Actions */}
             {!isDeadlinePassed && (
-              <div className="mt-6 pt-4 border-t border-emerald-500/20 flex flex-col gap-3">
+              <div className="mt-6 pt-4 border-t border-zinc-500/20 flex flex-col gap-3">
                 {showCancelConfirm ? (
-                  <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-left text-xs space-y-3">
-                    <div className="flex items-start gap-2.5 text-rose-900 font-medium">
-                      <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div className={styles.warningBox}>
+                    <div className="flex items-start gap-2.5 text-left">
+                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                       <div>
                         <p className="font-bold">Cancel your reservation?</p>
-                        <p className="text-[11px] text-rose-700 mt-0.5">This will update your status to declined and release your reservation.</p>
+                        <p className="text-[11px] opacity-90 mt-0.5">This will update your status to declined and release your reservation.</p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-end gap-2 pt-1">
+                    <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-500/20 mt-2">
                       <button
                         type="button"
                         onClick={() => setShowCancelConfirm(false)}
-                        className="px-3.5 py-2 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-700 font-bold text-[11px] uppercase tracking-wider"
+                        className="px-3.5 py-2 rounded-lg border border-zinc-400/30 bg-black/10 hover:bg-black/20 font-bold text-[11px] uppercase tracking-wider"
                       >
                         Keep Reservation
                       </button>
@@ -532,7 +649,7 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
                     <button
                       type="button"
                       onClick={() => setRsvpSubmitted(false)}
-                      className="px-4 py-2.5 rounded-lg border border-zinc-300 hover:border-zinc-400 bg-white hover:bg-zinc-50 text-zinc-700 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5"
+                      className="px-4 py-2.5 rounded-lg border border-zinc-500/30 hover:bg-white/10 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                       <span>Update Details</span>
@@ -540,9 +657,9 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowCancelConfirm(true)}
-                      className="px-4 py-2.5 rounded-lg border border-rose-200 bg-rose-50/90 hover:bg-rose-100 text-rose-700 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5"
+                      className="px-4 py-2.5 rounded-lg border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5"
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                      <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                       <span>Cancel Reservation</span>
                     </button>
                   </div>
@@ -552,34 +669,44 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
           </motion.div>
         ) : (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="p-6 sm:p-8 text-center bg-stone-100 dark:bg-stone-900 border border-stone-250 dark:border-stone-800 rounded-xl"
+            initial={{ opacity: 0, y: 15, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className={styles.declineCard}
           >
-            <div className="w-12 h-12 rounded-full bg-stone-200 dark:bg-stone-800 flex items-center justify-center mx-auto mb-4">
-              <X className="w-6 h-6 text-stone-600 dark:text-stone-400" />
-            </div>
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 240, damping: 18, delay: 0.1 }}
+              className={styles.declineIconBadge}
+            >
+              <X className="w-7 h-7" />
+            </motion.div>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-200 dark:bg-stone-800 text-[10px] font-mono font-bold text-stone-600 dark:text-stone-400 uppercase tracking-widest mb-3">
-              Status: Declined
-            </div>
+            <span className={styles.declineStatusPill}>
+              Response Logged
+            </span>
 
-            <h3 className="text-xl font-bold text-stone-800 dark:text-stone-100 tracking-tight">
-              Invitation Declined
+            <h3 className={styles.declineHeading}>
+              We'll miss you.
             </h3>
-            <p className="text-xs text-stone-600 dark:text-stone-400 mt-2 leading-relaxed max-w-md mx-auto">
-              Thank you for letting us know, <span className="font-bold">{guestName || 'Guest'}</span>. We're sorry you won't be able to make it!
-            </p>
+
+            <div className="mt-2 space-y-1">
+              <p className="font-semibold text-sm">Thank you for letting us know.</p>
+              <p className="text-xs opacity-90 leading-relaxed max-w-md mx-auto">
+                Although you won't be joining us, we truly appreciate your response and hope to celebrate together another time.
+              </p>
+            </div>
 
             {!isDeadlinePassed && (
-              <div className="mt-6 pt-4 border-t border-stone-200 dark:border-stone-800">
+              <div className="mt-6 pt-4 border-t border-zinc-500/20">
                 <button 
                   type="button"
                   onClick={() => {
                     setRsvpStatusState('accepted');
                     setRsvpSubmitted(false);
                   }}
-                  className="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs uppercase tracking-wider transition-all inline-flex items-center gap-2 shadow-sm"
+                  className="px-5 py-3 rounded-xl bg-[#8c7a6b] hover:bg-[#766659] text-white font-bold text-xs uppercase tracking-wider transition-all inline-flex items-center gap-2 shadow-sm"
                 >
                   <RotateCcw className="w-4 h-4" />
                   <span>Changed your mind? Accept Invitation</span>
@@ -591,26 +718,28 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {isDeadlinePassed && (
-            <div className="p-4 border border-rose-500/30 bg-rose-500/10 rounded-xl text-xs text-rose-700 flex items-start gap-3">
-              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-bold text-rose-800 uppercase tracking-wider">RSVP Closed</p>
-                <p className="mt-1 leading-normal">
-                  The RSVP deadline has passed. Please contact the host if you have any questions.
-                </p>
+            <div className={styles.errorBox}>
+              <div className="flex items-start gap-2.5">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 opacity-80" />
+                <div>
+                  <p className="font-bold uppercase tracking-wider">RSVP Closed</p>
+                  <p className="mt-1 leading-normal">
+                    The RSVP deadline has passed. Please contact the host if you have any questions.
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
           {/* Known Guest Banner */}
           {guest && (
-            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-xl flex items-center justify-between text-[11px] text-zinc-500 font-medium">
+            <div className="p-3 bg-black/10 border border-zinc-500/20 rounded-xl flex items-center justify-between text-[11px] opacity-80 font-medium">
               <span className="flex items-center gap-1.5 font-mono">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 PERSONALIZED INVITATION MATCHED
               </span>
               {guest.tableNumber && (
-                <span className="bg-zinc-200 px-2.5 py-0.5 rounded font-bold font-mono">
+                <span className="bg-black/20 px-2.5 py-0.5 rounded font-bold font-mono">
                   {guest.tableNumber}
                 </span>
               )}
@@ -619,7 +748,7 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
 
           {/* Required Full Name Field */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold flex items-center gap-1 text-zinc-500 uppercase tracking-wide">
+            <label className="text-xs font-bold flex items-center gap-1 opacity-80 uppercase tracking-wide">
               <User className="w-3.5 h-3.5 opacity-60" />
               <span>Your Full Name <span className="text-rose-500">*</span></span>
             </label>
@@ -636,24 +765,67 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
 
           {/* Required Phone Number Field */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold flex items-center gap-1 text-zinc-500 uppercase tracking-wide">
+            <label className="text-xs font-bold flex items-center gap-1 opacity-80 uppercase tracking-wide">
               <Phone className="w-3.5 h-3.5 opacity-60" />
               <span>Contact Phone Number <span className="text-rose-500">*</span></span>
             </label>
-            <input
-              type="tel"
-              required
-              disabled={isDeadlinePassed}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="e.g. +1 555-0100"
-              className={styles.input}
-            />
+            
+            <div className="flex gap-2 items-stretch">
+              {/* Country Code Selector Dropdown */}
+              <div className="relative shrink-0 w-[125px] sm:w-[150px]">
+                <select
+                  disabled={isDeadlinePassed}
+                  value={selectedCountry.code}
+                  onChange={(e) => {
+                    const found = COUNTRY_CODES.find((c) => c.code === e.target.value);
+                    if (found) setSelectedCountry(found);
+                  }}
+                  className={`${styles.input} pr-7 font-medium cursor-pointer appearance-none truncate`}
+                  title="Select Country Dialing Code"
+                >
+                  {COUNTRY_CODES.map((c) => (
+                    <option key={`${c.code}-${c.dialCode}`} value={c.code} className="bg-zinc-900 text-zinc-100">
+                      {c.flag} {c.dialCode} ({c.name})
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-2.5 flex items-center pointer-events-none opacity-60 text-[10px]">
+                  ▼
+                </div>
+              </div>
+
+              {/* Local Phone Number Field */}
+              <div className="flex-1 min-w-0">
+                <input
+                  type="tel"
+                  required
+                  disabled={isDeadlinePassed}
+                  value={localPhone}
+                  onChange={(e) => setLocalPhone(e.target.value)}
+                  placeholder="e.g. 771234567"
+                  className={styles.input}
+                />
+              </div>
+            </div>
+
+            {/* Live Normalization Format Indicator */}
+            <div className="flex items-center justify-between text-[10px] opacity-70 font-mono px-1 pt-0.5">
+              <span className="truncate">
+                {selectedCountry.flag} {selectedCountry.name} ({selectedCountry.dialCode})
+              </span>
+              {localPhone.trim() ? (
+                <span className="text-emerald-500 font-bold shrink-0 ml-2">
+                  Saved as: {phone}
+                </span>
+              ) : (
+                <span className="opacity-50 shrink-0 ml-2">Default: 🇿🇼 +263</span>
+              )}
+            </div>
           </div>
 
           {/* Attendance Selection (Visual Radio) */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-zinc-500 uppercase tracking-wide">
+            <label className="text-xs font-bold opacity-80 uppercase tracking-wide">
               Will you be joining us? <span className="text-rose-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-4 mt-1">
@@ -694,7 +866,7 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
               >
                 {/* Number of Guests Attending Field */}
                 <div className="flex flex-col gap-1.5 pt-1">
-                  <label className="text-xs font-bold text-zinc-500 uppercase tracking-wide">
+                  <label className="text-xs font-bold opacity-80 uppercase tracking-wide">
                     Number of Guests Attending <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
@@ -714,14 +886,14 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
                       ▼
                     </div>
                   </div>
-                  <p className="text-[10px] text-zinc-400 font-mono leading-normal">
+                  <p className="text-[10px] opacity-60 font-mono leading-normal">
                     * Derived dynamically from event invitation configuration. Max allowed: {maxSelectable}.
                   </p>
                 </div>
 
                 {/* Optional Song Request Field */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold flex items-center gap-1 text-zinc-500 uppercase tracking-wide">
+                  <label className="text-xs font-bold flex items-center gap-1 opacity-80 uppercase tracking-wide">
                     <Music className="w-3.5 h-3.5 opacity-60" />
                     <span>Song Request (Optional)</span>
                   </label>
@@ -740,7 +912,7 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
 
           {/* Message to the Couple/Host (Optional) */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold flex items-center gap-1 text-zinc-500 uppercase tracking-wide">
+            <label className="text-xs font-bold flex items-center gap-1 opacity-80 uppercase tracking-wide">
               <MessageSquare className="w-3.5 h-3.5 opacity-60" />
               <span>Leave a Message / Wishes (Optional)</span>
             </label>
@@ -756,7 +928,7 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
 
           {/* Optional Picture Upload for Guestbook / Wishes */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold flex items-center gap-1 text-zinc-500 uppercase tracking-wide">
+            <label className="text-xs font-bold flex items-center gap-1 opacity-80 uppercase tracking-wide">
               <Camera className="w-3.5 h-3.5 opacity-60" />
               <span>Attach a Picture / Memory (Optional)</span>
             </label>
@@ -771,16 +943,16 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
             />
 
             {uploadedPhoto ? (
-              <div className="relative rounded-xl overflow-hidden border border-stone-200 bg-stone-50 p-2 flex items-center gap-3">
-                <img src={uploadedPhoto} alt="Guest memory preview" className="w-16 h-16 object-cover rounded-lg shrink-0 border border-stone-200" />
+              <div className="relative rounded-xl overflow-hidden border border-zinc-500/20 bg-black/10 p-2 flex items-center gap-3">
+                <img src={uploadedPhoto} alt="Guest memory preview" className="w-16 h-16 object-cover rounded-lg shrink-0 border border-zinc-500/20" />
                 <div className="flex flex-col justify-center flex-1 min-w-0">
-                  <span className="text-xs font-bold text-stone-800 truncate">Photo Memory Attached</span>
-                  <span className="text-[10px] text-emerald-600 font-semibold">Ready to post with your blessing</span>
+                  <span className="text-xs font-bold truncate">Photo Memory Attached</span>
+                  <span className="text-[10px] text-emerald-500 font-semibold">Ready to post with your blessing</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setUploadedPhoto('')}
-                  className="p-1.5 rounded-lg bg-stone-200 hover:bg-rose-100 text-stone-600 hover:text-rose-600 transition-colors"
+                  className="p-1.5 rounded-lg bg-black/20 hover:bg-rose-500/20 text-stone-300 hover:text-rose-300 transition-colors"
                   title="Remove picture"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -794,19 +966,39 @@ export const RsvpForm: React.FC<RsvpFormProps> = ({
                   const input = document.getElementById('guest-photo-upload') as HTMLInputElement | null;
                   if (input) input.click();
                 }}
-                className="w-full py-3 px-4 border border-dashed border-stone-300 hover:border-amber-500 rounded-xl bg-stone-50/50 hover:bg-stone-50 text-xs font-semibold text-stone-600 hover:text-amber-700 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 border border-dashed border-zinc-500/30 hover:border-amber-500/50 rounded-xl bg-black/5 hover:bg-black/10 text-xs font-semibold opacity-80 transition-all flex items-center justify-center gap-2"
               >
-                <Upload className="w-4 h-4 text-amber-600" />
+                <Upload className="w-4 h-4 opacity-80" />
                 <span>Upload a photo with your message</span>
               </button>
             )}
           </div>
 
-          {errorMsg && (
-            <div className="p-3.5 bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-600 rounded-lg">
-              {errorMsg}
-            </div>
-          )}
+          <AnimatePresence>
+            {errorMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                className={
+                  errorMsg.includes("already received") || errorMsg.includes("already responded")
+                    ? styles.warningBox
+                    : styles.errorBox
+                }
+              >
+                <div className="flex items-start gap-2.5">
+                  {errorMsg.includes("already received") || errorMsg.includes("already responded") ? (
+                    <Info className="w-4 h-4 shrink-0 mt-0.5 opacity-80" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 opacity-80" />
+                  )}
+                  <div className="flex-1 text-xs font-medium leading-relaxed">
+                    {errorMsg}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Submit RSVP Button */}
           <button

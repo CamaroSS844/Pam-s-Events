@@ -1764,7 +1764,7 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
         {/* Document Header */}
         <div className="flex justify-between items-start border-b-2 border-stone-850 pb-5 mb-6">
           <div>
-            <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase font-bold">Woke Media Studio SaaS</span>
+            <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase font-bold">Pam's Events Studio SaaS</span>
             <h1 className="text-3xl font-serif font-black tracking-tight text-zinc-900 mt-1">Event Coordination Brief</h1>
             <p className="text-xs text-zinc-500 font-mono mt-1">GENERATED ON {new Date().toLocaleString([], { dateStyle: 'long', timeStyle: 'short' })}</p>
           </div>
@@ -1921,7 +1921,7 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
           <div className="border border-zinc-200 rounded-xl p-4 flex flex-col justify-between bg-zinc-50/20">
             <div>
               <span className="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-wider block mb-2">Operational Approval Block</span>
-              <p className="text-xs text-zinc-500 leading-relaxed">This brief provides the official coordination list as preserved by Woke Media Event Systems. Please cross-reference table IDs prior to venue setup.</p>
+              <p className="text-xs text-zinc-500 leading-relaxed">This brief provides the official coordination list as preserved by Pam's Events. Please cross-reference table IDs prior to venue setup.</p>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-6">
               <div className="border-t border-zinc-300 pt-1.5 text-center">
