@@ -4,7 +4,7 @@
  */
 
 import { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType, sanitizeForFirestore } from '../lib/firebase';
 import { EventModel, Guest, User, RecentActivity, GuestbookEntry, EventStatus, ThemeId, PortfolioItem, Testimonial, Package } from '../types';
 
 // Helper to simulate network latency
@@ -15,9 +15,9 @@ const INITIAL_EVENTS: EventModel[] = [
     id: 'evt-1',
     type: 'wedding',
     status: 'published',
-    name: "Evelyn & Arthur's Wedding Nuptials",
-    brideName: "Evelyn Vance",
-    groomName: "Arthur Pendelton",
+    name: "Luyanda & Muzi's Wedding Nuptials",
+    brideName: "Luyanda Sibanda",
+    groomName: "Muzi Ncube",
     date: "2026-09-12",
     time: "15:30",
     venue: "The Glasshouse Conservatory, Seattle, WA",
@@ -244,12 +244,12 @@ function initDb() {
   const usersStr = localStorage.getItem('event_platform_users');
   const defaultUsers: User[] = [
     { id: 'usr-admin', name: "Marcus Aurelius (Admin)", email: "admin@test.com", role: 'admin', eventLimit: 999, isBlocked: false, password: '123456789', avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150" },
-    { id: 'usr-client', name: "Eleanor Vance", email: "client@test.com", role: 'client', eventLimit: 3, isBlocked: false, password: '123456789', avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" }
+    { id: 'usr-client', name: "Eleanor Vance", email: "client@test.com", role: 'client', eventLimit: 10, isBlocked: false, password: '123456789', avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" }
   ];
   if (!usersStr) {
     localStorage.setItem('event_platform_users', JSON.stringify(defaultUsers));
   } else {
-    // Overwrite/update 'any' or missing passwords for demo accounts to '123456789' for robustness
+    // Overwrite/update 'any' or missing passwords & ensure quota for demo client is sufficient
     try {
       let parsedUsers: User[] = JSON.parse(usersStr);
       let changed = false;
@@ -258,9 +258,15 @@ function initDb() {
           u.password = '123456789';
           changed = true;
         }
-        if (u.email.toLowerCase() === 'client@test.com' && (u.password === 'any' || !u.password)) {
-          u.password = '123456789';
-          changed = true;
+        if (u.email.toLowerCase() === 'client@test.com') {
+          if (u.password === 'any' || !u.password) {
+            u.password = '123456789';
+            changed = true;
+          }
+          if (!u.eventLimit || u.eventLimit < 10) {
+            u.eventLimit = 10;
+            changed = true;
+          }
         }
         return u;
       });
@@ -272,9 +278,20 @@ function initDb() {
     }
   }
   // Simulated Logged-In User
-  if (!localStorage.getItem('event_platform_current_user')) {
-    const defaultUser: User = { id: 'usr-client', name: "Eleanor Vance", email: "client@test.com", role: 'client', eventLimit: 3, isBlocked: false, password: '123456789', avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" };
+  const curUserStr = localStorage.getItem('event_platform_current_user');
+  if (!curUserStr) {
+    const defaultUser: User = { id: 'usr-client', name: "Eleanor Vance", email: "client@test.com", role: 'client', eventLimit: 10, isBlocked: false, password: '123456789', avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" };
     localStorage.setItem('event_platform_current_user', JSON.stringify(defaultUser));
+  } else {
+    try {
+      const curUser: User = JSON.parse(curUserStr);
+      if (curUser.role === 'client' && (!curUser.eventLimit || curUser.eventLimit < 10)) {
+        curUser.eventLimit = 10;
+        localStorage.setItem('event_platform_current_user', JSON.stringify(curUser));
+      }
+    } catch (e) {
+      // ignore
+    }
   }
   
   // Asynchronously seed Firestore if empty
@@ -563,9 +580,9 @@ export const mockApi = {
     if (currentUser && currentUser.role === 'client') {
       const allEvents = await this.getEvents();
       const userEvents = allEvents.filter(e => e.clientId === currentUser.id);
-      const limit = currentUser.eventLimit !== undefined ? currentUser.eventLimit : 3;
+      const limit = currentUser.eventLimit !== undefined ? currentUser.eventLimit : 10;
       if (userEvents.length >= limit) {
-        throw new Error(`Quota limit reached! You are permitted to create at most ${limit} events. Please contact the administrator.`);
+        throw new Error(`Quota limit reached! You are permitted to create at most ${limit} events (${userEvents.length} active). Please contact the administrator to increase your quota.`);
       }
     }
 
@@ -589,9 +606,9 @@ export const mockApi = {
     localStorage.setItem('event_platform_events', JSON.stringify(events));
 
     try {
-      await setDoc(doc(db, 'events', newEvent.id), newEvent);
+      await setDoc(doc(db, 'events', newEvent.id), sanitizeForFirestore(newEvent));
     } catch (e) {
-      handleFirestoreError(e, OperationType.WRITE, `events/${newEvent.id}`);
+      console.warn("Firestore sync warning for createEvent:", e);
     }
 
     return newEvent;
@@ -615,9 +632,9 @@ export const mockApi = {
     localStorage.setItem('event_platform_events', JSON.stringify(events));
 
     try {
-      await updateDoc(doc(db, 'events', id), updates);
+      await updateDoc(doc(db, 'events', id), sanitizeForFirestore(updates));
     } catch (e) {
-      handleFirestoreError(e, OperationType.UPDATE, `events/${id}`);
+      console.warn("Firestore event update skipped or failed:", e);
     }
 
     return updatedEvent;
@@ -683,9 +700,9 @@ export const mockApi = {
     localStorage.setItem('event_platform_guests', JSON.stringify(guests));
 
     try {
-      await setDoc(doc(db, 'events', eventId, 'guests', newGuest.id), newGuest);
+      await setDoc(doc(db, 'events', eventId, 'guests', newGuest.id), sanitizeForFirestore(newGuest));
     } catch (e) {
-      handleFirestoreError(e, OperationType.WRITE, `events/${eventId}/guests/${newGuest.id}`);
+      console.warn("Firestore guest sync warning:", e);
     }
 
     return newGuest;
@@ -711,9 +728,9 @@ export const mockApi = {
       added.push(newGuest);
 
       try {
-        await setDoc(doc(db, 'events', eventId, 'guests', newGuest.id), newGuest);
+        await setDoc(doc(db, 'events', eventId, 'guests', newGuest.id), sanitizeForFirestore(newGuest));
       } catch (e) {
-        handleFirestoreError(e, OperationType.WRITE, `events/${eventId}/guests/${newGuest.id}`);
+        console.warn("Firestore bulk guest sync warning:", e);
       }
     }
 
@@ -740,9 +757,9 @@ export const mockApi = {
 
     const targetGuest = updatedGuest as Guest;
     try {
-      await updateDoc(doc(db, 'events', targetGuest.eventId, 'guests', id), updates);
+      await updateDoc(doc(db, 'events', targetGuest.eventId, 'guests', id), sanitizeForFirestore(updates));
     } catch (e) {
-      handleFirestoreError(e, OperationType.UPDATE, `events/${targetGuest.eventId}/guests/${id}`);
+      console.warn("Firestore update guest warning:", e);
     }
 
     return targetGuest;

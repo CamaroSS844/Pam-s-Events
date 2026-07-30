@@ -19,6 +19,7 @@ import {
   InteractiveProgramTimeline,
   InteractiveFaqAccordion,
   InteractiveEnvelopeHero,
+  InteractiveGiftRegistry,
   GoldShimmerParticles,
   PearlescentFlourishBG,
   GeometricGridLinesBG,
@@ -705,20 +706,19 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
             <div className="w-16 h-0.5 bg-[#D4AF37] mx-auto mt-3" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-            {(registryItems || []).map((item, idx) => (
-              <div key={idx} className="bg-white/95 backdrop-blur-sm border border-[#D4AF37]/30 p-5 sm:p-8 rounded-lg flex flex-col justify-between min-h-[11rem] sm:h-48 hover:border-[#D4AF37]/60 transition-colors shadow-md relative overflow-hidden group">
-                <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-4 -right-4 w-14 h-14 object-contain pointer-events-none opacity-15 mix-blend-multiply group-hover:opacity-35 transition-opacity" alt="Filigree Corner" />
-                <div>
-                  <h3 className="text-xs font-bold text-[#2C2C2C] uppercase tracking-wider pb-2 border-b border-[#D4AF37]/20 font-luxury-heading break-words">{item.store}</h3>
-                  <p className="text-xs text-stone-600 leading-relaxed mt-3 sm:mt-4 font-light break-words">{item.note}</p>
-                </div>
-                <a href={item.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#CD7F32] hover:text-[#D4AF37] uppercase tracking-wider pt-2 flex items-center gap-1 transition-colors font-luxury-heading mt-3 sm:mt-0">
-                  VIEW REGISTRY →
-                </a>
-              </div>
-            ))}
-          </div>
+          <InteractiveGiftRegistry
+            event={event}
+            themeId="luxury"
+            cardBgClass="bg-white/95 backdrop-blur-sm"
+            cardBorderClass="border-[#D4AF37]/30 hover:border-[#D4AF37]/60"
+            titleColorClass="text-[#2C2C2C]"
+            descColorClass="text-stone-600 font-light"
+            ctaColorClass="text-[#CD7F32] hover:text-[#D4AF37]"
+            headingFont="font-luxury-heading"
+            cornerDecor={
+              <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-4 -right-4 w-14 h-14 object-contain pointer-events-none opacity-15 mix-blend-multiply group-hover:opacity-35 transition-opacity" alt="Filigree Corner" />
+            }
+          />
         </div>
       </FadeInSection>
 
@@ -1127,20 +1127,19 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
             <div className="w-8 h-[0.5px] bg-[#3A3A3A] mx-auto mt-3 sm:mt-4" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-12 text-left">
-            {(registryItems || []).map((item, idx) => (
-              <div key={idx} className="bg-white border border-[#C0C0C0]/30 p-5 sm:p-8 flex flex-col justify-between min-h-[12rem] h-auto hover:border-[#3A3A3A] transition-colors duration-300 shadow-sm relative group overflow-hidden">
-                <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-3 -right-3 w-12 h-12 object-contain pointer-events-none opacity-15 mix-blend-multiply group-hover:opacity-35 transition-opacity" alt="Filigree Corner" />
-                <div>
-                  <h3 className="text-xs font-semibold text-[#3A3A3A] uppercase tracking-[0.15em] sm:tracking-[0.2em] pb-3 border-b border-[#C0C0C0]/20 break-words">{item.store}</h3>
-                  <p className="text-xs text-[#9E9E9E] leading-relaxed mt-3 sm:mt-4 font-light tracking-wide break-words">{item.note}</p>
-                </div>
-                <a href={item.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#3A3A3A] hover:text-[#9E9E9E] uppercase tracking-widest border-t border-[#C0C0C0]/20 pt-3 sm:pt-4 mt-3 sm:mt-4 transition-colors">
-                  View Registry →
-                </a>
-              </div>
-            ))}
-          </div>
+          <InteractiveGiftRegistry
+            event={event}
+            themeId="elegant"
+            cardBgClass="bg-white"
+            cardBorderClass="border-[#C0C0C0]/30 hover:border-[#3A3A3A]"
+            titleColorClass="text-[#3A3A3A]"
+            descColorClass="text-[#9E9E9E] font-light tracking-wide"
+            ctaColorClass="text-[#3A3A3A] hover:text-[#9E9E9E]"
+            headingFont="font-elegant-heading"
+            cornerDecor={
+              <img src="/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png" className="absolute -top-3 -right-3 w-12 h-12 object-contain pointer-events-none opacity-15 mix-blend-multiply group-hover:opacity-35 transition-opacity" alt="Filigree Corner" />
+            }
+          />
         </div>
       </FadeInSection>
 
@@ -1530,19 +1529,16 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
         <FadeInSection className="md:col-span-12 bg-white rounded-2xl p-5 sm:p-8 border border-[#5B7C99]/30 shadow-md">
           <span className="text-[9px] sm:text-[10px] font-modern-heading text-[#1A2B4A] font-bold uppercase tracking-[0.2em] block mb-4 sm:mb-6">GIFT REGISTRY</span>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-            {(registryItems || []).map((item, idx) => (
-              <div key={idx} className="p-4 sm:p-6 bg-[#FAF8F3] border border-[#5B7C99]/20 rounded-xl flex flex-col justify-between min-h-[9rem] sm:h-40 hover:border-[#C9A961] transition-all">
-                <div>
-                  <h4 className="text-xs font-modern-heading font-bold text-[#1A2B4A] uppercase tracking-widest border-b border-[#5B7C99]/10 pb-2 break-words">{item.store}</h4>
-                  <p className="text-xs text-[#2D2D2D]/70 leading-relaxed mt-2 sm:mt-3 font-light break-words">{item.note}</p>
-                </div>
-                <a href={item.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#C9A961] hover:text-[#1A2B4A] uppercase tracking-widest pt-2 flex items-center gap-1 transition-colors">
-                  VIEW REGISTRY →
-                </a>
-              </div>
-            ))}
-          </div>
+          <InteractiveGiftRegistry
+            event={event}
+            themeId="modern"
+            cardBgClass="bg-[#FAF8F3]"
+            cardBorderClass="border-[#5B7C99]/20 hover:border-[#C9A961]"
+            titleColorClass="text-[#1A2B4A]"
+            descColorClass="text-[#2D2D2D]/70 font-light"
+            ctaColorClass="text-[#C9A961] hover:text-[#1A2B4A]"
+            headingFont="font-modern-heading"
+          />
         </FadeInSection>
 
         {/* Tile 8: RSVP Form Console (span 12) */}
@@ -1871,19 +1867,16 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
             <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase break-words">GIFT REGISTRY</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-            {(registryItems || []).map((item, idx) => (
-              <div key={idx} className="bg-[#FAF6F0] border border-[#D4C4B0]/40 p-5 sm:p-6 rounded-xl flex flex-col justify-between min-h-[11rem] sm:h-48 hover:border-[#9CAF88] transition-colors shadow-sm">
-                <div>
-                  <h3 className="text-xs font-bold text-[#5C4033] uppercase tracking-widest pb-2 border-b border-[#D4C4B0]/20 font-sans break-words">{item.store}</h3>
-                  <p className="text-xs text-[#3E3E3E] leading-relaxed mt-3 sm:mt-4 font-light break-words">{item.note}</p>
-                </div>
-                <a href={item.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#C97064] hover:text-[#5C4033] uppercase tracking-wider pt-2 flex items-center gap-1 transition-colors font-sans mt-3 sm:0">
-                  VIEW REGISTRY →
-                </a>
-              </div>
-            ))}
-          </div>
+          <InteractiveGiftRegistry
+            event={event}
+            themeId="rustic"
+            cardBgClass="bg-[#FAF6F0]"
+            cardBorderClass="border-[#D4C4B0]/40 hover:border-[#9CAF88]"
+            titleColorClass="text-[#5C4033]"
+            descColorClass="text-[#3E3E3E] font-light"
+            ctaColorClass="text-[#C97064] hover:text-[#5C4033]"
+            headingFont="font-rustic-heading"
+          />
         </div>
       </FadeInSection>
 
@@ -2228,19 +2221,16 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
             <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic break-words">Gift Registry</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-left">
-            {(registryItems || []).map((item, idx) => (
-              <div key={idx} className="bg-white border border-[#F4E4E6] p-5 sm:p-8 rounded-3xl flex flex-col justify-between min-h-[11rem] sm:h-52 hover:shadow-md transition-shadow duration-300">
-                <div>
-                  <h3 className="text-xs font-bold text-[#3D5A3D] uppercase tracking-wider pb-2 border-b border-[#F4E4E6]/50 font-sans break-words">{item.store}</h3>
-                  <p className="text-xs text-[#3D5A3D]/80 leading-relaxed mt-3 sm:mt-4 font-light italic break-words">"{item.note}"</p>
-                </div>
-                <a href={item.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#C97064] hover:text-[#3D5A3D] uppercase tracking-wider pt-2 flex items-center gap-1 transition-colors font-sans mt-3 sm:mt-0">
-                  VIEW REGISTRY →
-                </a>
-              </div>
-            ))}
-          </div>
+          <InteractiveGiftRegistry
+            event={event}
+            themeId="floral"
+            cardBgClass="bg-white"
+            cardBorderClass="border-[#F4E4E6] rounded-3xl"
+            titleColorClass="text-[#3D5A3D]"
+            descColorClass="text-[#3D5A3D]/80 font-light italic"
+            ctaColorClass="text-[#C97064] hover:text-[#3D5A3D]"
+            headingFont="font-floral-heading"
+          />
         </div>
       </FadeInSection>
 
@@ -2540,6 +2530,28 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
         </div>
       </FadeInSection>
 
+      {/* Gift Registry */}
+      <FadeInSection className="py-14 sm:py-20 bg-amber-50/10 border-t border-amber-200 relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-20">
+          <div className="mb-10 sm:mb-14">
+            <span className="text-[9px] sm:text-[10px] tracking-widest text-amber-800 font-bold block mb-2 uppercase font-serif">REGISTRY</span>
+            <h2 className="text-lg sm:text-2xl font-bold text-amber-950 uppercase tracking-wide break-words font-serif">GIFT REGISTRY</h2>
+            <div className="w-12 h-0.5 bg-amber-800/40 mx-auto mt-2" />
+          </div>
+
+          <InteractiveGiftRegistry
+            event={event}
+            themeId="traditional"
+            cardBgClass="bg-white"
+            cardBorderClass="border-2 border-double border-amber-900/30 hover:border-amber-800"
+            titleColorClass="text-amber-950 font-serif"
+            descColorClass="text-amber-900/80 font-serif"
+            ctaColorClass="text-amber-900 hover:text-amber-700"
+            headingFont="font-serif font-bold"
+          />
+        </div>
+      </FadeInSection>
+
       {/* RSVP Section */}
       <FadeInSection id="rsvp-anchor" className="py-14 sm:py-20 bg-amber-50/20 border-t border-amber-200 relative overflow-hidden">
         <div className="max-w-lg mx-auto px-4 sm:px-6 relative z-20">
@@ -2757,6 +2769,22 @@ const MinimalTheme: React.FC<ThemeRendererProps> = ({
               />
             </div>
           </div>
+        </FadeInSection>
+
+        {/* Gift Registry */}
+        <FadeInSection className="border-b border-black pb-8 sm:pb-12">
+          <span className="text-[9px] uppercase tracking-widest text-stone-400 block mb-4 font-mono">GIFT REGISTRY</span>
+          <h3 className="text-base sm:text-lg font-bold font-mono text-black uppercase mb-4">GIFT REGISTRY</h3>
+          <InteractiveGiftRegistry
+            event={event}
+            themeId="minimal"
+            cardBgClass="bg-white"
+            cardBorderClass="border-black hover:bg-stone-50"
+            titleColorClass="text-black font-mono"
+            descColorClass="text-stone-700 font-mono"
+            ctaColorClass="text-black hover:underline font-mono"
+            headingFont="font-mono"
+          />
         </FadeInSection>
 
         {/* RSVP FORM stark console */}

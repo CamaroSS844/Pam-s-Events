@@ -357,10 +357,10 @@ export const EventWizard: React.FC<EventWizardProps> = ({ onComplete, onCancel, 
     const finalEvent = {
       type: eventType,
       status: 'pending_approval' as const,
-      name: basicInfo.name || `${eventType === 'wedding' ? basicInfo.brideName + ' & ' + basicInfo.groomName : basicInfo.birthdayPerson}'s Celebration Website`,
-      brideName: eventType === 'wedding' ? basicInfo.brideName : undefined,
-      groomName: eventType === 'wedding' ? basicInfo.groomName : undefined,
-      birthdayPerson: eventType === 'birthday' ? basicInfo.birthdayPerson : undefined,
+      name: basicInfo.name || `${eventType === 'wedding' ? (basicInfo.brideName || 'Bride') + ' & ' + (basicInfo.groomName || 'Groom') : (basicInfo.birthdayPerson || 'Celebrant')}'s Celebration Website`,
+      brideName: eventType === 'wedding' ? (basicInfo.brideName || '') : '',
+      groomName: eventType === 'wedding' ? (basicInfo.groomName || '') : '',
+      birthdayPerson: eventType === 'birthday' ? (basicInfo.birthdayPerson || '') : '',
       date: basicInfo.date,
       time: basicInfo.time,
       venue: basicInfo.venue || "TBD Venue Coordinates",
@@ -373,9 +373,9 @@ export const EventWizard: React.FC<EventWizardProps> = ({ onComplete, onCancel, 
       galleryImages: galleryImages,
       heroBackground: heroBackground,
       timelineSteps: agendaItems,
-      rsvpDeadline: basicInfo.rsvpDeadline || undefined,
+      rsvpDeadline: basicInfo.rsvpDeadline || '',
       maxGuestsPerInvitation: basicInfo.maxGuestsPerInvitation || 4,
-      slug: basicInfo.slug || undefined,
+      slug: basicInfo.slug || '',
       musicUrl: customMusicUrl || (MUSIC_PRESETS.find(p => p.id === selectedMusicPreset)?.url || MUSIC_PRESETS[0].url),
       musicTitle: musicTitle || "Celebration Background Music",
       musicAutoPlay: musicAutoPlay
@@ -389,8 +389,9 @@ export const EventWizard: React.FC<EventWizardProps> = ({ onComplete, onCancel, 
       }
       toast("Event submitted! Waiting for Media Admin approval.", "success");
       onComplete();
-    } catch (e) {
-      toast("Failed to submit event.", "error");
+    } catch (e: any) {
+      console.error("Failed to submit event:", e);
+      toast(e?.message || "Failed to submit event.", "error");
     }
   };
 

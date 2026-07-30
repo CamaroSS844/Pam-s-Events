@@ -285,11 +285,26 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
     { time: "10:30 PM", title: "Music & Dancing", desc: "Dance and celebrate into the evening." }
   ]);
 
-  // Registry options
+  // Registry options (Zimbabwe relevant)
   const registryItems = [
-    { store: "Crate & Barrel", link: "https://www.crateandbarrel.com", note: "Kitchenware, dining accessories, and home decor." },
-    { store: "Amazon Registry", link: "https://www.amazon.com/wedding", note: "Home goods, travel gear, and household essentials." },
-    { store: "Honeyfund", link: "https://www.honeyfund.com", note: "Contribute toward our honeymoon trip and experiences." }
+    { 
+      id: "ecocash", 
+      store: "EcoCash Gift", 
+      cta: "SEND GIFT →", 
+      note: "Send a monetary gift via EcoCash as we begin this new chapter together." 
+    },
+    { 
+      id: "home_fund", 
+      store: "Home Fund", 
+      cta: "CONTRIBUTE →", 
+      note: "Help us create our home with contributions towards furniture, appliances, and household essentials." 
+    },
+    { 
+      id: "honeymoon_fund", 
+      store: "Honeymoon Fund", 
+      cta: "CONTRIBUTE →", 
+      note: "Help us make unforgettable memories by contributing towards our honeymoon and experiences." 
+    }
   ];
 
   const handleRsvpSubmit = async (e: React.FormEvent) => {

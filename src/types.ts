@@ -47,6 +47,8 @@ export interface EventModel {
   galleryImages: string[];
   heroBackground: string;
   timelineSteps?: { time: string; title: string; desc: string }[];
+  ecocashNumber?: string;
+  ecocashName?: string;
   guestCount?: number;
   rsvpCount?: number;
   createdAt: string;

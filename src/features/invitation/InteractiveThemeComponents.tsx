@@ -8,8 +8,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   MailOpen, Heart, ChevronDown, X, Clock, MapPin, 
   Calendar, Check, Copy, Maximize2, Star, ShieldCheck, 
-  ChevronLeft, ChevronRight, HelpCircle, Info, Image as ImageIcon
+  ChevronLeft, ChevronRight, HelpCircle, Info, Image as ImageIcon,
+  Smartphone, Home, Plane, Gift, Send, ExternalLink, Sparkles
 } from 'lucide-react';
+import { EventModel } from '../../types';
 
 /* ==========================================
    1. GALLERY LIGHTBOX & INTERACTIVE GRID
@@ -348,7 +350,7 @@ export const InteractiveEnvelopeHero: React.FC<{
         style={{ color: accentColor, backgroundColor: `${accentColor}15`, borderColor: `${accentColor}50` }}
       >
         <span className="relative z-10 flex items-center gap-2">
-          <img src="/logo.jpg" className="w-5 h-5 rounded-full object-cover border border-amber-400/50 shadow-sm" alt="Seal" />
+          <img src="/logo.jpg" loading="lazy" decoding="async" className="w-5 h-5 rounded-full object-cover border border-amber-400/50 shadow-sm pointer-events-none" alt="Seal" />
           <span>{isOpen ? 'Fold Invitation Message' : 'Unseal Interactive Welcome Note'}</span>
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
             <ChevronDown className="w-3.5 h-3.5" />
@@ -370,7 +372,7 @@ export const InteractiveEnvelopeHero: React.FC<{
 
             <div className="relative z-10 flex flex-col items-center space-y-3">
               <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-amber-300 via-amber-500 to-amber-200 shadow-md">
-                <img src="/IMG-20260728-WA0003.png" className="w-full h-full rounded-full object-cover" alt="Botanical Ring Seal" />
+                <img src="/IMG-20260728-WA0003.png" loading="lazy" decoding="async" className="w-full h-full rounded-full object-cover pointer-events-none" alt="Botanical Ring Seal" />
               </div>
 
               <h4 className="text-base font-bold text-stone-900 uppercase tracking-widest">{title}</h4>
@@ -403,23 +405,27 @@ export const GoldShimmerParticles: React.FC = () => {
           scale: [1, 1.05, 1],
         }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-[#D4AF37]/20 via-[#FFF3A8]/10 to-transparent blur-3xl"
+        className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-[#D4AF37]/20 via-[#FFF3A8]/10 to-transparent blur-3xl will-change-transform transform-gpu"
       />
       {/* Floating Gold Wreath Watermark */}
       <motion.img
         src="/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png"
+        loading="lazy"
+        decoding="async"
         alt=""
         animate={{ rotate: [0, 360] }}
         transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
-        className="absolute -top-16 -left-16 w-64 h-64 opacity-15 mix-blend-screen"
+        className="absolute -top-16 -left-16 w-64 h-64 opacity-15 mix-blend-screen pointer-events-none will-change-transform transform-gpu"
       />
       {/* Floating Gold Crest Watermark */}
       <motion.img
         src="/ChatGPT Image Jul 28, 2026, 12_21_45 PM.png"
+        loading="lazy"
+        decoding="async"
         alt=""
         animate={{ y: [0, 15, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/2 right-4 w-48 h-48 opacity-10 mix-blend-screen"
+        className="absolute top-1/2 right-4 w-48 h-48 opacity-10 mix-blend-screen pointer-events-none will-change-transform transform-gpu"
       />
     </div>
   );
@@ -435,10 +441,12 @@ export const PearlescentFlourishBG: React.FC = () => {
       />
       <motion.img
         src="/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png"
+        loading="lazy"
+        decoding="async"
         alt=""
         animate={{ opacity: [0.1, 0.25, 0.1] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-0 right-0 w-80 h-80 opacity-20 pointer-events-none"
+        className="absolute top-0 right-0 w-80 h-80 opacity-20 pointer-events-none will-change-transform transform-gpu"
       />
     </div>
   );
@@ -450,10 +458,12 @@ export const GeometricGridLinesBG: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <motion.img
         src="/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png"
+        loading="lazy"
+        decoding="async"
         alt=""
         animate={{ opacity: [0.08, 0.18, 0.08] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute inset-0 w-full h-full object-cover opacity-10 mix-blend-overlay"
+        className="absolute inset-0 w-full h-full object-cover opacity-10 mix-blend-overlay pointer-events-none will-change-transform transform-gpu"
       />
     </div>
   );
@@ -465,17 +475,21 @@ export const FallingLeavesBG: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <motion.img
         src="/IMG-20260728-WA0003.png"
+        loading="lazy"
+        decoding="async"
         alt=""
         animate={{ y: [0, 12, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-0 left-0 w-full max-w-xl opacity-20 mix-blend-multiply"
+        className="absolute top-0 left-0 w-full max-w-xl opacity-20 mix-blend-multiply pointer-events-none will-change-transform transform-gpu"
       />
       <motion.img
         src="/IMG-20260728-WA0005.png"
+        loading="lazy"
+        decoding="async"
         alt=""
         animate={{ y: [0, -12, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-0 right-0 w-full max-w-xl opacity-20 mix-blend-multiply"
+        className="absolute bottom-0 right-0 w-full max-w-xl opacity-20 mix-blend-multiply pointer-events-none will-change-transform transform-gpu"
       />
     </div>
   );
@@ -491,10 +505,12 @@ export const FloatingPetalsBG: React.FC = () => {
       />
       <motion.img
         src="/IMG-20260728-WA0011.png"
+        loading="lazy"
+        decoding="async"
         alt=""
         animate={{ y: [-5, 10, -5] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-0 left-0 right-0 w-full h-auto opacity-30 mix-blend-multiply"
+        className="absolute top-0 left-0 right-0 w-full h-auto opacity-30 mix-blend-multiply pointer-events-none will-change-transform transform-gpu"
       />
     </div>
   );
@@ -506,10 +522,12 @@ export const FiligreeMandalaBG: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 opacity-25 flex items-center justify-center">
       <motion.img
         src="/IMG-20260728-WA0007.png"
+        loading="lazy"
+        decoding="async"
         alt=""
         animate={{ scale: [1, 1.03, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        className="w-full h-full object-cover mix-blend-multiply"
+        className="w-full h-full object-cover mix-blend-multiply pointer-events-none will-change-transform transform-gpu"
       />
     </div>
   );
@@ -524,5 +542,493 @@ export const MinimalArchitecturalLines: React.FC = () => {
         style={{ backgroundImage: `url("/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png")`, backgroundSize: 'cover' }}
       />
     </div>
+  );
+};
+
+/* ==========================================
+   6. INTERACTIVE ZIMBABWE GIFT REGISTRY & MODAL
+   ========================================== */
+export interface RegistryOptionItem {
+  id?: string;
+  store: string;
+  note: string;
+  cta?: string;
+  link?: string;
+}
+
+export const InteractiveGiftRegistry: React.FC<{
+  event: EventModel;
+  themeId: string;
+  items?: RegistryOptionItem[];
+  cardBgClass?: string;
+  cardBorderClass?: string;
+  titleColorClass?: string;
+  descColorClass?: string;
+  ctaColorClass?: string;
+  headingFont?: string;
+  cornerDecor?: React.ReactNode;
+}> = ({
+  event,
+  themeId,
+  items,
+  cardBgClass = 'bg-white',
+  cardBorderClass = 'border-stone-200',
+  titleColorClass = 'text-stone-900',
+  descColorClass = 'text-stone-600',
+  ctaColorClass = 'text-amber-800 hover:text-amber-600',
+  headingFont = 'font-serif',
+  cornerDecor
+}) => {
+  const [activeModal, setActiveModal] = useState<'ecocash' | 'home_fund' | 'honeymoon_fund' | null>(null);
+  const [copiedEcocash, setCopiedEcocash] = useState(false);
+  
+  // Form states for fund contribution pledge
+  const [guestName, setGuestName] = useState('');
+  const [pledgeAmount, setPledgeAmount] = useState('');
+  const [pledgeNote, setPledgeNote] = useState('');
+  const [pledgeSubmitted, setPledgeSubmitted] = useState(false);
+
+  // Couple names & EcoCash details
+  const coupleName = event.type === 'wedding' 
+    ? `${event.brideName || 'Bride'} & ${event.groomName || 'Groom'}`
+    : (event.birthdayPerson || event.name || 'Event Host');
+  
+  const ecocashNum = event.ecocashNumber || '+263 77 123 4567';
+  const ecocashAccountName = event.ecocashName || coupleName;
+
+  const registryData = [
+    {
+      id: 'ecocash',
+      title: 'EcoCash Gift',
+      desc: 'Send a monetary gift via EcoCash as we begin this new chapter together.',
+      cta: 'SEND GIFT →',
+      icon: Smartphone
+    },
+    {
+      id: 'home_fund',
+      title: 'Home Fund',
+      desc: 'Help us create our home with contributions towards furniture, appliances, and household essentials.',
+      cta: 'CONTRIBUTE →',
+      icon: Home
+    },
+    {
+      id: 'honeymoon_fund',
+      title: 'Honeymoon Fund',
+      desc: 'Help us make unforgettable memories by contributing towards our honeymoon and experiences.',
+      cta: 'CONTRIBUTE →',
+      icon: Plane
+    }
+  ];
+
+  const handleCopyEcocash = () => {
+    navigator.clipboard.writeText(ecocashNum.replace(/\s+/g, ''));
+    setCopiedEcocash(true);
+    setTimeout(() => setCopiedEcocash(false), 2500);
+  };
+
+  const handlePledgeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guestName.trim()) return;
+    setPledgeSubmitted(true);
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+    setPledgeSubmitted(false);
+    setGuestName('');
+    setPledgeAmount('');
+    setPledgeNote('');
+  };
+
+  return (
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-left">
+        {registryData.map((item) => {
+          const IconComp = item.icon;
+          return (
+            <motion.div
+              key={item.id}
+              whileHover={{ y: -3, scale: 1.01 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setActiveModal(item.id as any)}
+              className={`${cardBgClass} border ${cardBorderClass} p-5 sm:p-7 rounded-xl flex flex-col justify-between min-h-[11rem] sm:min-h-[13rem] cursor-pointer group relative overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md`}
+            >
+              {cornerDecor}
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-stone-200/40">
+                  <h3 className={`text-xs font-bold ${titleColorClass} uppercase tracking-wider ${headingFont} break-words`}>
+                    {item.title}
+                  </h3>
+                  <div className="p-1.5 rounded-lg bg-stone-100/80 text-stone-600 group-hover:bg-amber-100/60 transition-colors">
+                    <IconComp className="w-4 h-4 shrink-0" />
+                  </div>
+                </div>
+                <p className={`text-xs ${descColorClass} leading-relaxed mt-3 sm:mt-4 font-light break-words`}>
+                  {item.desc}
+                </p>
+              </div>
+
+              <div className="pt-3 mt-3 border-t border-stone-200/30 flex items-center justify-between">
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${ctaColorClass} transition-colors flex items-center gap-1 ${headingFont}`}>
+                  {item.cta}
+                </span>
+                <span className="text-[9px] uppercase tracking-widest text-stone-400 font-mono">
+                  REGISTRY
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Interactive Modal / Drawer for EcoCash & Funds */}
+      <AnimatePresence>
+        {activeModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeModal}
+            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              transition={{ duration: 0.25 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 sm:p-8 relative text-left border border-stone-200 overflow-hidden my-auto"
+            >
+              {/* Close Button */}
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-2 rounded-full hover:bg-stone-100 transition-colors"
+                title="Close Modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* MODAL CONTENT 1: ECOCASH GIFT */}
+              {activeModal === 'ecocash' && (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3 border-b border-stone-100 pb-4">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200">
+                      <Smartphone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest block font-mono">ECOCASH DIRECT GIFT</span>
+                      <h3 className="text-base sm:text-lg font-bold text-stone-900 uppercase font-serif">EcoCash Gift Transfer</h3>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-stone-600 leading-relaxed">
+                    Send a monetary gift via EcoCash as we begin this new chapter together.
+                  </p>
+
+                  {/* EcoCash details box */}
+                  <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 sm:p-5 space-y-3 relative">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-stone-500 font-mono uppercase tracking-wider">ECOCASH NUMBER</span>
+                      <span className="text-[9px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded uppercase">Verified</span>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-stone-200 shadow-sm">
+                      <span className="text-base sm:text-lg font-mono font-bold text-stone-900 tracking-wider">
+                        {ecocashNum}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleCopyEcocash}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-medium transition-colors"
+                      >
+                        {copiedEcocash ? (
+                          <>
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="text-xs text-stone-700">
+                      <span className="text-[10px] text-stone-400 font-mono uppercase block">ACCOUNT NAME</span>
+                      <span className="font-semibold text-stone-900">{ecocashAccountName}</span>
+                    </div>
+                  </div>
+
+                  {/* Transfer steps */}
+                  <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 space-y-2">
+                    <span className="text-[10px] font-bold text-emerald-900 uppercase tracking-wider block font-mono">HOW TO SEND VIA ECOCASH:</span>
+                    <ol className="text-xs text-emerald-950 space-y-1 list-decimal list-inside leading-relaxed font-light">
+                      <li>Dial <strong className="font-semibold">*151#</strong> on your handset or open the EcoCash App.</li>
+                      <li>Select <strong>Send Money</strong>.</li>
+                      <li>Enter number: <strong className="font-semibold">{ecocashNum}</strong></li>
+                      <li>Confirm recipient name: <strong className="font-semibold">{ecocashAccountName}</strong></li>
+                      <li>Enter your gift amount and PIN to complete.</li>
+                    </ol>
+                  </div>
+
+                  {!pledgeSubmitted ? (
+                    <form onSubmit={handlePledgeSubmit} className="pt-2 border-t border-stone-100 space-y-3">
+                      <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block font-mono">LEAVE A GIFT NOTE (OPTIONAL)</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          required
+                          value={guestName}
+                          onChange={(e) => setGuestName(e.target.value)}
+                          placeholder="Your Name *"
+                          className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        />
+                        <input
+                          type="text"
+                          value={pledgeAmount}
+                          onChange={(e) => setPledgeAmount(e.target.value)}
+                          placeholder="Amount Sent (e.g. $50 USD / ZiG)"
+                          className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        value={pledgeNote}
+                        onChange={(e) => setPledgeNote(e.target.value)}
+                        placeholder="Blessing / Personal Message..."
+                        className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                      />
+                      <button
+                        type="submit"
+                        className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Heart className="w-4 h-4" />
+                        <span>Send Blessing Note & Confirm</span>
+                      </button>
+                    </form>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 bg-emerald-100/80 border border-emerald-300 text-emerald-900 rounded-xl text-center space-y-2"
+                    >
+                      <Check className="w-8 h-8 mx-auto text-emerald-700" />
+                      <h4 className="text-sm font-bold uppercase">Thank You So Much!</h4>
+                      <p className="text-xs text-emerald-800 leading-relaxed">
+                        Your gift note and best wishes have been received with love by {coupleName}.
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+              {/* MODAL CONTENT 2: HOME FUND */}
+              {activeModal === 'home_fund' && (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3 border-b border-stone-100 pb-4">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-200">
+                      <Home className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-blue-600 uppercase tracking-widest block font-mono">HOME ESSENTIALS</span>
+                      <h3 className="text-base sm:text-lg font-bold text-stone-900 uppercase font-serif">Home Fund Contribution</h3>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-stone-600 leading-relaxed">
+                    Help us create our home with contributions towards furniture, appliances, and household essentials.
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono text-stone-600">
+                    <div className="p-2.5 bg-stone-50 border border-stone-200 rounded-lg">
+                      <span className="block text-base mb-1">🛋️</span>
+                      <span>Furniture</span>
+                    </div>
+                    <div className="p-2.5 bg-stone-50 border border-stone-200 rounded-lg">
+                      <span className="block text-base mb-1">🍳</span>
+                      <span>Appliances</span>
+                    </div>
+                    <div className="p-2.5 bg-stone-50 border border-stone-200 rounded-lg">
+                      <span className="block text-base mb-1">🛏️</span>
+                      <span>Essentials</span>
+                    </div>
+                  </div>
+
+                  {/* EcoCash details box inside Home Fund */}
+                  <div className="bg-blue-50/40 border border-blue-100 rounded-xl p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-blue-900 font-mono uppercase">CONTRIBUTE VIA ECOCASH:</span>
+                      <button
+                        type="button"
+                        onClick={handleCopyEcocash}
+                        className="text-[10px] text-blue-700 font-bold hover:underline flex items-center gap-1"
+                      >
+                        {copiedEcocash ? 'Copied!' : 'Copy Number'}
+                      </button>
+                    </div>
+                    <div className="flex items-baseline justify-between text-xs text-stone-800">
+                      <span>EcoCash: <strong className="font-mono text-stone-900">{ecocashNum}</strong></span>
+                      <span className="text-[10px] text-stone-500">Name: {ecocashAccountName}</span>
+                    </div>
+                  </div>
+
+                  {!pledgeSubmitted ? (
+                    <form onSubmit={handlePledgeSubmit} className="pt-2 border-t border-stone-100 space-y-3">
+                      <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block font-mono">PLEDGE A HOME FUND CONTRIBUTION</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          required
+                          value={guestName}
+                          onChange={(e) => setGuestName(e.target.value)}
+                          placeholder="Your Name *"
+                          className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                        <input
+                          type="text"
+                          value={pledgeAmount}
+                          onChange={(e) => setPledgeAmount(e.target.value)}
+                          placeholder="Pledge Amount ($ / ZiG)"
+                          className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        value={pledgeNote}
+                        onChange={(e) => setPledgeNote(e.target.value)}
+                        placeholder="Message for the couple..."
+                        className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                      <button
+                        type="submit"
+                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Heart className="w-4 h-4" />
+                        <span>Submit Contribution Pledge</span>
+                      </button>
+                    </form>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 bg-blue-100/80 border border-blue-300 text-blue-900 rounded-xl text-center space-y-2"
+                    >
+                      <Check className="w-8 h-8 mx-auto text-blue-700" />
+                      <h4 className="text-sm font-bold uppercase">Contribution Pledge Received!</h4>
+                      <p className="text-xs text-blue-800 leading-relaxed">
+                        Thank you for helping {coupleName} furnish and build their home together.
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+              {/* MODAL CONTENT 3: HONEYMOON FUND */}
+              {activeModal === 'honeymoon_fund' && (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3 border-b border-stone-100 pb-4">
+                    <div className="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center shrink-0 border border-pink-200">
+                      <Plane className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-pink-600 uppercase tracking-widest block font-mono">HONEYMOON & EXPERIENCES</span>
+                      <h3 className="text-base sm:text-lg font-bold text-stone-900 uppercase font-serif">Honeymoon Fund Contribution</h3>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-stone-600 leading-relaxed">
+                    Help us make unforgettable memories by contributing towards our honeymoon and experiences.
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono text-stone-600">
+                    <div className="p-2.5 bg-stone-50 border border-stone-200 rounded-lg">
+                      <span className="block text-base mb-1">🌅</span>
+                      <span>Sunset Cruise</span>
+                    </div>
+                    <div className="p-2.5 bg-stone-50 border border-stone-200 rounded-lg">
+                      <span className="block text-base mb-1">🏖️</span>
+                      <span>Resort Stay</span>
+                    </div>
+                    <div className="p-2.5 bg-stone-50 border border-stone-200 rounded-lg">
+                      <span className="block text-base mb-1">✈️</span>
+                      <span>Excursions</span>
+                    </div>
+                  </div>
+
+                  {/* EcoCash details box inside Honeymoon Fund */}
+                  <div className="bg-pink-50/40 border border-pink-100 rounded-xl p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-pink-900 font-mono uppercase">CONTRIBUTE VIA ECOCASH:</span>
+                      <button
+                        type="button"
+                        onClick={handleCopyEcocash}
+                        className="text-[10px] text-pink-700 font-bold hover:underline flex items-center gap-1"
+                      >
+                        {copiedEcocash ? 'Copied!' : 'Copy Number'}
+                      </button>
+                    </div>
+                    <div className="flex items-baseline justify-between text-xs text-stone-800">
+                      <span>EcoCash: <strong className="font-mono text-stone-900">{ecocashNum}</strong></span>
+                      <span className="text-[10px] text-stone-500">Name: {ecocashAccountName}</span>
+                    </div>
+                  </div>
+
+                  {!pledgeSubmitted ? (
+                    <form onSubmit={handlePledgeSubmit} className="pt-2 border-t border-stone-100 space-y-3">
+                      <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block font-mono">PLEDGE A HONEYMOON CONTRIBUTION</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          required
+                          value={guestName}
+                          onChange={(e) => setGuestName(e.target.value)}
+                          placeholder="Your Name *"
+                          className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-500"
+                        />
+                        <input
+                          type="text"
+                          value={pledgeAmount}
+                          onChange={(e) => setPledgeAmount(e.target.value)}
+                          placeholder="Pledge Amount ($ / ZiG)"
+                          className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-500"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        value={pledgeNote}
+                        onChange={(e) => setPledgeNote(e.target.value)}
+                        placeholder="Honeymoon wishes for the couple..."
+                        className="w-full text-xs p-2.5 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-500"
+                      />
+                      <button
+                        type="submit"
+                        className="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Heart className="w-4 h-4" />
+                        <span>Submit Contribution Pledge</span>
+                      </button>
+                    </form>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 bg-pink-100/80 border border-pink-300 text-pink-900 rounded-xl text-center space-y-2"
+                    >
+                      <Check className="w-8 h-8 mx-auto text-pink-700" />
+                      <h4 className="text-sm font-bold uppercase">Honeymoon Contribution Pledge Received!</h4>
+                      <p className="text-xs text-pink-800 leading-relaxed">
+                        Thank you for helping {coupleName} make unforgettable honeymoon memories!
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
