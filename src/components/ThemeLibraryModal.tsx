@@ -16,7 +16,7 @@ interface ThemeLibraryModalProps {
 // Map each ThemeId to a gorgeous custom visual thumbnail representing that specific design archetype
 const THEME_THUMBNAILS: Record<ThemeId, { image: string; tag: string; features: string[] }> = {
   luxury: {
-    image: '/assets/invitation/wedding-rings.png',
+    image: 'public/wedding-rings.png',
     tag: 'Gold Wreath & Crest',
     features: ['Royal Gold Crest Wreath', 'Majestic Gold Scrollwork', 'Shimmering Metallic Frame']
   },
