@@ -114,7 +114,7 @@ const DashboardShell: React.FC<DashboardShellProps> = ({
         onClick={onNavigateHome}
       >
         <img
-          src="/logo.jpg"
+          src="/assets/branding/logo.jpg"
           alt="Pam's Events Logo"
           className="w-10 h-10 object-contain"
           referrerPolicy="no-referrer"

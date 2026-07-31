@@ -42,7 +42,6 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
 
   // Fallback Selector State to let users play with the Personalized Welcome features easily
   const [availableGuests, setAvailableGuests] = useState<Guest[]>([]);
-  const [activeGuestToken, setActiveGuestToken] = useState<string>(guestToken || '');
 
   useEffect(() => {
     async function loadData() {
@@ -113,8 +112,9 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
           setAvailableGuests(allGuests);
 
           // Find current guest
-          if (activeGuestToken) {
-            const matchedGuest = allGuests.find(g => g.token.toLowerCase() === activeGuestToken.toLowerCase());
+          const effectiveToken = guestToken;
+          if (effectiveToken) {
+            const matchedGuest = allGuests.find(g => g.token.toLowerCase() === effectiveToken.toLowerCase());
             if (matchedGuest) {
               setGuest(matchedGuest);
               setRsvpStatus(matchedGuest.rsvpStatus === 'declined' ? 'declined' : 'accepted');
@@ -130,6 +130,8 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
                 mockApi.addRecentActivity(matchedEvent.id, matchedGuest.name, 'opened_invitation', 'opened the invitation microsite');
               }
             }
+          } else if (allGuests.length > 0) {
+            setGuest(allGuests[0]);
           } else {
             setGuest(null);
           }
@@ -144,7 +146,7 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
       }
     }
     loadData();
-  }, [eventId, activeGuestToken, customEventData]);
+  }, [eventId, guestToken, customEventData]);
 
   // Dynamic Scroll Animation observer hook for smooth fade-in entrance animations
   useEffect(() => {
@@ -413,7 +415,7 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
               </span>
             ) : (
               <span className="bg-stone-100 text-zinc-600 border border-zinc-200 py-0.5 sm:py-1 px-2.5 sm:px-3 rounded-full font-bold">
-                Dear Guest
+                Welcome, Valued Guest
               </span>
             )}
           </div>
@@ -428,23 +430,6 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
             <Printer className="w-3.5 h-3.5 text-amber-600 shrink-0" />
             <span className="hidden xs:inline">Print as PDF</span>
           </button>
-
-          {/* Guest Selector Widget for testing */}
-          {!isGuestPreview && availableGuests.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <label className="text-[9px] sm:text-[10px] font-mono font-bold text-zinc-400 uppercase hidden md:inline">Test Guest:</label>
-              <select 
-                value={activeGuestToken} 
-                onChange={(e) => setActiveGuestToken(e.target.value)}
-                className="bg-white border border-zinc-250 py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-medium outline-none focus:ring-1 focus:ring-amber-400 max-w-[140px] sm:max-w-none"
-              >
-                <option value="">Generic (Dear Guest)</option>
-                {availableGuests.map(g => (
-                  <option key={g.id} value={g.token}>{g.name} ({g.rsvpStatus})</option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
       </div>
 
@@ -513,8 +498,6 @@ export const EventWebsite: React.FC<EventWebsiteProps> = ({
           isOpen={isPrintModalOpen}
           onClose={() => setIsPrintModalOpen(false)}
           event={event}
-          guests={availableGuests.length > 0 ? availableGuests : (guest ? [guest] : [])}
-          isPublicInvitationView={true}
         />
       )}
 

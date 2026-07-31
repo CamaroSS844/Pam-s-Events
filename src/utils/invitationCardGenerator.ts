@@ -169,8 +169,8 @@ export async function generateInvitationCardDataUrl(
         bodyColor: '#1E293B',
         borderPrimary: '#D4AF37',
         borderSecondary: '#E6C687',
-        cornerAsset: '/IMG-20260728-WA0007.png',
-        headerAsset: '/IMG-20260728-WA0007.png',
+        cornerAsset: '/assets/invitation/gold-vine-ornament.png',
+        headerAsset: '/assets/invitation/gold-vine-ornament.png',
         fontSerif: 'Georgia, serif',
         fontSans: 'sans-serif'
       };
@@ -183,8 +183,8 @@ export async function generateInvitationCardDataUrl(
         bodyColor: '#0F172A',
         borderPrimary: '#94A3B8',
         borderSecondary: '#CBD5E1',
-        cornerAsset: '/IMG-20260728-WA0003.png',
-        headerAsset: '/IMG-20260728-WA0007.png',
+        cornerAsset: '/assets/invitation/sage-botanical-leaves.png',
+        headerAsset: '/assets/invitation/gold-vine-ornament.png',
         fontSerif: 'Georgia, serif',
         fontSans: 'sans-serif'
       };
@@ -197,8 +197,8 @@ export async function generateInvitationCardDataUrl(
         bodyColor: '#0F172A',
         borderPrimary: '#1E3A8A',
         borderSecondary: '#93C5FD',
-        cornerAsset: '/IMG-20260728-WA0003.png',
-        headerAsset: '/IMG-20260728-WA0007.png',
+        cornerAsset: '/assets/invitation/sage-botanical-leaves.png',
+        headerAsset: '/assets/invitation/gold-vine-ornament.png',
         fontSerif: 'Georgia, serif',
         fontSans: 'sans-serif'
       };
@@ -211,8 +211,8 @@ export async function generateInvitationCardDataUrl(
         bodyColor: '#1C1917',
         borderPrimary: '#C97064',
         borderSecondary: '#FDBA74',
-        cornerAsset: '/IMG-20260728-WA0005.png',
-        headerAsset: '/IMG-20260728-WA0003.png',
+        cornerAsset: '/assets/invitation/botanical-eucalyptus-garland.png',
+        headerAsset: '/assets/invitation/sage-botanical-leaves.png',
         fontSerif: 'Georgia, serif',
         fontSans: 'sans-serif'
       };
@@ -225,8 +225,8 @@ export async function generateInvitationCardDataUrl(
         bodyColor: '#1E293B',
         borderPrimary: '#F472B6',
         borderSecondary: '#FBCFE8',
-        cornerAsset: '/IMG-20260728-WA0014.png',
-        headerAsset: '/IMG-20260728-WA0014.png',
+        cornerAsset: '/assets/invitation/rose-floral-arch.png',
+        headerAsset: '/assets/invitation/rose-floral-arch.png',
         fontSerif: 'Georgia, serif',
         fontSans: 'sans-serif'
       };
@@ -239,8 +239,8 @@ export async function generateInvitationCardDataUrl(
         bodyColor: '#1F2937',
         borderPrimary: '#B45309',
         borderSecondary: '#FDE68A',
-        cornerAsset: '/IMG-20260728-WA0003.png',
-        headerAsset: '/IMG-20260728-WA0007.png',
+        cornerAsset: '/assets/invitation/sage-botanical-leaves.png',
+        headerAsset: '/assets/invitation/gold-vine-ornament.png',
         fontSerif: 'Georgia, serif',
         fontSans: 'sans-serif'
       };
@@ -253,8 +253,8 @@ export async function generateInvitationCardDataUrl(
         bodyColor: '#262626',
         borderPrimary: '#525252',
         borderSecondary: '#D4D4D4',
-        cornerAsset: '/IMG-20260728-WA0007.png',
-        headerAsset: '/IMG-20260728-WA0007.png',
+        cornerAsset: '/assets/invitation/gold-vine-ornament.png',
+        headerAsset: '/assets/invitation/gold-vine-ornament.png',
         fontSerif: 'Georgia, serif',
         fontSans: 'sans-serif'
       };
@@ -269,7 +269,7 @@ export async function generateInvitationCardDataUrl(
   const [cornerImg, headerImg, ringsImg] = await Promise.all([
     loadImage(themeCfg.cornerAsset),
     loadImage(themeCfg.headerAsset),
-    loadImage('/chatgpt-wedding-rings.png')
+    loadImage('/assets/invitation/wedding-rings.png')
   ]);
 
   // Draw Subtle Decorative Corner Watermarks (Opacity ~ 8-10%)
@@ -452,7 +452,7 @@ export async function generateInvitationCardDataUrl(
   ctx.stroke();
 
   // Load and draw Pam's Events Logo inside center badge
-  const logoImg = await loadImage('/logo.jpg');
+  const logoImg = await loadImage('/assets/branding/logo.jpg');
   if (logoImg) {
     ctx.drawImage(logoImg, logoBadgeX + 8, logoBadgeY + 8, logoBadgeSize - 16, logoBadgeSize - 16);
   } else {

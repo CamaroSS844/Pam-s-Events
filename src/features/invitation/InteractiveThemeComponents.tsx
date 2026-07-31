@@ -337,7 +337,7 @@ export const InteractiveEnvelopeHero: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
 
   // Asset selection according to theme
-  const envelopeBgImage = themeId === 'floral' ? '/IMG-20260728-WA0014.png' : themeId === 'rustic' ? '/IMG-20260728-WA0005.png' : '/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png';
+  const envelopeBgImage = themeId === 'floral' ? '/assets/invitation/rose-floral-arch.png' : themeId === 'rustic' ? '/assets/invitation/botanical-eucalyptus-garland.png' : '/assets/invitation/filigree-corner-ornament.png';
 
   return (
     <div className="w-full flex flex-col items-center justify-center my-4">
@@ -350,7 +350,7 @@ export const InteractiveEnvelopeHero: React.FC<{
         style={{ color: accentColor, backgroundColor: `${accentColor}15`, borderColor: `${accentColor}50` }}
       >
         <span className="relative z-10 flex items-center gap-2">
-          <img src="/logo.jpg" loading="lazy" decoding="async" className="w-5 h-5 rounded-full object-cover border border-amber-400/50 shadow-sm pointer-events-none" alt="Seal" />
+          <img src="/assets/branding/logo.jpg" loading="lazy" decoding="async" className="w-5 h-5 rounded-full object-cover border border-amber-400/50 shadow-sm pointer-events-none" alt="Seal" />
           <span>{isOpen ? 'Fold Invitation Message' : 'Unseal Interactive Welcome Note'}</span>
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
             <ChevronDown className="w-3.5 h-3.5" />
@@ -372,7 +372,7 @@ export const InteractiveEnvelopeHero: React.FC<{
 
             <div className="relative z-10 flex flex-col items-center space-y-3">
               <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-amber-300 via-amber-500 to-amber-200 shadow-md">
-                <img src="/IMG-20260728-WA0003.png" loading="lazy" decoding="async" className="w-full h-full rounded-full object-cover pointer-events-none" alt="Botanical Ring Seal" />
+                <img src="/assets/invitation/sage-botanical-leaves.png" loading="lazy" decoding="async" className="w-full h-full rounded-full object-cover pointer-events-none" alt="Botanical Ring Seal" />
               </div>
 
               <h4 className="text-base font-bold text-stone-900 uppercase tracking-widest">{title}</h4>
@@ -409,7 +409,7 @@ export const GoldShimmerParticles: React.FC = () => {
       />
       {/* Floating Gold Wreath Watermark */}
       <motion.img
-        src="/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png"
+        src="/assets/invitation/wedding-rings.png"
         loading="lazy"
         decoding="async"
         alt=""
@@ -419,7 +419,7 @@ export const GoldShimmerParticles: React.FC = () => {
       />
       {/* Floating Gold Crest Watermark */}
       <motion.img
-        src="/ChatGPT Image Jul 28, 2026, 12_21_45 PM.png"
+        src="/assets/invitation/golden-ornament-frame.png"
         loading="lazy"
         decoding="async"
         alt=""
@@ -437,10 +437,10 @@ export const PearlescentFlourishBG: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <div 
         className="absolute inset-0 opacity-15 mix-blend-multiply" 
-        style={{ backgroundImage: `url("/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png")`, backgroundSize: 'cover' }} 
+        style={{ backgroundImage: `url("/assets/invitation/filigree-corner-ornament.png")`, backgroundSize: 'cover' }} 
       />
       <motion.img
-        src="/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png"
+        src="/assets/invitation/geometric-gold-frame.png"
         loading="lazy"
         decoding="async"
         alt=""
@@ -457,7 +457,7 @@ export const GeometricGridLinesBG: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <motion.img
-        src="/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png"
+        src="/assets/invitation/geometric-gold-frame.png"
         loading="lazy"
         decoding="async"
         alt=""
@@ -474,7 +474,7 @@ export const FallingLeavesBG: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <motion.img
-        src="/IMG-20260728-WA0003.png"
+        src="/assets/invitation/sage-botanical-leaves.png"
         loading="lazy"
         decoding="async"
         alt=""
@@ -483,7 +483,7 @@ export const FallingLeavesBG: React.FC = () => {
         className="absolute top-0 left-0 w-full max-w-xl opacity-20 mix-blend-multiply pointer-events-none will-change-transform transform-gpu"
       />
       <motion.img
-        src="/IMG-20260728-WA0005.png"
+        src="/assets/invitation/botanical-eucalyptus-garland.png"
         loading="lazy"
         decoding="async"
         alt=""
@@ -501,10 +501,10 @@ export const FloatingPetalsBG: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
       <div 
         className="absolute inset-0 opacity-25 mix-blend-multiply"
-        style={{ backgroundImage: `url("/IMG-20260728-WA0014.png")`, backgroundSize: 'cover' }}
+        style={{ backgroundImage: `url("/assets/invitation/rose-floral-arch.png")`, backgroundSize: 'cover' }}
       />
       <motion.img
-        src="/IMG-20260728-WA0011.png"
+        src="/assets/invitation/hanging-lavender-canopy.png"
         loading="lazy"
         decoding="async"
         alt=""
@@ -521,7 +521,7 @@ export const FiligreeMandalaBG: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 opacity-25 flex items-center justify-center">
       <motion.img
-        src="/IMG-20260728-WA0007.png"
+        src="/assets/invitation/gold-vine-ornament.png"
         loading="lazy"
         decoding="async"
         alt=""
@@ -539,7 +539,7 @@ export const MinimalArchitecturalLines: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 opacity-20">
       <div 
         className="w-full h-full"
-        style={{ backgroundImage: `url("/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png")`, backgroundSize: 'cover' }}
+        style={{ backgroundImage: `url("/assets/invitation/filigree-corner-ornament.png")`, backgroundSize: 'cover' }}
       />
     </div>
   );

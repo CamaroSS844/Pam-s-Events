@@ -3,16 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Printer,
   X,
-  FileText,
-  CheckCircle2,
   Sliders,
-  QrCode,
-  Calendar,
-  MapPin,
-  Users,
-  Eye,
-  FileCheck2,
-  Clock
+  CheckCircle2
 } from 'lucide-react';
 import { EventModel, Guest, RecentActivity } from '../types';
 import { getVenueFirstLine } from '../features/invitation/ThemeRenderers';
@@ -21,7 +13,7 @@ interface PrintPdfPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   event: EventModel;
-  guests: Guest[];
+  guests?: Guest[];
   activities?: RecentActivity[];
   isPublicInvitationView?: boolean;
 }
@@ -30,34 +22,9 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
   isOpen,
   onClose,
   event,
-  guests,
-  activities = [],
-  isPublicInvitationView = false,
 }) => {
   const [includeProgram, setIncludeProgram] = useState(true);
-  const [includeMetrics, setIncludeMetrics] = useState(false);
-  const [includeGuestLedger, setIncludeGuestLedger] = useState(false);
-  const [includeActivityLog, setIncludeActivityLog] = useState(false);
   const [includeQrCode, setIncludeQrCode] = useState(true);
-  const [includeApprovalBlock, setIncludeApprovalBlock] = useState(false);
-  const [showWatermark, setShowWatermark] = useState(false);
-
-  // Sync state when props change
-  React.useEffect(() => {
-    if (!isPublicInvitationView) {
-      setIncludeMetrics(true);
-      setIncludeGuestLedger(true);
-      setIncludeActivityLog(true);
-      setIncludeApprovalBlock(true);
-      setShowWatermark(true);
-    } else {
-      setIncludeMetrics(false);
-      setIncludeGuestLedger(false);
-      setIncludeActivityLog(false);
-      setIncludeApprovalBlock(false);
-      setShowWatermark(false);
-    }
-  }, [isPublicInvitationView]);
 
   if (!isOpen) return null;
 
@@ -71,19 +38,6 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
     { time: '19:00', title: 'Celebration Dinner', desc: 'Gourmet buffet and birthday toasts.' },
     { time: '21:00', title: 'Cake Cutting & Afterparty', desc: 'Cake cutting ceremony followed by open dance floor.' }
   ]);
-
-  // Compute headcount totals
-  const totalGuests = guests.length;
-  const acceptedGuests = guests.filter((g) => g.rsvpStatus === 'accepted');
-  const acceptedCount = acceptedGuests.length;
-  const companionTotal = acceptedGuests.reduce(
-    (sum, g) => sum + ((g as any).companionsCount || (g as any).hasCompanion ? 1 : 0),
-    0
-  );
-  const aggregateHeadcount = acceptedCount + companionTotal;
-  const declinedCount = guests.filter((g) => g.rsvpStatus === 'declined').length;
-  const pendingCount = guests.filter((g) => g.rsvpStatus === 'pending').length;
-  const responsePercent = totalGuests > 0 ? Math.round(((acceptedCount + declinedCount) / totalGuests) * 100) : 0;
 
   const handleTriggerPrint = () => {
     window.print();
@@ -99,7 +53,7 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
           initial={{ opacity: 0, scale: 0.96, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 12 }}
-          className="bg-zinc-900 border border-zinc-800 text-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] my-auto"
+          className="bg-zinc-900 border border-zinc-800 text-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] my-auto"
         >
           {/* Modal Toolbar Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 border-b border-zinc-800 bg-zinc-900/90 no-print">
@@ -110,16 +64,14 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-white font-serif">
-                    {isPublicInvitationView ? "Print Invitation" : "Print as PDF Preview"}
+                    Print Invitation
                   </h3>
                   <span className="bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-amber-500/30 uppercase tracking-wider">
                     Pam's Events PDF Engine
                   </span>
                 </div>
                 <p className="text-xs text-zinc-400 mt-0.5">
-                  {isPublicInvitationView
-                    ? "Generates a clean event invitation card with venue, date, time, program schedule, and QR code."
-                    : "Applies precise print rules for an elegant invitation & event coordination summary."}
+                  Generates a clean event invitation card with venue, date, time, program schedule, and QR code.
                 </p>
               </div>
             </div>
@@ -144,98 +96,44 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
             </div>
           </div>
 
-          {/* Settings & Customization Drawer Bar - Only shown for Organisers in Dashboard */}
-          {!isPublicInvitationView && (
-            <div className="bg-zinc-950/70 border-b border-zinc-800/80 px-5 py-3 flex flex-wrap items-center justify-between gap-4 text-xs no-print">
-              <div className="flex items-center gap-2 text-zinc-400 font-mono text-[11px] font-semibold">
-                <Sliders className="w-3.5 h-3.5 text-amber-400" />
-                <span>PDF SECTION OPTIONS:</span>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 font-medium text-zinc-300">
-                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                  <input
-                    type="checkbox"
-                    checked={includeProgram}
-                    onChange={(e) => setIncludeProgram(e.target.checked)}
-                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                  />
-                  <span>Program Schedule</span>
-                </label>
-
-                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                  <input
-                    type="checkbox"
-                    checked={includeQrCode}
-                    onChange={(e) => setIncludeQrCode(e.target.checked)}
-                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                  />
-                  <span>Invitation QR Code</span>
-                </label>
-
-                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                  <input
-                    type="checkbox"
-                    checked={includeMetrics}
-                    onChange={(e) => setIncludeMetrics(e.target.checked)}
-                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                  />
-                  <span>RSVP Metrics</span>
-                </label>
-
-                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                  <input
-                    type="checkbox"
-                    checked={includeGuestLedger}
-                    onChange={(e) => setIncludeGuestLedger(e.target.checked)}
-                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                  />
-                  <span>Guest Registry</span>
-                </label>
-
-                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                  <input
-                    type="checkbox"
-                    checked={includeActivityLog}
-                    onChange={(e) => setIncludeActivityLog(e.target.checked)}
-                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                  />
-                  <span>Activity Log</span>
-                </label>
-
-                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                  <input
-                    type="checkbox"
-                    checked={includeApprovalBlock}
-                    onChange={(e) => setIncludeApprovalBlock(e.target.checked)}
-                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                  />
-                  <span>Sign-off Block</span>
-                </label>
-
-                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                  <input
-                    type="checkbox"
-                    checked={showWatermark}
-                    onChange={(e) => setShowWatermark(e.target.checked)}
-                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                  />
-                  <span>Watermark</span>
-                </label>
-              </div>
+          {/* Settings & Customization Drawer Bar */}
+          <div className="bg-zinc-950/70 border-b border-zinc-800/80 px-5 py-3 flex flex-wrap items-center justify-between gap-4 text-xs no-print">
+            <div className="flex items-center gap-2 text-zinc-400 font-mono text-[11px] font-semibold">
+              <Sliders className="w-3.5 h-3.5 text-amber-400" />
+              <span>PRINT SECTION OPTIONS:</span>
             </div>
-          )}
+
+            <div className="flex flex-wrap items-center gap-3 font-medium text-zinc-300">
+              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                <input
+                  type="checkbox"
+                  checked={includeProgram}
+                  onChange={(e) => setIncludeProgram(e.target.checked)}
+                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                />
+                <span>Program Schedule</span>
+              </label>
+
+              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                <input
+                  type="checkbox"
+                  checked={includeQrCode}
+                  onChange={(e) => setIncludeQrCode(e.target.checked)}
+                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                />
+                <span>Invitation QR Code</span>
+              </label>
+            </div>
+          </div>
 
           {/* Paper Sheet Preview Area */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-zinc-950/90 custom-scrollbar">
             <div className="pdf-paper-preview printable-area my-2">
-              {!isPublicInvitationView && showWatermark && <div className="print-watermark">PAM'S EVENTS</div>}
-
               {/* Document Header */}
               <div className="flex justify-between items-start border-b-2 border-slate-900 pb-5 mb-6 relative z-10">
                 <div>
                   <span className="text-[10px] font-mono tracking-widest text-amber-800 dark:text-amber-600 uppercase font-bold">
-                    {isPublicInvitationView ? "Official Celebration Invitation" : "Pam's Events • Event Coordination Brief"}
+                    Official Celebration Invitation
                   </span>
                   <h1 className="text-3xl font-serif font-black tracking-tight text-slate-900 mt-1">
                     {event.name || "Celebration Invitation"}
@@ -248,9 +146,6 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
                   <span className="inline-block bg-slate-900 text-white font-mono text-[9px] font-bold px-3 py-1 rounded-sm uppercase tracking-wider">
                     {event.status === 'published' ? '● Published Live' : '⏰ Official Invitation'}
                   </span>
-                  {!isPublicInvitationView && (
-                    <p className="text-[11px] font-mono text-slate-400 mt-2">REF: {event.clientNumber || event.slug || event.id.substring(0, 8)}</p>
-                  )}
                 </div>
               </div>
 
@@ -319,57 +214,6 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
                 </div>
               )}
 
-              {/* Statistical Ledger Overview (Only if toggled) */}
-              {includeMetrics && (
-                <div className="mb-8 print-avoid-break relative z-10">
-                  <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-500 border-b border-slate-300 pb-1.5 mb-4">
-                    RSVP Executive Metrics
-                  </h3>
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="border border-slate-300 rounded-xl p-4 text-center bg-white">
-                      <span className="text-[10px] font-mono font-semibold text-slate-500 uppercase block mb-1">
-                        Invited Total
-                      </span>
-                      <span className="text-2xl font-bold font-serif text-slate-900">{totalGuests}</span>
-                    </div>
-                    <div className="border border-emerald-300/80 rounded-xl p-4 text-center bg-emerald-50/40">
-                      <span className="text-[10px] font-mono font-semibold text-emerald-700 uppercase block mb-1">
-                        Attending Head
-                      </span>
-                      <span className="text-2xl font-bold font-serif text-emerald-800">{aggregateHeadcount}</span>
-                      <p className="text-[8px] text-slate-500 mt-0.5">
-                        {acceptedCount} primary, {companionTotal} extra
-                      </p>
-                    </div>
-                    <div className="border border-rose-300/80 rounded-xl p-4 text-center bg-rose-50/40">
-                      <span className="text-[10px] font-mono font-semibold text-rose-700 uppercase block mb-1">
-                        Declined
-                      </span>
-                      <span className="text-2xl font-bold font-serif text-rose-800">{declinedCount}</span>
-                    </div>
-                    <div className="border border-amber-300/80 rounded-xl p-4 text-center bg-amber-50/40">
-                      <span className="text-[10px] font-mono font-semibold text-amber-700 uppercase block mb-1">
-                        Pending
-                      </span>
-                      <span className="text-2xl font-bold font-serif text-amber-800">{pendingCount}</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 border border-slate-300 rounded-xl p-3 bg-white">
-                    <div className="flex justify-between items-center text-[10px] font-mono font-semibold text-slate-600 mb-1">
-                      <span>RSVP Response Progression</span>
-                      <span>{responsePercent}%</span>
-                    </div>
-                    <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                      <div
-                        className="bg-slate-900 h-full rounded-full transition-all"
-                        style={{ width: `${responsePercent}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Public QR Code & Check-in Badge */}
               {includeQrCode && (
                 <div className="mb-8 border border-slate-300 rounded-xl p-4 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-6 print-avoid-break relative z-10">
@@ -392,139 +236,10 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
                 </div>
               )}
 
-              {/* Detailed Guest Ledger Table */}
-              {includeGuestLedger && (
-                <div className="mb-8 print-avoid-break relative z-10">
-                  <div className="flex items-center justify-between border-b border-slate-300 pb-1.5 mb-4">
-                    <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-500">
-                      Official Guest Registry ({guests.length} Entries)
-                    </h3>
-                  </div>
-
-                  {guests.length === 0 ? (
-                    <p className="text-xs italic text-slate-400 text-center py-4 border border-dashed border-slate-300 rounded-xl">
-                      No guests are currently registered in this database.
-                    </p>
-                  ) : (
-                    <table className="w-full text-left text-xs border border-slate-300 rounded-xl overflow-hidden">
-                      <thead>
-                        <tr className="bg-slate-100 text-slate-800 uppercase font-mono text-[9px] tracking-wider">
-                          <th className="py-2.5 px-3 border-b border-slate-300">Guest Name</th>
-                          <th className="py-2.5 px-3 border-b border-slate-300">RSVP Status</th>
-                          <th className="py-2.5 px-3 border-b border-slate-300">Table No.</th>
-                          <th className="py-2.5 px-3 border-b border-slate-300">Companions</th>
-                          <th className="py-2.5 px-3 border-b border-slate-300">Contact Email</th>
-                          <th className="py-2.5 px-3 border-b border-slate-300 text-center">Badges</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200">
-                        {guests.map((g) => (
-                          <tr key={g.id} className="hover:bg-slate-50">
-                            <td className="py-2 px-3 font-semibold text-slate-900">{g.name}</td>
-                            <td className="py-2 px-3">
-                              {g.rsvpStatus === 'accepted' && (
-                                <span className="text-emerald-700 font-bold font-mono text-[10px]">
-                                  ✓ Confirmed
-                                </span>
-                              )}
-                              {g.rsvpStatus === 'declined' && (
-                                <span className="text-rose-700 font-bold font-mono text-[10px]">
-                                  ✗ Declined
-                                </span>
-                              )}
-                              {g.rsvpStatus === 'pending' && (
-                                <span className="text-amber-700 font-bold font-mono text-[10px]">
-                                  ? Pending
-                                </span>
-                              )}
-                            </td>
-                            <td className="py-2 px-3 font-mono font-medium text-slate-700">
-                              {g.tableNumber || 'N/A'}
-                            </td>
-                            <td className="py-2 px-3 font-mono text-slate-600">
-                              {g.companionsCount > 0 ? `+${g.companionsCount}` : 'None'}
-                            </td>
-                            <td className="py-2 px-3 text-[11px] text-slate-600 truncate max-w-[160px]">
-                              {g.email || 'N/A'}
-                            </td>
-                            <td className="py-2 px-3 text-center">
-                              <div className="flex gap-1 justify-center">
-                                {g.isVip && (
-                                  <span className="bg-amber-100 text-amber-900 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase border border-amber-300">
-                                    VIP
-                                  </span>
-                                )}
-                                {g.isFamily && (
-                                  <span className="bg-blue-100 text-blue-900 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase border border-blue-300">
-                                    FAM
-                                  </span>
-                                )}
-                                {!g.isVip && !g.isFamily && <span className="text-slate-300">-</span>}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </div>
-              )}
-
-              {/* Activity Log & Telemetry */}
-              {includeActivityLog && (
-                <div className="mb-8 print-avoid-break relative z-10">
-                  <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-500 border-b border-slate-300 pb-1.5 mb-3">
-                    Recent Operational Activity Log
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {activities.slice(0, 4).map((act) => (
-                      <div key={act.id} className="text-[11px] border-l-2 border-slate-400 pl-3 py-1 bg-slate-50/50 rounded-r-lg">
-                        <span className="text-slate-400 font-mono text-[9px] block">
-                          {new Date(act.timestamp).toLocaleDateString()} at{' '}
-                          {new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                        <p className="text-slate-800 leading-normal mt-0.5 font-medium">
-                          {act.detail || (act as any).description || `${act.guestName} - ${act.action}`}
-                        </p>
-                      </div>
-                    ))}
-                    {activities.length === 0 && (
-                      <p className="text-xs italic text-slate-400 col-span-2">No activity records logged.</p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Operational Sign-off Block */}
-              {includeApprovalBlock && (
-                <div className="border border-slate-300 rounded-xl p-5 bg-slate-50/40 print-avoid-break relative z-10 mt-6">
-                  <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider block mb-2">
-                    Official Sign-Off & Verification Block
-                  </span>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-6">
-                    This document serves as the official event brief prepared by Pam's Events. Please confirm table assignments and headcounts prior to vendor setup.
-                  </p>
-                  <div className="grid grid-cols-2 gap-8 pt-4 border-t border-slate-300">
-                    <div>
-                      <div className="border-b border-slate-400 h-8" />
-                      <p className="text-[10px] font-mono font-bold text-slate-600 uppercase mt-1">
-                        Lead Event Coordinator Signature
-                      </p>
-                    </div>
-                    <div>
-                      <div className="border-b border-slate-400 h-8" />
-                      <p className="text-[10px] font-mono font-bold text-slate-600 uppercase mt-1">
-                        Host / Client Representative Signature
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Document Footer */}
               <div className="mt-8 pt-4 border-t border-slate-200 flex justify-between items-center text-[9px] font-mono text-slate-400">
                 <span>Pam's Events Invitation • Page 1 of 1</span>
-                <span>System Reference: {event.id.substring(0, 12)}</span>
+                <span>Invitation Reference: {event.id.substring(0, 12)}</span>
               </div>
             </div>
           </div>

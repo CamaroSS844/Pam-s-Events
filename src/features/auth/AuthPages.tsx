@@ -147,7 +147,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-3 bg-stone-900/80 backdrop-blur-md px-4 py-2 rounded-full border border-amber-500/30">
               <img 
-                src="/logo.jpg" 
+                src="/assets/branding/logo.jpg" 
                 alt="Pam's Events Logo" 
                 className="w-7 h-7 rounded-full object-cover border border-amber-400/50"
                 referrerPolicy="no-referrer"
@@ -189,7 +189,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({
             {/* Header Title */}
             <div>
               <div className="flex items-center gap-2 lg:hidden mb-4">
-                <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-amber-400" />
+                <img src="/assets/branding/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-amber-400" />
                 <span className="font-serif font-bold text-stone-900 text-sm">Pam's Events Studio</span>
               </div>
 

@@ -16,37 +16,37 @@ interface ThemeLibraryModalProps {
 // Map each ThemeId to a gorgeous custom visual thumbnail representing that specific design archetype
 const THEME_THUMBNAILS: Record<ThemeId, { image: string; tag: string; features: string[] }> = {
   luxury: {
-    image: '/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png',
+    image: '/assets/invitation/wedding-rings.png',
     tag: 'Gold Wreath & Crest',
     features: ['Royal Gold Crest Wreath', 'Majestic Gold Scrollwork', 'Shimmering Metallic Frame']
   },
   elegant: {
-    image: '/ChatGPT Image Jul 28, 2026, 12_27_45 PM.png',
+    image: '/assets/invitation/filigree-corner-ornament.png',
     tag: 'Ivory Botanical Lace',
     features: ['Ivory Botanical Lace Border', 'Subtle Parchment Vignette', 'Couture Monogram Seal']
   },
   modern: {
-    image: '/ChatGPT Image Jul 28, 2026, 12_25_25 PM.png',
+    image: '/assets/invitation/geometric-gold-frame.png',
     tag: 'Geometric Gold Vines',
     features: ['Geometric Gold Vine Frame', 'Refined Minimal Scrollwork', 'Cobalt & Gold Contrast']
   },
   rustic: {
-    image: '/IMG-20260728-WA0005.png',
+    image: '/assets/invitation/botanical-eucalyptus-garland.png',
     tag: 'Eucalyptus Garland',
     features: ['Sage Eucalyptus Garland', 'Botanical Leaf Arch', 'Organic Leaf Wreath']
   },
   floral: {
-    image: '/IMG-20260728-WA0014.png',
+    image: '/assets/invitation/rose-floral-arch.png',
     tag: 'Dusty Rose Botanical',
     features: ['Dusty Rose Floral Arch', 'Blush Rose Corner Accents', 'Lavender Bottom Garland']
   },
   traditional: {
-    image: '/IMG-20260728-WA0007.png',
+    image: '/assets/invitation/gold-vine-ornament.png',
     tag: 'Heritage Gold Scroll',
     features: ['Traditional Gold Vine Scroll', 'Royal Crest Ornament', 'Mahogany & Sand Accents']
   },
   minimal: {
-    image: '/IMG-20260728-WA0003.png',
+    image: '/assets/invitation/sage-botanical-leaves.png',
     tag: 'Minimal Botanical Ring',
     features: ['Restrained Monogram Ring', 'Spacious Negative Space', 'Crisp Type Hierarchy']
   }

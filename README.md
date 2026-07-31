@@ -13,8 +13,15 @@ This repository contains everything you need to run the Pam's Events platform lo
 **Prerequisites:**  Node.js
 
 
-1. Install dependencies:
-   `npm install`
-2. Configure any local environment values you need in [.env.local](.env.local)
-3. Run the app:
-   `npm run dev`
+## Asset Management & Naming Guidelines
+
+All static media assets in this project are stored inside organized subdirectories in `/public/assets/`:
+- `/public/assets/invitation/` - Ornamental arches, frames, watermarks, ribbons, and decorative graphics.
+- `/public/assets/branding/` - Logotypes, badges, and brand icons.
+
+### Naming Conventions
+To guarantee 100% asset loading reliability across production CDNs and client-side canvas snapshot export tools (e.g. `html-to-image`):
+1. **URL-Safe Filenames**: Use strictly lowercase letters, numbers, and hyphens (`a-z`, `0-9`, `-`).
+2. **No Spaces or Special Characters**: Never use spaces, parentheses, commas, underscores, or uppercase letters in asset filenames.
+3. **Descriptive Purpose**: Name files based on what they represent (e.g., `invitation-floral-watermark.jpeg`, `wedding-rings.png`, `gold-vine-ornament.png`).
+

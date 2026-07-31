@@ -174,12 +174,12 @@ export const InvitationCardDocument = forwardRef<HTMLDivElement, DocumentProps>(
 
       {/* DECORATIVE CORNER FLORAL WATERMARKS */}
       <img
-        src="/whatsapp-floral-watermark.jpeg"
+        src="/assets/invitation/invitation-floral-watermark.jpeg"
         alt=""
         className="absolute -top-10 -left-10 w-[260px] h-[260px] object-contain opacity-10 pointer-events-none z-0"
       />
       <img
-        src="/whatsapp-floral-watermark.jpeg"
+        src="/assets/invitation/invitation-floral-watermark.jpeg"
         alt=""
         className="absolute -bottom-10 -right-10 w-[260px] h-[260px] object-contain opacity-10 pointer-events-none z-0 -scale-x-100"
       />
@@ -269,7 +269,7 @@ export const InvitationCardDocument = forwardRef<HTMLDivElement, DocumentProps>(
                   style={{ borderColor: theme.borderLightColor }}
                 >
                   <img
-                    src="/logo.jpg"
+                    src="/assets/branding/logo.jpg"
                     alt="PE"
                     className="w-full h-full object-contain rounded-md"
                     referrerPolicy="no-referrer"
@@ -280,7 +280,7 @@ export const InvitationCardDocument = forwardRef<HTMLDivElement, DocumentProps>(
 
             {/* MANDATORY REAL WEDDING RINGS ASSET */}
             <img
-              src="/chatgpt-wedding-rings.png"
+              src="/assets/invitation/wedding-rings.png"
               alt="Wedding Rings"
               className="absolute -bottom-[24px] -right-[32px] w-[115px] h-auto object-contain filter drop-shadow-md z-20 pointer-events-none select-none"
             />
@@ -426,8 +426,10 @@ export const InvitationCardModal: React.FC<InvitationCardModalProps> = ({
       } else {
         throw new Error("Document DOM reference not available");
       }
-    } catch (err) {
-      console.warn("DOM PNG export fallback triggered", err);
+    } catch (err: unknown) {
+      const errMessage = err instanceof Error ? err.message : String(err);
+      const errTarget = (err as { target?: { src?: string } })?.target?.src || 'N/A';
+      console.error(`DOM PNG export failed (Error: ${errMessage}, Target asset: ${errTarget}). Triggering fallback canvas generator.`, err);
       try {
         const fallbackDataUrl = await generateInvitationCardDataUrl(event, qrCodeUrl, guest?.name);
         const fileName = `pamsevents_${coupleTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_')}_a5_qr_invitation.png`;
