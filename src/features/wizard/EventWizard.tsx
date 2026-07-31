@@ -134,6 +134,7 @@ export const EventWizard: React.FC<EventWizardProps> = ({ onComplete, onCancel, 
     date: '2026-09-12',
     time: '16:00',
     venue: '',
+    venueName: '',
     description: '',
     themeColor: '#D4AF37',
     dressCode: '',
@@ -364,6 +365,7 @@ export const EventWizard: React.FC<EventWizardProps> = ({ onComplete, onCancel, 
       date: basicInfo.date,
       time: basicInfo.time,
       venue: basicInfo.venue || "TBD Venue Coordinates",
+      venueName: basicInfo.venueName || undefined,
       description: basicInfo.description || "You are cordially invited to celebrate this historic day with us. Event schedule, mapping, and meal selection forms are available inside.",
       themeId: selectedThemeId,
       themeColor: basicInfo.themeColor,
@@ -760,9 +762,26 @@ export const EventWizard: React.FC<EventWizardProps> = ({ onComplete, onCancel, 
                 </div>
 
                 <div className="flex flex-col gap-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wide flex items-center justify-between">
+                    <span>Venue Name (Manual Title)</span>
+                    <span className="text-[10px] font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Takes Priority</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    value={basicInfo.venueName} 
+                    onChange={(e) => setBasicInfo({ ...basicInfo, venueName: e.target.value })} 
+                    placeholder="e.g. Gold Vine, Rainbow Towers, The Glasshouse" 
+                    className="w-full px-4 py-2.5 rounded-xl border border-zinc-250 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-500 transition-all bg-stone-50/50" 
+                  />
+                  <p className="text-[10px] text-zinc-400 leading-normal">
+                    Enter the display name for your venue (e.g. "Gold Vine"). This will always be displayed as the main title on the invitation card instead of map codes (like RJ4P+FVP) or raw addresses.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-1.5 sm:col-span-2">
                   <div className="flex items-center justify-between">
                     <label className={`text-xs font-semibold uppercase tracking-wide ${errors.venue ? 'text-rose-600 font-bold' : 'text-zinc-500'}`}>
-                      Venue Location Name & Address <span className="text-rose-500">*</span>
+                      Venue Location Address / Search <span className="text-rose-500">*</span>
                     </label>
                     {errors.venue && (
                       <span className="text-[11px] font-bold text-rose-600 flex items-center gap-1">

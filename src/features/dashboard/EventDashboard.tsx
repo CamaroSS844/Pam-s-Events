@@ -19,6 +19,8 @@ import { EventModel, Guest, RecentActivity, ThemeConfig, ThemeId } from '../../t
 import { RSVPLineChart, GuestCategoryDonut } from '../../components/AnalyticsCharts';
 import { ThemePreviewModal } from '../../components/ThemePreviewModal';
 import { PrintPdfPreviewModal } from '../../components/PrintPdfPreviewModal';
+import { InvitationCardModal } from '../../components/InvitationCardModal';
+import { formatInvitationMessage } from '../../utils/invitationCardGenerator';
 import { exportEventToGoogleSheets, GoogleSheetsExportResult } from '../../services/googleSheetsService';
 
 interface EventDashboardProps {
@@ -498,13 +500,14 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
               onClick={() => {
                 const identifier = event.slug || event.clientNumber || event.id;
                 const url = `${window.location.origin}/${identifier}`;
-                navigator.clipboard.writeText(url);
-                toast("Event public link copied to clipboard!", "success");
+                const formattedMsg = formatInvitationMessage(event, url);
+                navigator.clipboard.writeText(formattedMsg);
+                toast("Copied formatted invitation message & link!", "success");
               }}
               className="inline-flex items-center gap-1.5 px-4 py-2 border border-zinc-250 bg-white rounded-xl text-xs font-bold text-zinc-700 hover:bg-stone-50 transition-colors"
             >
               <Link2 className="w-4 h-4 text-zinc-500" />
-              <span>Copy Link</span>
+              <span>Copy Invitation Link</span>
             </button>
 
             <button 
@@ -1069,8 +1072,10 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
                               <button 
                                 onClick={() => {
                                   const identifier = event?.slug || event?.clientNumber || event?.id || eventId;
-                                  navigator.clipboard.writeText(`${window.location.origin}/${identifier}?guest=${g.token}`);
-                                  toast(`Copied custom invitation link for ${g.name}!`, "success");
+                                  const url = `${window.location.origin}/${identifier}?guest=${g.token}`;
+                                  const formattedMsg = formatInvitationMessage(event || {}, url, g.name);
+                                  navigator.clipboard.writeText(formattedMsg);
+                                  toast(`Copied personalized invitation message & link for ${g.name}!`, "success");
                                 }}
                                 className="text-amber-600 hover:text-amber-700 font-semibold font-sans text-[10px] shrink-0"
                               >
@@ -1583,158 +1588,25 @@ export const EventDashboard: React.FC<EventDashboardProps> = ({
       </div>
 
       {/* GUEST QR CODE PREVIEW MODAL */}
-      <AnimatePresence>
-        {qrModalGuest && (
-          <div className="fixed inset-0 z-50 bg-stone-950/65 backdrop-blur-sm flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl border border-zinc-200 max-w-sm w-full overflow-hidden shadow-2xl p-6 text-center flex flex-col gap-5"
-            >
-              <div className="flex justify-between items-center border-b border-zinc-150 pb-2">
-                <span className="text-xs font-mono font-bold text-zinc-400 uppercase">Invitation Credentials</span>
-                <button onClick={() => setQrModalGuest(null)} className="text-zinc-400 hover:text-zinc-600"><XCircle className="w-5 h-5" /></button>
-              </div>
-
-              <div>
-                <h4 className="text-base font-bold text-zinc-800">{qrModalGuest.name}</h4>
-                <span className="text-xs text-zinc-400">Section Assignment: {qrModalGuest.tableNumber}</span>
-              </div>
-
-              {/* Dynamic generated QR Code */}
-              <div className="bg-stone-50 border border-zinc-150 rounded-xl p-4 flex flex-col items-center gap-3">
-                <div className="w-40 h-40 border-4 border-white shadow-md bg-white p-2 relative flex items-center justify-center">
-                  {guestQrCodeUrl ? (
-                    <img 
-                      src={guestQrCodeUrl} 
-                      className="w-full h-full object-contain" 
-                      alt="Guest QR Code" 
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-stone-100 flex items-center justify-center text-xs text-zinc-400 font-mono">Generating...</div>
-                  )}
-                  {/* Floating app icon inside center of QR code */}
-                  <div className="absolute w-10 h-10 bg-white border-2 border-stone-200 rounded-lg flex items-center justify-center p-0.5 shadow-sm select-none">
-                    <img src="/logo.jpg" className="w-full h-full object-contain" alt="PE" referrerPolicy="no-referrer" />
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono tracking-widest text-zinc-400 font-bold uppercase">SECURED BY PAM'S EVENTS</span>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <button 
-                  onClick={() => {
-                    const identifier = event?.slug || event?.clientNumber || event?.id || eventId;
-                    navigator.clipboard.writeText(`${window.location.origin}/${identifier}?guest=${qrModalGuest.token}`);
-                    toast(`Copied personalized link for ${qrModalGuest.name}!`, "success");
-                  }}
-                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
-                >
-                  <Link2 className="w-4 h-4 text-white" />
-                  <span>Copy invitation URL link</span>
-                </button>
-                
-                <button 
-                  onClick={() => {
-                    if (!guestQrCodeUrl) return;
-                    const link = document.createElement('a');
-                    link.href = guestQrCodeUrl;
-                    link.download = `pamsevents_guest_${qrModalGuest.name.toLowerCase().replace(/\s+/g, '_')}_qr.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    toast(`Downloaded QR code for ${qrModalGuest.name}!`, "success");
-                    setQrModalGuest(null);
-                  }}
-                  className="w-full py-2 border border-zinc-250 hover:bg-stone-50 text-zinc-600 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5"
-                >
-                  <Download className="w-4 h-4 text-zinc-400" />
-                  <span>Download High-Res QR code image</span>
-                </button>
-              </div>
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {qrModalGuest && (
+        <InvitationCardModal
+          isOpen={!!qrModalGuest}
+          onClose={() => setQrModalGuest(null)}
+          event={event || {}}
+          guest={qrModalGuest}
+          qrCodeUrl={guestQrCodeUrl}
+        />
+      )}
 
       {/* EVENT SITE SPECIFIC QR CODE PREVIEW MODAL */}
-      <AnimatePresence>
-        {eventQrModal && (
-          <div className="fixed inset-0 z-50 bg-stone-950/65 backdrop-blur-sm flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl border border-zinc-200 max-w-sm w-full overflow-hidden shadow-2xl p-6 text-center flex flex-col gap-5"
-            >
-              <div className="flex justify-between items-center border-b border-zinc-150 pb-2">
-                <span className="text-xs font-mono font-bold text-zinc-400 uppercase">Microsite QR Code</span>
-                <button onClick={() => setEventQrModal(null)} className="text-zinc-400 hover:text-zinc-600"><XCircle className="w-5 h-5" /></button>
-              </div>
-
-              <div>
-                <h4 className="text-base font-bold text-zinc-800">{eventQrModal.name}</h4>
-                <span className="text-xs text-zinc-400">Share Public Event Website</span>
-              </div>
-
-              {/* Dynamic generated QR Code */}
-              <div className="bg-stone-50 border border-zinc-150 rounded-xl p-4 flex flex-col items-center gap-3">
-                <div className="w-40 h-40 border-4 border-white shadow-md bg-white p-2 relative flex items-center justify-center">
-                  {eventQrCodeUrl ? (
-                    <img 
-                      src={eventQrCodeUrl} 
-                      className="w-full h-full object-contain" 
-                      alt="Event QR Code" 
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-stone-100 flex items-center justify-center text-xs text-zinc-400 font-mono">Generating...</div>
-                  )}
-                  {/* Floating app icon inside center of QR code */}
-                  <div className="absolute w-10 h-10 bg-white border-2 border-stone-200 rounded-lg flex items-center justify-center p-0.5 shadow-sm select-none">
-                    <img src="/logo.jpg" className="w-full h-full object-contain" alt="PE" referrerPolicy="no-referrer" />
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono tracking-widest text-zinc-400 font-bold uppercase">SECURED BY PAM'S EVENTS</span>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <button 
-                  onClick={() => {
-                    const identifier = eventQrModal.slug || eventQrModal.clientNumber || eventQrModal.id;
-                    navigator.clipboard.writeText(`${window.location.origin}/${identifier}`);
-                    toast(`Copied public link for ${eventQrModal.name}!`, "success");
-                  }}
-                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
-                >
-                  <Link2 className="w-4 h-4 text-white" />
-                  <span>Copy public link</span>
-                </button>
-                
-                <button 
-                  onClick={() => {
-                    if (!eventQrCodeUrl) return;
-                    const link = document.createElement('a');
-                    link.href = eventQrCodeUrl;
-                    link.download = `pamsevents_${eventQrModal.name.toLowerCase().replace(/\s+/g, '_')}_qr.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    toast(`Downloaded QR code for ${eventQrModal.name}!`, "success");
-                    setEventQrModal(null);
-                  }}
-                  className="w-full py-2 border border-zinc-250 hover:bg-stone-50 text-zinc-600 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5"
-                >
-                  <Download className="w-4 h-4 text-zinc-400" />
-                  <span>Download High-Res QR code image</span>
-                </button>
-              </div>
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {eventQrModal && (
+        <InvitationCardModal
+          isOpen={!!eventQrModal}
+          onClose={() => setEventQrModal(null)}
+          event={eventQrModal}
+          qrCodeUrl={eventQrCodeUrl}
+        />
+      )}
 
       <AnimatePresence>
         {previewThemeId && (

@@ -38,6 +38,7 @@ export interface EventModel {
   date: string;
   time: string;
   venue: string;
+  venueName?: string;
   description: string;
   themeId: ThemeId;
   themeColor: string;

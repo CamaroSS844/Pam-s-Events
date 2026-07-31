@@ -15,6 +15,7 @@ import {
   Clock
 } from 'lucide-react';
 import { EventModel, Guest, RecentActivity } from '../types';
+import { getVenueFirstLine } from '../features/invitation/ThemeRenderers';
 
 interface PrintPdfPreviewModalProps {
   isOpen: boolean;
@@ -34,12 +35,29 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
   isPublicInvitationView = false,
 }) => {
   const [includeProgram, setIncludeProgram] = useState(true);
-  const [includeMetrics, setIncludeMetrics] = useState(!isPublicInvitationView);
-  const [includeGuestLedger, setIncludeGuestLedger] = useState(!isPublicInvitationView);
-  const [includeActivityLog, setIncludeActivityLog] = useState(!isPublicInvitationView);
+  const [includeMetrics, setIncludeMetrics] = useState(false);
+  const [includeGuestLedger, setIncludeGuestLedger] = useState(false);
+  const [includeActivityLog, setIncludeActivityLog] = useState(false);
   const [includeQrCode, setIncludeQrCode] = useState(true);
-  const [includeApprovalBlock, setIncludeApprovalBlock] = useState(!isPublicInvitationView);
-  const [showWatermark, setShowWatermark] = useState(!isPublicInvitationView);
+  const [includeApprovalBlock, setIncludeApprovalBlock] = useState(false);
+  const [showWatermark, setShowWatermark] = useState(false);
+
+  // Sync state when props change
+  React.useEffect(() => {
+    if (!isPublicInvitationView) {
+      setIncludeMetrics(true);
+      setIncludeGuestLedger(true);
+      setIncludeActivityLog(true);
+      setIncludeApprovalBlock(true);
+      setShowWatermark(true);
+    } else {
+      setIncludeMetrics(false);
+      setIncludeGuestLedger(false);
+      setIncludeActivityLog(false);
+      setIncludeApprovalBlock(false);
+      setShowWatermark(false);
+    }
+  }, [isPublicInvitationView]);
 
   if (!isOpen) return null;
 
@@ -126,109 +144,113 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
             </div>
           </div>
 
-          {/* Settings & Customization Drawer Bar */}
-          <div className="bg-zinc-950/70 border-b border-zinc-800/80 px-5 py-3 flex flex-wrap items-center justify-between gap-4 text-xs no-print">
-            <div className="flex items-center gap-2 text-zinc-400 font-mono text-[11px] font-semibold">
-              <Sliders className="w-3.5 h-3.5 text-amber-400" />
-              <span>PDF SECTION OPTIONS:</span>
+          {/* Settings & Customization Drawer Bar - Only shown for Organisers in Dashboard */}
+          {!isPublicInvitationView && (
+            <div className="bg-zinc-950/70 border-b border-zinc-800/80 px-5 py-3 flex flex-wrap items-center justify-between gap-4 text-xs no-print">
+              <div className="flex items-center gap-2 text-zinc-400 font-mono text-[11px] font-semibold">
+                <Sliders className="w-3.5 h-3.5 text-amber-400" />
+                <span>PDF SECTION OPTIONS:</span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 font-medium text-zinc-300">
+                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={includeProgram}
+                    onChange={(e) => setIncludeProgram(e.target.checked)}
+                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                  />
+                  <span>Program Schedule</span>
+                </label>
+
+                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={includeQrCode}
+                    onChange={(e) => setIncludeQrCode(e.target.checked)}
+                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                  />
+                  <span>Invitation QR Code</span>
+                </label>
+
+                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={includeMetrics}
+                    onChange={(e) => setIncludeMetrics(e.target.checked)}
+                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                  />
+                  <span>RSVP Metrics</span>
+                </label>
+
+                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={includeGuestLedger}
+                    onChange={(e) => setIncludeGuestLedger(e.target.checked)}
+                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                  />
+                  <span>Guest Registry</span>
+                </label>
+
+                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={includeActivityLog}
+                    onChange={(e) => setIncludeActivityLog(e.target.checked)}
+                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                  />
+                  <span>Activity Log</span>
+                </label>
+
+                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={includeApprovalBlock}
+                    onChange={(e) => setIncludeApprovalBlock(e.target.checked)}
+                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                  />
+                  <span>Sign-off Block</span>
+                </label>
+
+                <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={showWatermark}
+                    onChange={(e) => setShowWatermark(e.target.checked)}
+                    className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
+                  />
+                  <span>Watermark</span>
+                </label>
+              </div>
             </div>
-
-            <div className="flex flex-wrap items-center gap-3 font-medium text-zinc-300">
-              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                <input
-                  type="checkbox"
-                  checked={includeProgram}
-                  onChange={(e) => setIncludeProgram(e.target.checked)}
-                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                />
-                <span>Program Schedule</span>
-              </label>
-
-              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                <input
-                  type="checkbox"
-                  checked={includeQrCode}
-                  onChange={(e) => setIncludeQrCode(e.target.checked)}
-                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                />
-                <span>Invitation QR Code</span>
-              </label>
-
-              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                <input
-                  type="checkbox"
-                  checked={includeMetrics}
-                  onChange={(e) => setIncludeMetrics(e.target.checked)}
-                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                />
-                <span>RSVP Metrics</span>
-              </label>
-
-              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                <input
-                  type="checkbox"
-                  checked={includeGuestLedger}
-                  onChange={(e) => setIncludeGuestLedger(e.target.checked)}
-                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                />
-                <span>Guest Registry</span>
-              </label>
-
-              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                <input
-                  type="checkbox"
-                  checked={includeActivityLog}
-                  onChange={(e) => setIncludeActivityLog(e.target.checked)}
-                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                />
-                <span>Activity Log</span>
-              </label>
-
-              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                <input
-                  type="checkbox"
-                  checked={includeApprovalBlock}
-                  onChange={(e) => setIncludeApprovalBlock(e.target.checked)}
-                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                />
-                <span>Sign-off Block</span>
-              </label>
-
-              <label className="inline-flex items-center gap-1.5 cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700">
-                <input
-                  type="checkbox"
-                  checked={showWatermark}
-                  onChange={(e) => setShowWatermark(e.target.checked)}
-                  className="rounded border-zinc-700 text-amber-500 focus:ring-amber-500/20 bg-zinc-800"
-                />
-                <span>Watermark</span>
-              </label>
-            </div>
-          </div>
+          )}
 
           {/* Paper Sheet Preview Area */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-zinc-950/90 custom-scrollbar">
             <div className="pdf-paper-preview printable-area my-2">
-              {showWatermark && <div className="print-watermark">PAM'S EVENTS</div>}
+              {!isPublicInvitationView && showWatermark && <div className="print-watermark">PAM'S EVENTS</div>}
 
               {/* Document Header */}
               <div className="flex justify-between items-start border-b-2 border-slate-900 pb-5 mb-6 relative z-10">
                 <div>
                   <span className="text-[10px] font-mono tracking-widest text-amber-800 dark:text-amber-600 uppercase font-bold">
-                    Pam's Events • {isPublicInvitationView ? "Official Celebration Invitation" : "Event Coordination Brief"}
+                    {isPublicInvitationView ? "Official Celebration Invitation" : "Pam's Events • Event Coordination Brief"}
                   </span>
                   <h1 className="text-3xl font-serif font-black tracking-tight text-slate-900 mt-1">
                     {event.name || "Celebration Invitation"}
                   </h1>
                   <p className="text-xs text-slate-500 font-mono mt-1">
-                    ISSUED ON {new Date().toLocaleString([], { dateStyle: 'long', timeStyle: 'short' })}
+                    ISSUED ON {new Date().toLocaleDateString([], { dateStyle: 'long' })}
                   </p>
                 </div>
                 <div className="text-right">
                   <span className="inline-block bg-slate-900 text-white font-mono text-[9px] font-bold px-3 py-1 rounded-sm uppercase tracking-wider">
                     {event.status === 'published' ? '● Published Live' : '⏰ Official Invitation'}
                   </span>
-                  <p className="text-[11px] font-mono text-slate-400 mt-2">REF: {event.clientNumber || event.slug || event.id.substring(0, 8)}</p>
+                  {!isPublicInvitationView && (
+                    <p className="text-[11px] font-mono text-slate-400 mt-2">REF: {event.clientNumber || event.slug || event.id.substring(0, 8)}</p>
+                  )}
                 </div>
               </div>
 
@@ -258,7 +280,12 @@ export const PrintPdfPreviewModal: React.FC<PrintPdfPreviewModalProps> = ({
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 border border-slate-300 rounded-xl p-4 bg-slate-50/60 mb-8 print-avoid-break relative z-10">
                 <div>
                   <span className="text-[9px] font-mono font-bold text-slate-500 uppercase">Primary Venue</span>
-                  <p className="text-xs font-bold text-slate-900 mt-1">{event.venue || 'TBD Venue'}</p>
+                  <p className="text-xs font-bold text-slate-900 mt-1">
+                    {getVenueFirstLine(event.venue, event.venueName)}
+                  </p>
+                  {event.venue && event.venue !== getVenueFirstLine(event.venue, event.venueName) && (
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">{event.venue}</p>
+                  )}
                 </div>
                 <div>
                   <span className="text-[9px] font-mono font-bold text-slate-500 uppercase">Target Date</span>

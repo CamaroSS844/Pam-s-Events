@@ -54,10 +54,36 @@ export const formatDateSafe = (dateStr?: string, options?: Intl.DateTimeFormatOp
   }
 };
 
-export const getVenueFirstLine = (venueStr?: string) => {
+export const isPlusCode = (str: string): boolean => {
+  if (!str) return false;
+  const trimmed = str.trim();
+  return /^[A-Z0-9]{2,8}\+[A-Z0-9]{2,5}/i.test(trimmed);
+};
+
+export const getVenueFirstLine = (venueStr?: string, venueNameStr?: string) => {
+  // 1. Manual venue name takes priority if provided and not a plus code
+  if (venueNameStr && typeof venueNameStr === 'string' && venueNameStr.trim()) {
+    const trimmedName = venueNameStr.trim();
+    if (!isPlusCode(trimmedName)) {
+      return trimmedName;
+    }
+  }
+
   if (!venueStr || typeof venueStr !== 'string' || !venueStr.trim()) return 'Venue TBD';
-  const parts = venueStr.trim().split(',');
-  return parts[0] ? parts[0].trim() : (venueStr || 'Venue TBD');
+  const trimmedVenue = venueStr.trim();
+
+  // If the venue string itself is or starts with a Plus Code
+  if (isPlusCode(trimmedVenue)) {
+    const parts = trimmedVenue.split(',');
+    const nonPlusParts = parts.filter(p => !isPlusCode(p.trim()) && p.trim().length > 0);
+    if (nonPlusParts.length > 0) {
+      return nonPlusParts[0].trim();
+    }
+    return 'Venue Location';
+  }
+
+  const parts = trimmedVenue.split(',');
+  return parts[0] ? parts[0].trim() : (trimmedVenue || 'Venue TBD');
 };
 
 export const isRsvpDeadlinePassed = (deadlineDateString?: string) => {
@@ -617,7 +643,7 @@ const LuxuryTheme: React.FC<ThemeRendererProps> = ({
               <img src="/IMG-20260728-WA0007.png" className="w-4 h-8 object-contain opacity-80 pointer-events-none" alt="Gold Vine" />
               <span className="text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-[#CD7F32] uppercase font-semibold block">Venue & Location</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">{getVenueFirstLine(event.venue)}</h2>
+            <h2 className="text-2xl sm:text-3xl font-luxury-heading text-[#2C2C2C] uppercase tracking-widest break-words">{getVenueFirstLine(event.venue, event.venueName)}</h2>
             <div className="w-16 h-0.5 bg-[#D4AF37]" />
             
             <p className="text-xs text-stone-600 leading-relaxed font-light font-luxury-heading break-words">
@@ -1043,7 +1069,7 @@ const ElegantTheme: React.FC<ThemeRendererProps> = ({
         <div className="max-w-5xl mx-auto px-4 sm:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center relative z-10">
           <div className="flex flex-col gap-4 sm:gap-6">
             <span className="text-[9px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.25em] text-[#9E9E9E] block uppercase font-semibold">Location & Venue</span>
-            <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light leading-tight break-words">{getVenueFirstLine(event.venue)}</h2>
+            <h2 className="text-2xl sm:text-3xl font-elegant-heading text-[#3A3A3A] uppercase tracking-tight font-light leading-tight break-words">{getVenueFirstLine(event.venue, event.venueName)}</h2>
             <div className="w-12 h-[0.5px] bg-[#3A3A3A]" />
             
             <p className="text-xs text-[#9E9E9E] leading-relaxed font-light tracking-wide break-words">
@@ -1388,7 +1414,7 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
             >
               <div>
                 <span className="text-[9px] sm:text-[10px] font-modern-heading text-[#C9A961] uppercase tracking-[0.2em] block mb-3 sm:mb-4">VENUE & LOCATION</span>
-                <h3 className="text-xl sm:text-2xl font-modern-heading font-bold text-white uppercase tracking-wide break-words">{getVenueFirstLine(event.venue)}</h3>
+                <h3 className="text-xl sm:text-2xl font-modern-heading font-bold text-white uppercase tracking-wide break-words">{getVenueFirstLine(event.venue, event.venueName)}</h3>
                 <div className="w-12 h-[1px] bg-[#C9A961] my-3 sm:my-4" />
                 
                 <p className="text-xs text-[#FAF8F3]/80 leading-relaxed font-light tracking-wide break-words">
@@ -1461,7 +1487,7 @@ const ModernTheme: React.FC<ThemeRendererProps> = ({
           >
             <div>
               <span className="text-[9px] sm:text-[10px] font-modern-heading text-[#C9A961] uppercase tracking-[0.2em] block mb-3 sm:mb-4">VENUE & LOCATION</span>
-              <h3 className="text-xl sm:text-2xl font-modern-heading font-bold text-white uppercase tracking-wide break-words">{getVenueFirstLine(event.venue)}</h3>
+              <h3 className="text-xl sm:text-2xl font-modern-heading font-bold text-white uppercase tracking-wide break-words">{getVenueFirstLine(event.venue, event.venueName)}</h3>
               <div className="w-12 h-[1px] bg-[#C9A961] my-3 sm:my-4" />
               
               <p className="text-xs text-[#FAF8F3]/80 leading-relaxed font-light tracking-wide break-words">
@@ -1792,7 +1818,7 @@ const RusticTheme: React.FC<ThemeRendererProps> = ({
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20">
           <div className="flex flex-col gap-4 sm:gap-6">
             <span className="text-[9px] sm:text-[10px] tracking-widest text-[#9CAF88] font-bold block uppercase font-sans">Venue & Location</span>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase leading-tight break-words">{getVenueFirstLine(event.venue)}</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-rustic-heading font-bold text-[#5C4033] uppercase leading-tight break-words">{getVenueFirstLine(event.venue, event.venueName)}</h2>
             <div className="w-12 h-0.5 bg-[#C97064]" />
             
             <p className="text-xs text-[#3E3E3E] leading-relaxed font-light tracking-wide break-words">
@@ -2146,7 +2172,7 @@ const FloralTheme: React.FC<ThemeRendererProps> = ({
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20">
           <div className="text-left flex flex-col gap-4 sm:gap-6">
             <span className="text-[9px] sm:text-[10px] font-sans tracking-widest text-[#A8B5A0] font-bold block uppercase">Venue & Location</span>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic leading-tight break-words">{getVenueFirstLine(event.venue)}</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-floral-heading text-[#3D5A3D] italic leading-tight break-words">{getVenueFirstLine(event.venue, event.venueName)}</h2>
             <div className="w-12 h-0.5 bg-[#D4A5A5]" />
             
             <p className="text-xs text-[#3D5A3D]/90 leading-relaxed font-light break-words">
@@ -2464,7 +2490,7 @@ const TraditionalTheme: React.FC<ThemeRendererProps> = ({
         <div className="max-w-4xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center relative z-20">
           <div>
             <span className="text-[9px] sm:text-[10px] tracking-widest text-amber-800 font-bold block mb-2 uppercase">Venue & Location</span>
-            <h2 className="text-lg sm:text-2xl font-bold text-amber-950 uppercase mb-3 break-words">{getVenueFirstLine(event.venue)}</h2>
+            <h2 className="text-lg sm:text-2xl font-bold text-amber-950 uppercase mb-3 break-words">{getVenueFirstLine(event.venue, event.venueName)}</h2>
             
             <p className="text-xs text-amber-900/80 leading-relaxed mb-4 font-serif break-words">
               We look forward to seeing you here. See venue location details and directions below.
@@ -2734,7 +2760,7 @@ const MinimalTheme: React.FC<ThemeRendererProps> = ({
           </span>
           <div className="max-w-xl">
             <h3 className="text-base sm:text-lg font-bold uppercase mb-2 break-words">
-              {getVenueFirstLine(event.venue)}
+              {getVenueFirstLine(event.venue, event.venueName)}
             </h3>
             <p className="text-xs text-stone-600 leading-relaxed mb-4 break-words">
               See the venue location details and interactive map below.
