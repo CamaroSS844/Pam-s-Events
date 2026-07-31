@@ -48,16 +48,23 @@ export function formatInvitationMessage(event: Partial<EventModel>, link: string
  * Format event date into human readable string e.g. "Saturday, September 12, 2026"
  */
 function formatEventDate(dateStr?: string): string {
-  if (!dateStr) return 'Date TBD';
+  if (!dateStr) return '12th September 2026';
   try {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    const day = date.getDate();
+    const getOrdinal = (n: number) => {
+      if (n > 3 && n < 21) return 'th';
+      switch (n % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+    const month = date.toLocaleDateString('en-GB', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day}${getOrdinal(day)} ${month} ${year}`;
   } catch {
     return dateStr;
   }
@@ -262,7 +269,7 @@ export async function generateInvitationCardDataUrl(
   const [cornerImg, headerImg, ringsImg] = await Promise.all([
     loadImage(themeCfg.cornerAsset),
     loadImage(themeCfg.headerAsset),
-    loadImage('/ChatGPT Image Jul 28, 2026, 12_01_58 PM.png')
+    loadImage('/chatgpt-wedding-rings.png')
   ]);
 
   // Draw Subtle Decorative Corner Watermarks (Opacity ~ 8-10%)
@@ -343,21 +350,25 @@ export async function generateInvitationCardDataUrl(
     currentY += 40;
   }
 
-  // 5. Header Tagline ("TOGETHER WITH THEIR FAMILIES" or "YOU'RE CORDIALLY INVITED")
+  // 5. Heading: You're Invited
   ctx.textAlign = 'center';
-  ctx.fillStyle = themeCfg.accentColor;
-  ctx.font = `bold 28px ${themeCfg.fontSerif}`;
-  const headerTag = isWedding ? "TOGETHER WITH THEIR FAMILIES" : "YOU'RE CORDIALLY INVITED";
-  ctx.fillText(headerTag, centerX, currentY);
-
-  currentY += 85;
-
-  // 6. Bride & Groom / Couple Title (Reduced prominence by ~25%)
   ctx.fillStyle = themeCfg.titleColor;
-  ctx.font = `italic bold 62px ${themeCfg.fontSerif}`;
-  ctx.fillText(coupleTitle, centerX, currentY);
+  ctx.font = `italic bold 82px ${themeCfg.fontSerif}`;
+  ctx.fillText("You're Invited", centerX, currentY);
 
-  currentY += 55;
+  currentY += 80;
+
+  // 6. Main Text Sentence
+  ctx.fillStyle = themeCfg.bodyColor;
+  ctx.font = `34px ${themeCfg.fontSerif}`;
+  const invSentence = `You are kindly invited to ${coupleTitle}'s ${isWedding ? "wedding" : "special celebration"}.`;
+  const sentenceLines = wrapCanvasText(ctx, invSentence, 1200);
+  sentenceLines.forEach(line => {
+    ctx.fillText(line, centerX, currentY);
+    currentY += 46;
+  });
+
+  currentY += 20;
 
   // Elegant Divider Line
   ctx.strokeStyle = themeCfg.accentColor;
@@ -373,67 +384,28 @@ export async function generateInvitationCardDataUrl(
   ctx.arc(centerX, currentY, 5, 0, Math.PI * 2);
   ctx.fill();
 
-  currentY += 60;
+  currentY += 65;
 
   // 7. Wedding Date ONLY
   ctx.fillStyle = themeCfg.titleColor;
-  ctx.font = `bold 36px ${themeCfg.fontSerif}`;
+  ctx.font = `bold 38px ${themeCfg.fontSerif}`;
   ctx.fillText(formattedDate.toUpperCase(), centerX, currentY);
 
-  currentY += 70;
-
-  // 8. Short Elegant Invitation Message
-  ctx.fillStyle = themeCfg.bodyColor;
-  ctx.font = `26px ${themeCfg.fontSerif}`;
-
-  const messageText = isWedding
-    ? "Together with our families, we warmly invite you to celebrate one of the happiest days of our lives."
-    : "We warmly invite you to share in this special celebration with us and make unforgettable memories together.";
-
-  const messageLines = wrapCanvasText(ctx, messageText, 1100);
-  messageLines.forEach(line => {
-    ctx.fillText(line, centerX, currentY);
-    currentY += 38;
-  });
-
   if (guestName && guestName.trim() && guestName.toLowerCase() !== 'dear guest') {
-    currentY += 10;
-    ctx.font = `bold 26px ${themeCfg.fontSerif}`;
+    currentY += 45;
+    ctx.font = `bold 28px ${themeCfg.fontSerif}`;
+    ctx.fillStyle = themeCfg.bodyColor;
     ctx.fillText(`Honoured Guest: ${guestName.trim()}`, centerX, currentY);
-    currentY += 30;
   }
 
-  currentY += 50;
+  currentY += 85;
 
-  // 9. QR HERO SECTION HEADER
-  ctx.fillStyle = themeCfg.titleColor;
-  ctx.font = `italic 42px ${themeCfg.fontSerif}`;
-  ctx.fillText("Your complete invitation awaits", centerX, currentY);
-
-  currentY += 45;
-
-  ctx.fillStyle = '#475569';
-  ctx.font = `bold 22px ${themeCfg.fontSans}`;
-  ctx.fillText("SCAN TO ACCESS:", centerX, currentY);
-
-  currentY += 35;
-
-  // Dynamic Features List
-  const canvasFeatures: string[] = [];
-  if (isWedding) canvasFeatures.push('• Ceremony details');
-  else canvasFeatures.push('• Event details');
-  if (event.venue || event.venueName || event.mapLink) canvasFeatures.push('• Venue & directions');
-  if (!(event as any).disableRsvp) canvasFeatures.push('• RSVP');
-  if (event.timelineSteps && event.timelineSteps.length > 0) canvasFeatures.push('• Event schedule');
-  if (event.dressCode && event.dressCode.trim()) canvasFeatures.push('• Dress code');
-  if (event.ecocashNumber || (event as any).giftRegistry) canvasFeatures.push('• Gift registry');
-  canvasFeatures.push('• Additional information');
-
+  // 8. QR Instruction - EXACT MATCH
   ctx.fillStyle = themeCfg.bodyColor;
-  ctx.font = `22px ${themeCfg.fontSerif}`;
-  ctx.fillText(canvasFeatures.join('   '), centerX, currentY);
+  ctx.font = `32px ${themeCfg.fontSerif}`;
+  ctx.fillText("Please scan the QR code for details.", centerX, currentY);
 
-  currentY += 50;
+  currentY += 65;
 
   // 9. FOCAL POINT: Large High-Quality QR Code (With Generous Quiet Zone)
   const qrBoxSize = 560;
@@ -501,15 +473,9 @@ export async function generateInvitationCardDataUrl(
   // 10. Footer CTA
   currentY = qrBoxY + qrBoxSize + 70;
 
-  ctx.fillStyle = themeCfg.titleColor;
-  ctx.font = `bold 30px ${themeCfg.fontSerif}`;
-  ctx.fillText("SCAN TO VIEW INVITATION & RSVP", centerX, currentY);
-
-  currentY += 40;
-
-  ctx.fillStyle = '#64748B';
-  ctx.font = `bold 20px ${themeCfg.fontSans}`;
-  ctx.fillText("PAM'S EVENTS • OFFICIAL DIGITAL INVITATION CARD", centerX, currentY);
+  ctx.fillStyle = themeCfg.accentColor;
+  ctx.font = `24px ${themeCfg.fontSerif}`;
+  ctx.fillText("~ ♡ ~", centerX, currentY);
 
   return canvas.toDataURL('image/png');
 }
